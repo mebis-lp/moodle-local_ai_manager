@@ -15,12 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *Lang strings for local_ai_manager - EN.
+ *Lang strings for aipurpose_chat - EN.
  *
- * @package    local_ai_manager
+ * @package    aipurpose_chat
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'AI Manager';
+$string['pluginname'] = 'Purpose "Chat"';
+$string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['settings_test_tool'] = 'Make a test request';
+$string['settings_test_tool_heading'] = 'Test purpose';
+$string['prompt'] = 'Prompt';
