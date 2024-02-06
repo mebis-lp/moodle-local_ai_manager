@@ -15,27 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper - chatgpt_35
+ * capabilities for local_ai_manager
  *
- * @package    aitool_chatgpt_35
+ * @package    local_ai_manager
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aitool_chatgpt_35;
-
-/**
- * Helper - chatgpt_35
- *
- * @package    aitool_chatgpt_35
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class helper {
-
-    // public static function () {
-
-    // }
-}
+$capabilities = [
+    'local/ai_manager:use_ai_manager' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => [
+            'user' => CAP_ALLOW,
+            'guest' => CAP_PREVENT,
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ]
+    ],
+];

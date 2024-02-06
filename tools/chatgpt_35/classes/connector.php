@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aitool\chatgpt_35;
+namespace aitool_chatgpt_35;
 
 use dml_exception;
 
@@ -37,8 +37,8 @@ use dml_exception;
  */
 class connector extends \local_ai_manager\helper {
 
-    const MODEL = 'gpt-3.5';
-    const ENDPOINTURL = 'https://api.openai.com/v1/completions';
+    const MODEL = 'gpt-3.5-turbo';
+    const ENDPOINTURL = 'https://api.openai.com/v1/chat/completions';
 
     private $model;
     private $endpointurl;
@@ -54,8 +54,8 @@ class connector extends \local_ai_manager\helper {
     public function __construct() {
         $this->model = self::MODEL;
         $this->endpointurl = self::ENDPOINTURL;
-        $this->temperature = get_config('local_ai_manager', 'temperature', 0.5);
-        $this->apikey = get_config('local_ai_manager', 'openaiapikey');
+        $this->temperature = get_config('aitool_chatgpt_35', 'temperature', 0.5);
+        $this->apikey = get_config('aitool_chatgpt_35', 'openaiapikey');
     }
 
     /**
@@ -67,7 +67,7 @@ class connector extends \local_ai_manager\helper {
      * @return array The response from the request.
      * @throws moodle_exception If the API key is empty.
      */
-    public function make_request($url, $data, $apikey, $multipart = null) {
+    private function make_request($url, $data, $apikey, $multipart = null) {
         global $CFG;
         require_once($CFG->libdir . '/filelib.php');
         if (empty($apikey)) {
@@ -92,6 +92,8 @@ class connector extends \local_ai_manager\helper {
         $end = microtime(true);
         $executiontime = round($end - $start, 2);
 
+        \local_debugger\performance\debugger::print_debug('test', 'response', $response);
+
         if (json_decode($response) == null) {
             return ['curl_error' => $response, 'execution_time' => $executiontime];
         }
@@ -111,13 +113,13 @@ class connector extends \local_ai_manager\helper {
             throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty query model.');
         }
 
-        $data = $this->get_prompt_data($this->endpointurl, $prompttext);
+        $data = $this->get_prompt_data($prompttext);
         $result = $this->make_request($this->endpointurl, $data, $this->apikey);
 
-        if (isset($result['choices'][0]['text'])) {
-            return $result['choices'][0]['text'];
-        } else if (isset($result['choices'][0]['message'])) {
-            return $result['choices'][0]['message'];
+        if (!empty($result['response']['choices'][0]['text'])) {
+            return $result['response']['choices'][0]['text'];
+        } else if (!empty($result['response']['choices'][0]['message'])) {
+            return $result['response']['choices'][0]['message']['content'];
         } else {
             return $result;
         }
@@ -133,7 +135,12 @@ class connector extends \local_ai_manager\helper {
         $data = [
             'model' => $this->model,
             'temperature' => $this->temperature,
-            'prompt' => $prompttext,
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => $prompttext
+                ],
+            ],
         ];
         return $data;
     }

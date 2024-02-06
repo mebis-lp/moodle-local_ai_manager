@@ -15,27 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper - chatgpt_35
+ * External service definitions for local_ai_manager.
  *
- * @package    aitool_chatgpt_35
+ * @package    local_ai_manager
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aitool_chatgpt_35;
+defined('MOODLE_INTERNAL') || die();
 
-/**
- * Helper - chatgpt_35
- *
- * @package    aitool_chatgpt_35
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class helper {
-
-    // public static function () {
-
-    // }
-}
+$functions = [
+    'local_ai_manager_post_query' => [
+        'classname'     => 'local_ai_manager\external\submit_query',
+        'methodname'    => 'execute',
+        'description'   => 'Send a query to a LLM.',
+        'type'          => 'read',
+        'ajax'          => true,
+        'capabilities'  => 'local/ai_manager:use_ai_manager',
+    ],
+];

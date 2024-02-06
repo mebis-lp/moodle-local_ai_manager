@@ -58,7 +58,7 @@ class manager {
             $tool = self::get_default_tool($purpose);
         }
 
-        $classname = "\aitool_" . $tool . "\connector";
+        $classname = "\\aitool_" . $tool . "\\connector";
         if (!class_exists($classname)) {
             return "Class '\aitool_" . $tool . "\connector' is missing in tool " . $tool;
         }
@@ -69,12 +69,15 @@ class manager {
         return get_config('local_ai_manager', 'default_' . $purpose);
     }
 
-    // public static function get_tools_for_purpose(string $purpose, string $usetool = '') {
-    //     $helper = new \local_ai_manager\helper();
-    //     $enabledtools = $helper->get_enabled_plugins();
-    // }
+    /**
+     * Get the completion of the LLM.
+     *
+     * @param string $prompttext The prompt text.
+     * @return string The generated completion.
+     */
+    public function make_request(string $prompttext): string {
+        \local_debugger\performance\debugger::print_debug('test', 'make_request',$this->toolconnector);
 
-
-    // public static function get_
-
+       return $this->toolconnector->prompt_completion($prompttext);
+    }
 }

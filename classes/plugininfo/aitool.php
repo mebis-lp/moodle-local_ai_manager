@@ -21,6 +21,7 @@
  * @category    string
  * @copyright   2024, ISB Bayern
  * @author      Dr. Peter Mayer
+ * @author      Dr. Peter Mayer
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,6 +38,7 @@ use dml_exception;
  * @package     local_ai_manager
  * @category    string
  * @copyright   2024, ISB Bayern
+ * @author      Dr. Peter Mayer
  * @author      Dr. Peter Mayer
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
