@@ -92,8 +92,6 @@ class connector extends \local_ai_manager\helper {
         $end = microtime(true);
         $executiontime = round($end - $start, 2);
 
-        \local_debugger\performance\debugger::print_debug('test', 'response', $response);
-
         if (json_decode($response) == null) {
             return ['curl_error' => $response, 'execution_time' => $executiontime];
         }
@@ -104,10 +102,11 @@ class connector extends \local_ai_manager\helper {
      * Generates a completion for the given prompt text.
      *
      * @param string $prompttext The prompt text.
+     * @param array $options Options to be used during processing.
      * @return string|array The generated completion or null if the model is empty.
      * @throws moodle_exception If the model is empty.
      */
-    public function prompt_completion($prompttext) {
+    public function prompt_completion($prompttext, $options = []) {
 
         if (empty($this->model)) {
             throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty query model.');

@@ -52,6 +52,7 @@ class submit_query extends external_api {
         return new external_function_parameters([
             'purpose' => new external_value(PARAM_TEXT, 'The purpose of the promt.', VALUE_REQUIRED),
             'prompt' => new external_value(PARAM_RAW, 'The prompt', VALUE_REQUIRED),
+            'options' => new external_value(PARAM_RAW, 'Options array', VALUE_REQUIRED),
         ]);
     }
 
@@ -60,25 +61,36 @@ class submit_query extends external_api {
      *
      * @param string $purpose
      * @param string $prompt
+     * @param string $options
      * @return array
      */
-    public static function execute(string $purpose, string $prompt): array {
+    public static function execute(string $purpose, string $prompt, string $options): array {
 
         [
             'purpose' => $purpose,
             'prompt' => $prompt,
+            'options' => $options,
         ] = self::validate_parameters(self::execute_parameters(), [
             'purpose' => $purpose,
             'prompt' => $prompt,
+            'options' => $options,
         ]);
-        \local_debugger\performance\debugger::print_debug('test', 'submit_query', [$purpose, $prompt]);
 
         try {
-
             $aimanager = new \local_ai_manager\manager($purpose);
-            $result = $aimanager->make_request($prompt);
+            $options = json_decode($options);
+            \local_debugger\performance\debugger::print_debug('test','submit_query execute',$options);
+            if (empty($options)) {
+                $options = new \stdClass();
+            }
+            $result = $aimanager->make_request($prompt, $options);
 
-            $return = ['code' => 200, 'string' => 'ok', 'result' => $result];
+            if (!empty(json_decode($result, true)['error'])) {
+                $return = ['code' => 204, 'string' => 'error', 'result' => json_decode($result, true)['error']['message']];
+
+            } else {
+                $return = ['code' => 200, 'string' => 'ok', 'result' => $result];
+            }
         } catch (\Exception $e) {
 
             $return = ['code' => 500, 'string' => 'error', 'result' => $e->getMessage()];

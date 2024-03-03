@@ -62,6 +62,7 @@ class manager {
         if (!class_exists($classname)) {
             return "Class '\aitool_" . $tool . "\connector' is missing in tool " . $tool;
         }
+        \local_debugger\performance\debugger::print_debug('test', 'make_request constructor', [$purpose, $tool, $classname]);
         $this->toolconnector = new $classname();
     }
 
@@ -73,11 +74,22 @@ class manager {
      * Get the completion of the LLM.
      *
      * @param string $prompttext The prompt text.
+     * @param object $options Options to be used during processing.
      * @return string The generated completion.
      */
-    public function make_request(string $prompttext): string {
-        \local_debugger\performance\debugger::print_debug('test', 'make_request',$this->toolconnector);
+    public function make_request(string $prompttext, object $options = null): string {
 
-       return $this->toolconnector->prompt_completion($prompttext);
+        if ($options === null) {
+            $options = new \stdClass();
+        }
+        \local_debugger\performance\debugger::print_debug('test', 'make_request options', $options);
+
+        $result = $this->toolconnector->prompt_completion($prompttext, $options);
+
+        if (is_array($result)) {
+            $result = json_encode($result);
+        }
+
+        return $result;
     }
 }

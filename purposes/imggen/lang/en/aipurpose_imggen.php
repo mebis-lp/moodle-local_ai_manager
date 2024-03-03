@@ -15,27 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper - chatgpt_35
+ *Lang strings for aipurpose_imggen - EN.
  *
- * @package    aitool_chatgpt_35
+ * @package    aipurpose_imggen
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aitool_chatgpt_35;
-
-/**
- * Helper - chatgpt_35
- *
- * @package    aitool_chatgpt_35
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class helper {
-
-    // public static function () {
-
-    // }
-}
+$string['pluginname'] = 'Purpose "Image generation"';
+$string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';

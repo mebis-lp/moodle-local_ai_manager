@@ -20,16 +20,19 @@ export const init = (purpose, prompt) => {
  * Call to store input value
  * @param {string} purpose
  * @param {string} prompt
+ * @param {array} options
  * @returns {mixed}
  */
 const execMakeRequest = (
     purpose,
-    prompt
+    prompt,
+    options
 ) => fetchMany([{
     methodname: 'local_ai_manager_post_query',
     args: {
         purpose,
-        prompt
+        prompt,
+        options
     },
 }])[0];
 
@@ -37,16 +40,12 @@ const execMakeRequest = (
  * Executes the call to store input value.
  * @param {string} purpose
  * @param {string} prompt
- * @returns {string}
+ * @param {array} options
+ * @returns {mixed}
  */
-export const makeRequest = async (purpose, prompt) => {
+export const makeRequest = async (purpose, prompt, options = []) => {
 
-    const response = await execMakeRequest(purpose, prompt);
-    if (response.code != 200) {
-        Log.error(response.string);
-    }
-    if (response.code == 200) {
-        Log.info(response.string);
-    }
-    return response.result;
+    const response = await execMakeRequest(purpose, prompt, options);
+    return response;
+
 };
