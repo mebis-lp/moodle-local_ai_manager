@@ -101,6 +101,7 @@ class connector extends \local_ai_manager\helper {
         if ($fileformat == 'mp3') {
             $data['file'] = curl_file_create($filepath);
         }
+
         \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Pos', "2b");
         $curl = new \curl();
         $curloptions = [
@@ -108,14 +109,9 @@ class connector extends \local_ai_manager\helper {
             "CURLOPT_HTTPHEADER" => $headers,
         ];
         \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Pos', 3);
+        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper DATA', $data);
 
         $response = $curl->post($url, json_encode($data), $curloptions);
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Pos', 4);
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper RESPONSE 0', $response);
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper RESPONSE 1', json_decode($response,true)['data']);
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper RESPONSE 2', json_decode($response, true)['data'][0]['url']);
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper RESPONSE 2', json_decode($response, true)['error']);
-
 
         if (!empty(json_decode($response, true)['error'])) {
             return ['error' => json_decode($response, true)['error']];
@@ -177,7 +173,7 @@ class connector extends \local_ai_manager\helper {
             throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty query model.');
         }
 
-        $data = $this->get_prompt_data($prompttext);
+        $data = $this->get_prompt_data($prompttext, $options);
         $result = $this->make_request($this->endpointurl, $data, $this->apikey, null,  $options);
 
         if (!empty($result['response']['choices'][0]['text'])) {
@@ -197,12 +193,33 @@ class connector extends \local_ai_manager\helper {
      * @param string $prompttext The prompt text.
      * @return array The prompt data.
      */
-    private function get_prompt_data($prompttext): array {
+    private function get_prompt_data(string $prompttext, object $options): array {
+
+        // If empty, use text language, else translate to the mentioned language.
+        if (!empty($options->language)) {
+            $data['language'] = $options->language;
+            $manager = new \local_ai_manager\manager('chat');
+            $prompt = 'Translate the follwing text into ' . $options->language .':' . $prompttext;
+            $prompttext = $manager->make_request($prompt);
+        }
+
         $data = [
             'model' => $this->model,
             'input' => $prompttext,
-            'voice' => 'alloy',
+            'voice' => (empty($options->voice)) ? 'alloy' : $options->voice,
         ];
+
         return $data;
+    }
+
+    /**
+     * Getter method to get additional, language model specific options.
+     * @return array
+     */
+    public function get_additional_options(): array {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/ai_manager/tools/whisper_1/classes/language_codes.php');
+
+        return ['languagecodes' => $languagecodes];
     }
 }
