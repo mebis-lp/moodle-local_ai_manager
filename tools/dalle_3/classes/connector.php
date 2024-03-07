@@ -79,12 +79,10 @@ class connector extends \aitool_whisper_1\connector {
         if ($options === null) {
             $options = new \stdClass();
         }
-        \local_debugger\performance\debugger::print_debug('test', 'prompt_completion dalle model', $this->model);
 
         if (empty($this->model)) {
             throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty query model.');
         }
-        \local_debugger\performance\debugger::print_debug('test', 'prompt_completion dalle options', $options);
 
         $data = [
             'prompt' => $prompttext,
@@ -92,10 +90,9 @@ class connector extends \aitool_whisper_1\connector {
             'n' => (empty($options->numberofresponses)) ? 1 : $options->numberofresponses,
         ];
 
-        \local_debugger\performance\debugger::print_debug('test', 'prompt_completion dalle data', $data);
 
+        \local_debugger\performance\debugger::print_debug('test', 'prompt completion dalle', $data);
         $result = $this->make_request($this->endpointurl, $data, $this->apikey, null, $options, 'png');
-        \local_debugger\performance\debugger::print_debug('test', 'prompt_completion dalle result', $result);
 
         if (!empty($result['error'])) {
             return $result;

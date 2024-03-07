@@ -90,34 +90,27 @@ class connector extends \local_ai_manager\helper {
 
         $headers = $multipart ? ["Content-Type: multipart/form-data"] : ["Content-Type: application/json;charset=utf-8"];
         $headers[] = "Authorization: Bearer $apikey";
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Pos', 1);
 
         // Store the file to a temporary location.
         $filedir = make_temp_directory(true);
         $filepath = $filedir . '/' . uniqid() . "." . $fileformat;
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Pos', 2);
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Data', $data);
 
         if ($fileformat == 'mp3') {
             $data['file'] = curl_file_create($filepath);
         }
 
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Pos', "2b");
         $curl = new \curl();
         $curloptions = [
             "CURLOPT_RETURNTRANSFER" => true,
             "CURLOPT_HTTPHEADER" => $headers,
         ];
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Pos', 3);
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper DATA', $data);
 
         $response = $curl->post($url, json_encode($data), $curloptions);
+        \local_debugger\performance\debugger::print_debug('test', 'prompt_completion RESULT', $response);
 
         if (!empty(json_decode($response, true)['error'])) {
             return ['error' => json_decode($response, true)['error']];
         }
-
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper Pos', 5);
 
         $fs = get_file_storage();
         $fileinfo = [
@@ -128,7 +121,6 @@ class connector extends \local_ai_manager\helper {
             'filepath'  => '/',
             'filename'  => $options->filename,
         ];
-        \local_debugger\performance\debugger::print_debug('test', 'make_request whisper fileinfo', $fileinfo);
 
         if ($fileformat == 'png') {
             $file = $fs->create_file_from_url($fileinfo, json_decode($response,true)['data'][0]['url'], [], true);
@@ -139,7 +131,7 @@ class connector extends \local_ai_manager\helper {
         }
 
         // Finally delete the temporarily file.
-        // unlink($filepath);
+        unlink($filepath);
 
         $filepath = \moodle_url::make_draftfile_url(
             $file->get_itemid(),
@@ -148,6 +140,14 @@ class connector extends \local_ai_manager\helper {
             false
         )->out();
 
+        // if (!empty($response['response']['usage'])) {
+        //     \local_ai_manager\manager::log_request(
+        //         $result['response']['usage']['prompt_tokens'],
+        //         $result['response']['usage']['completion_tokens'],
+        //         $result['response']['usage']['total_tokens'],
+        //         $result['response']['model']
+        //     );
+        // }
 
         if ($filecreated != true) {
             return ['curl_error' => $response, 'execution_time' => $executiontime];

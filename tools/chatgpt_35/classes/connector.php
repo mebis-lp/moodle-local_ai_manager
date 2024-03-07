@@ -115,6 +115,15 @@ class connector extends \local_ai_manager\helper {
         $data = $this->get_prompt_data($prompttext);
         $result = $this->make_request($this->endpointurl, $data, $this->apikey);
 
+        if (!empty($result['response']['usage'])) {
+            \local_ai_manager\manager::log_request(
+                $result['response']['usage']['prompt_tokens'],
+                $result['response']['usage']['completion_tokens'],
+                $result['response']['usage']['total_tokens'],
+                $result['response']['model']
+            );
+        }
+
         if (!empty($result['response']['choices'][0]['text'])) {
             return $result['response']['choices'][0]['text'];
         } else if (!empty($result['response']['choices'][0]['message'])) {

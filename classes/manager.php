@@ -26,6 +26,7 @@
 namespace local_ai_manager;
 
 use dml_exception;
+use stdClass;
 
 /**
  * Helper
@@ -91,5 +92,20 @@ class manager {
         }
 
         return $result;
+    }
+
+    public static function log_request(int $prompttoken, int $completiontoken, int $tokentotal, string $model) {
+        global $DB, $USER;
+
+        $data = new stdClass();
+        $data->userid = $USER->id;
+        $data->prompttoken = $prompttoken;
+        $data->completiontoken = $completiontoken;
+        $data->tokentotal = $tokentotal;
+        $data->model = $model;
+        $data->timecreated = time();
+
+        $DB->insert_record('local_ai_manager_request_log',$data);
+
     }
 }

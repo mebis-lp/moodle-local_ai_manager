@@ -86,7 +86,7 @@ class admin_settingspage_tabs extends \admin_settingpage {
                 $active = true;
             }
 
-            $tab->description = '';
+            // $tab->description = '';
             list($visiblename, $descr) = array_pad(explode('$@DESCR*', $tab->visiblename), 2, '');
             $visiblename = trim($visiblename);
             $descr = trim($descr);
@@ -98,7 +98,7 @@ class admin_settingspage_tabs extends \admin_settingpage {
             $context['tabs'][] = array(
                 'name' => $tab->name,
                 'displayname' => $tab->visiblename,
-                'description' => $tab->description,
+                // 'description' => $tab->description,
                 'html' => $tab->output_html(),
                 'active' => $active,
             );

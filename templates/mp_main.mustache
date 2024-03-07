@@ -1,0 +1,169 @@
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button class="nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
+      aria-selected="true">{{#str}}mp_configuration, local_ai_manager{{/str}}</button>
+    <button class="nav-link" id="nav-profile-tab" data-toggle="tab" data-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile"
+      aria-selected="false">{{#str}}mp_statistics, local_ai_manager{{/str}}</button>
+    <button class="nav-link" id="nav-usagestats-tab" data-toggle="tab" data-target="#nav-usagestats" type="button" role="tab" aria-controls="nav-usagestats"
+      aria-selected="false">{{#str}}mp_usagestatistics, local_ai_manager{{/str}}</button>
+  </div>
+</nav>
+
+
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active pt-5" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+    <form method="post">
+      <h3>{{#str}} mp_heading_tool_purpose_matching , local_ai_manager {{/str}}</h3>
+      {{#matching}}
+      {{#purposes}}
+      <div class="row mt-3 col-md-5">
+        <label for="inputEmail3" class="col-md-3 col-form-label">{{purposename}}</label>
+        <div class="col-md-9">
+          <select class="form-control" id="inputGroupSelect01">
+            <option selected>{{#str}} pleaseselect, local_ai_manager {{/str}}</option>
+            {{#selectoptions}}
+            <option value="{{tool}}">{{toolname}}</option>
+            {{/selectoptions}}
+          </select>
+        </div>
+      </div>
+      {{/purposes}}
+      {{/matching}}
+      <hr>
+      <h3>{{#str}} mp_heading_api_keys , local_ai_manager {{/str}}</h3>
+      {{#tools}}
+      <div class="row mt-3 col-md-5">
+        <label for="inputEmail3" class="col-md-3 col-form-label">{{toolname}}</label>
+        <div class="col-md-9">
+          <input class="form-control" value="{{apikey}}">
+        </div>
+      </div>
+      {{/tools}}
+      <hr>
+      <button class="btn btn-primary" type="submit">{{#str}} save {{/str}}</button>
+    </form>
+  </div>
+  <div class="tab-pane fade pt-5" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+    <h3>{{#str}} mp_heading_userstatistics , local_ai_manager {{/str}}</h3>
+
+    <table class="table table-hover table-striped ">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">{{#str}}firstname{{/str}}</th>
+          <th scope="col">{{#str}}lastname{{/str}}</th>
+          <th scope="col">{{#str}}requests{{/str}}</th>
+          <th scope="col">{{#str}}mp_used_tokens, local_ai_manager{{/str}}</th>
+          <th scope="col">{{#str}}mp_estimated_costs, local_ai_manager{{/str}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>1.234</td>
+          <td>17.563</td>
+          <td>4,35 €</td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>Jacob</td>
+          <td>Thornton</td>
+          <td>254</td>
+          <td>1.563</td>
+          <td>0,35 €</td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td>Larry</td>
+          <td>the Bird</td>
+          <td>58</td>
+          <td>163</td>
+          <td>0,05 €</td>
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <th>Total</th>
+          <th></th>
+          <th>1546</th>
+          <th>19.289</th>
+          <th>4,75 €</th>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr>
+    <h3>{{#str}} mp_heading_budget , local_ai_manager {{/str}} - OpenAI</h3>
+    <div class="progress mt-3">
+      <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+    </div>
+    <p><b>Prognose:</b> Budget reicht noch für ca. 20 Tage.</p>
+    <hr>
+    <h3>{{#str}} mp_heading_budget , local_ai_manager {{/str}} - Google Gemini</h3>
+    <div class="progress mt-3">
+      <div class="progress-bar" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">45%</div>
+    </div>
+    <p><b>Prognose:</b> Budget reicht noch für ca. 127 Tage.</p>
+    <hr>
+    <h3>{{#str}} mp_heading_budget , local_ai_manager {{/str}} - BayernGPT</h3>
+    <div class="progress mt-3">
+      <div class="progress-bar" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
+    </div>
+    <p><b>Prognose:</b> Budget reicht noch 1395 Tage.</p>
+  </div>
+
+  <div class="tab-pane fade pt-5" id="nav-usagestats" role="tabpanel" aria-labelledby="nav-usagestats-tab">
+    <h3>{{#str}} mp_heading_usagestatistics , local_ai_manager {{/str}}</h3>
+
+    <table class="table table-hover table-striped ">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Modell</th>
+          <th scope="col">{{#str}}requests{{/str}}</th>
+          <th scope="col">{{#str}}mp_used_tokens, local_ai_manager{{/str}}</th>
+          <th scope="col">{{#str}}mp_estimated_costs, local_ai_manager{{/str}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>ChatGPT 3.5 Turbo</td>
+          <td>1.234</td>
+          <td>17.563</td>
+          <td>4,35 €</td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>ChatGPT 4</td>
+          <td>254</td>
+          <td>1.563</td>
+          <td>2,35 €</td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td>Whisper 1</td>
+          <td>4503</td>
+          <td>0</td>
+          <td>0,00 €</td>
+        </tr>
+        <tr>
+          <th scope="row">4</th>
+          <td>Dall-E</td>
+          <td>4.812</td>
+          <td>??</td>
+          <td>??</td>
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <th>Total</th>
+          <th>1546</th>
+          <th>19.289</th>
+          <th>4,75 €</th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

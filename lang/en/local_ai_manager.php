@@ -24,15 +24,28 @@
  */
 
 $string['empty_api_key'] = 'Empty API Key';
+$string['pleaseselect'] = 'Please, select';
 $string['pluginname'] = 'AI Manager';
-$string['temperature'] = 'Temperature';
-$string['temperature_desc'] = 'This describes "randomness" or "creativity". Low temperature will generate more coherent but predictable text. High numbers means more creative but not accurate. The range is from 0 to 1.';
+$string['privacy:metadata'] = 'The local ai_manager plugin does not store any personal data.';
+$string['purpose_chat'] = 'Chatbot';
 $string['purpose_defaults_heading'] = 'Purposes\' default model';
 $string['purpose_defaults_heading_desc'] = 'Define the default model used for different purposes';
-$string['pleaseselect'] = 'Please, select';
-$string['purpose_chat'] = 'Chatbot';
 $string['purpose_imggen'] = 'Imagegeneration';
-$string['purpose_tts'] = 'Text to speech';
 $string['purpose_stt'] = 'Speech to text';
+$string['purpose_tts'] = 'Text to speech';
 $string['settingsgeneral'] = 'Allgemein';
-$string['privacy:metadata'] = 'The local ai_manager plugin does not store any personal data.';
+$string['temperature'] = 'Temperature';
+$string['temperature_desc'] = 'This describes "randomness" or "creativity". Low temperature will generate more coherent but predictable text. High numbers means more creative but not accurate. The range is from 0 to 1.';
+
+// Strings for category managementpage.
+$string['mp_pagetitle'] = 'Category AI Settings';
+$string['mp_configuration'] = 'Configuration';
+$string['mp_statistics'] = 'Userstatistic';
+$string['mp_usagestatistics'] = 'Usagestatistics';
+$string['mp_heading_api_keys'] = 'API Keys';
+$string['mp_heading_tool_purpose_matching'] = 'Matching of languagemodels and purpose';
+$string['mp_used_tokens'] = 'Consumed Tokens';
+$string['mp_estimated_costs'] = 'Estimated Costs';
+$string['mp_heading_usagestatistics'] = 'Usage statistics';
+$string['mp_heading_userstatistics'] = 'User statistics';
+$string['mp_heading_budget'] = 'Budget';
