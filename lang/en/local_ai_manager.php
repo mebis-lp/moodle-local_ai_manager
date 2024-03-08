@@ -36,6 +36,9 @@ $string['purpose_tts'] = 'Text to speech';
 $string['settingsgeneral'] = 'Allgemein';
 $string['temperature'] = 'Temperature';
 $string['temperature_desc'] = 'This describes "randomness" or "creativity". Low temperature will generate more coherent but predictable text. High numbers means more creative but not accurate. The range is from 0 to 1.';
+$string['empty'] = 'empty';
+$string['settings'] = 'Einstellungen';
+$string['tools'] = 'Languagemodels';
 
 // Strings for category managementpage.
 $string['mp_pagetitle'] = 'Category AI Settings';

@@ -41,3 +41,4 @@ $string['frequency_penalty_desc'] = 'Reduces repetition of words that have alrea
 $string['presence_penalty'] = 'Presence penalty';
 $string['presence_penalty_desc'] = 'Similar to frequency penalty, it reduces probability of using a word that was already used. The difference is that is does not matter how many times the word was used - just if it was or not.';
 $string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['tools'] = 'Languagemodells';

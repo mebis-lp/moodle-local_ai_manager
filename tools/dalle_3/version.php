@@ -24,7 +24,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2023121203;
+$plugin->version  = 2023121204;
 $plugin->requires = 2023042403;
 $plugin->release = '0.0.1';
 $plugin->component = 'aitool_dalle_3';

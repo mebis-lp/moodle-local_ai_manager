@@ -22,12 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+// defined('MOODLE_INTERNAL') || die();
 
-$settings = new admin_settingpage('tab_chatgpt_35', get_string('pluginname', 'aitool_chatgpt_35'));
+// $settings = new admin_settingpage('tab_chatgpt_35', get_string('pluginname', 'aitool_chatgpt_35'));
 
-$name = new lang_string('openaisettings', 'aitool_chatgpt_35');
-$settings->add(new admin_setting_heading('openaisettings', $name, ''));
+// $name = new lang_string('openaisettings', 'aitool_chatgpt_35');
+// $settings->add(new admin_setting_heading('openaisettings', $name, ''));
 
 $settings->add(new admin_setting_configtext(
     'aitool_chatgpt_35/openaiapikey',
@@ -72,4 +72,4 @@ $settings->add(new admin_setting_configtext(
     ''
 ));
 
-$tabs->add($settings);
+// $tabs->add($settings);

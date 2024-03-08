@@ -1,0 +1,13 @@
+<div class="mt-5">
+  <a class="btn btn-secondary mb-3 mt-3" href="/admin/settings.php?section=local_ai_manager#settingstools">{{#str}}back{{/str}}</a>
+  <form method="post">
+    <div class="form-group row">
+      <label for="openaiapikey" class="col-sm-2 col-form-label">{{#str}}openaiapikey, aitool_dalle_3{{/str}}</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name = "openaiapikey" id="openaiapikey" value={{openaiapikey}}>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" name="action" value="storesettings" type="submit">{{#str}} save {{/str}}</button>
+  </form>
+</div>

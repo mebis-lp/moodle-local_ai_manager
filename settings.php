@@ -24,16 +24,39 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use local_ai_manager\admin\setting_button;
+
 if ($hassiteconfig) {
+
+    // $localmbscleanupcategory = $ADMIN->add(
+    //     'localplugins',
+    //     new admin_category('localmbscleanupcategory', get_string('pluginname', 'local_mbscleanup'))
+    // );
+
+    // $tabs = new local_mbs\admin_settingspage_tabs('local_mbscleanup', get_string('pluginname', 'local_mbscleanup'));
+    // $ADMIN->add('localmbscleanupcategory', $tabs);
+
+
+    $ADMIN->add('localplugins', new admin_category('local_ai_manager_cat', new lang_string('pluginname', 'local_ai_manager')));
+    // $settingspage = new admin_settingpage('managelocalhelloworld', new lang_string('manage', 'local_ai_manager'));
+
     $tabs = new \local_ai_manager\admin_settingspage_tabs('local_ai_manager', get_string('pluginname', 'local_ai_manager'));
+    $ADMIN->add('local_ai_manager_cat', $tabs);
 
-    $ADMIN->add('localplugins', $tabs);
-
-    // TAB: General settings.
     $settings = new admin_settingpage('settingsgeneral', get_string('settingsgeneral', 'local_ai_manager'));
 
     $helper = new local_ai_manager\helper();
     $plugininfo = new local_ai_manager\plugininfo\aitool();
+    $enabledtools = $plugininfo->get_enabled_plugins();
+
+    // Set for each tool a new settings page.
+    foreach ($enabledtools as $tool) {
+        $ADMIN->add('local_ai_manager_cat', new admin_externalpage(
+            'aitool_' . $tool,
+            get_string('pluginname', 'aitool_' . $tool),
+            $CFG->wwwroot . '/local/ai_manager/tools/' . $tool . '/tool_settings.php'
+        ));
+    }
 
     // Heading for section to set default model for each porpuse.
     $settings->add(new admin_setting_heading(
@@ -42,7 +65,6 @@ if ($hassiteconfig) {
         get_string('purpose_defaults_heading_desc', 'local_ai_manager')
     ));
 
-    $enabledtools = $plugininfo->get_enabled_plugins();
 
     $options = ['' => get_string('pleaseselect', 'local_ai_manager')];
     foreach ($enabledtools as $tool) {
@@ -63,6 +85,21 @@ if ($hassiteconfig) {
 
     $tabs->add($settings);
 
+    $settings = new admin_settingpage('settingstools', get_string('tools', 'local_ai_manager'));
+    foreach ($enabledtools as $tool) {
+        $settings->add(
+            new setting_button(
+                'local_ai_manager/href_aitool_' . $tool,
+                get_string('pluginname', 'aitool_' . $tool),
+                '',
+                get_string('settings', 'local_ai_manager'),
+                $CFG->wwwroot . '/local/ai_manager/tools/' . $tool . '/tool_settings.php',
+                "btn btn-secondary"
+            ),
+        );
+    }
+    $tabs->add($settings);
+
     // Include all setting pages of the subplugins purposes to a single tab each.
     $plugininfo = new local_ai_manager\plugininfo\aipurpose();
     $enabledpurposes = $plugininfo->get_enabled_plugins();
@@ -70,10 +107,4 @@ if ($hassiteconfig) {
     foreach ($enabledpurposes as $purpose) {
         include_once($CFG->dirroot . "/local/ai_manager/purposes/" . $purpose . "/settings.php");
     }
-
-    // Include all setting pages of the subplugins tools to a single tab each.
-    foreach ($enabledtools as $tool) {
-        include_once($CFG->dirroot. "/local/ai_manager/tools/" . $tool . "/settings.php");
-    }
-
 }
