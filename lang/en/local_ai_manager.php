@@ -39,6 +39,9 @@ $string['temperature_desc'] = 'This describes "randomness" or "creativity". Low 
 $string['empty'] = 'empty';
 $string['settings'] = 'Einstellungen';
 $string['tools'] = 'Languagemodels';
+$string['settings_cat_tools'] = 'Languagemodels';
+$string['settings_cat_purposes'] = 'Purposes';
+$string['generalsettings'] = 'General settings';
 
 // Strings for category managementpage.
 $string['mp_pagetitle'] = 'Category AI Settings';

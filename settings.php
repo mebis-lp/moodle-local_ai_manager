@@ -38,23 +38,38 @@ if ($hassiteconfig) {
 
 
     $ADMIN->add('localplugins', new admin_category('local_ai_manager_cat', new lang_string('pluginname', 'local_ai_manager')));
+
+    $tabs = new \local_ai_manager\admin_settingspage_tabs('local_ai_manager', get_string('generalsettings', 'local_ai_manager'));
+    $ADMIN->add('local_ai_manager_cat', $tabs);
+
+    $ADMIN->add('local_ai_manager_cat', new admin_category('local_ai_manager_cat_tools', new lang_string('settings_cat_tools', 'local_ai_manager')));
+    $ADMIN->add('local_ai_manager_cat', new admin_category('local_ai_manager_cat_purposes', new lang_string('settings_cat_purposes', 'local_ai_manager')));
     // $settingspage = new admin_settingpage('managelocalhelloworld', new lang_string('manage', 'local_ai_manager'));
 
-    $tabs = new \local_ai_manager\admin_settingspage_tabs('local_ai_manager', get_string('pluginname', 'local_ai_manager'));
-    $ADMIN->add('local_ai_manager_cat', $tabs);
 
     $settings = new admin_settingpage('settingsgeneral', get_string('settingsgeneral', 'local_ai_manager'));
 
     $helper = new local_ai_manager\helper();
-    $plugininfo = new local_ai_manager\plugininfo\aitool();
-    $enabledtools = $plugininfo->get_enabled_plugins();
+    $plugininfotools = new local_ai_manager\plugininfo\aitool();
+    $enabledtools = $plugininfotools->get_enabled_plugins();
+    $plugininfopurposes = new local_ai_manager\plugininfo\aipurpose();
+    $enabledpurposes = $plugininfopurposes->get_enabled_plugins();
 
     // Set for each tool a new settings page.
     foreach ($enabledtools as $tool) {
-        $ADMIN->add('local_ai_manager_cat', new admin_externalpage(
+        $ADMIN->add('local_ai_manager_cat_tools', new admin_externalpage(
             'aitool_' . $tool,
             get_string('pluginname', 'aitool_' . $tool),
             $CFG->wwwroot . '/local/ai_manager/tools/' . $tool . '/tool_settings.php'
+        ));
+    }
+
+    // Set for each prupose a new settings page.
+    foreach ($enabledpurposes as $purpose) {
+        $ADMIN->add('local_ai_manager_cat_purposes', new admin_externalpage(
+            'aipurpose_' . $purpose,
+            get_string('pluginname', 'aipurpose_' . $purpose),
+            $CFG->wwwroot . '/local/ai_manager/purposes/' . $purpose . '/tool_settings.php'
         ));
     }
 
@@ -101,8 +116,7 @@ if ($hassiteconfig) {
     $tabs->add($settings);
 
     // Include all setting pages of the subplugins purposes to a single tab each.
-    $plugininfo = new local_ai_manager\plugininfo\aipurpose();
-    $enabledpurposes = $plugininfo->get_enabled_plugins();
+
     // print_r($enabledpurposes);die;
     foreach ($enabledpurposes as $purpose) {
         include_once($CFG->dirroot . "/local/ai_manager/purposes/" . $purpose . "/settings.php");
