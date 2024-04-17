@@ -106,7 +106,6 @@ class connector extends \local_ai_manager\helper {
         ];
 
         $response = $curl->post($url, json_encode($data), $curloptions);
-        \local_debugger\performance\debugger::print_debug('test', 'prompt_completion RESULT', $response);
 
         if (!empty(json_decode($response, true)['error'])) {
             return ['error' => json_decode($response, true)['error']];

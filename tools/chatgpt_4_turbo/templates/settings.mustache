@@ -1,0 +1,85 @@
+<div class="">
+  <a class="btn btn-secondary mb-3 mt-3" href="/admin/settings.php?section=local_ai_manager#settingstools">{{#str}}back{{/str}}</a>
+  <form method="post">
+    <div class="form-group row">
+      <label for="openaiapikey" class="col-sm-2 col-form-label">{{#str}}openaiapikey, aitool_chatgpt_4_turbo{{/str}}</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name = "openaiapikey" id="openaiapikey" value={{openaiapikey}}>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="form-group row">
+      <label for="sourceoftruth" class="col-sm-2 col-form-label"> {{#str}} sourceoftruth, aitool_chatgpt_4_turbo {{/str}} </label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="sourceoftruth" name="sourceoftruth" rows="3">{{sourceoftruth}}</textarea>
+        <div class="col-sm-12">
+          {{#str}} sourceoftruth_desc , aitool_chatgpt_4_turbo {{/str}} 0.5
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="form-group row">
+      <label for="temperature" class="col-sm-2 col-form-label">{{#str}}temperature, aitool_chatgpt_4_turbo{{/str}}</label>
+      <div class="col-sm-10">
+        <input type="number" step="0.01" class="form-control" name="temperature" id="temperature" value="{{temperature}}">
+        <div class="col-sm-2 col-form-label">
+          <b>{{#str}} default {{/str}} 0.5</b>
+        </div>
+        <div class="col-sm-12">
+          {{#str}} temperature_desc , aitool_chatgpt_4_turbo {{/str}}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="form-group row">
+      <label for="top_p" class="col-sm-2 col-form-label">{{#str}}top_p, aitool_chatgpt_4_turbo{{/str}}</label>
+      <div class="col-sm-10">
+        <input type="number" step="0.01" class="form-control" name="top_p"  id="top_p" value="{{top_p}}">
+        <div class="col-sm-2 col-form-label">
+          <b>{{#str}} default {{/str}} {{#str}} empty,  local_ai_manager{{/str}}</b>
+        </div>
+        <div class="col-sm-12">
+          {{#str}} top_p_desc , aitool_chatgpt_4_turbo {{/str}}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="form-group row">
+      <label for="frequency_penalty" class="col-sm-2 col-form-label">{{#str}}frequency_penalty, aitool_chatgpt_4_turbo{{/str}}</label>
+      <div class="col-sm-10">
+        <input type="number" step="0.01" class="form-control" id="frequency_penalty" name="frequency_penalty" value="{{frequency_penalty}}">
+        <div class="col-sm-2 col-form-label">
+          <b>{{#str}} default {{/str}} {{#str}} empty,  local_ai_manager{{/str}}</b>
+        </div>
+        <div class="col-sm-12">
+          {{#str}} frequency_penalty_desc , aitool_chatgpt_4_turbo {{/str}}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="form-group row">
+      <label for="presence_penalty" class="col-sm-2 col-form-label">{{#str}}presence_penalty, aitool_chatgpt_4_turbo{{/str}}</label>
+      <div class="col-sm-10">
+        <input type="number" step="0.01" class="form-control" id="presence_penalty" name="presence_penalty" value="{{presence_penalty}}">
+        <div class="col-sm-2 col-form-label">
+          <b>{{#str}} default {{/str}} {{#str}} empty,  local_ai_manager{{/str}}</b>
+        </div>
+        <div class="col-sm-12">
+          {{#str}} presence_penalty_desc , aitool_chatgpt_4_turbo {{/str}}
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" name="action" value="storesettings" type="submit">{{#str}} save {{/str}}</button>
+  </form>
+</div>
