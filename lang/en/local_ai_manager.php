@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *Lang strings for local_ai_manager - EN.
+ * Lang strings for local_ai_manager - EN.
  *
  * @package    local_ai_manager
  * @copyright  ISB Bayern, 2024
@@ -27,6 +27,7 @@ $string['empty_api_key'] = 'Empty API Key';
 $string['pleaseselect'] = 'Please, select';
 $string['pluginname'] = 'AI Manager';
 $string['privacy:metadata'] = 'The local ai_manager plugin does not store any personal data.';
+$string['prompterror'] = 'Prompt error';
 $string['purpose_chat'] = 'Chatbot';
 $string['purpose_defaults_heading'] = 'Purposes\' default model';
 $string['purpose_defaults_heading_desc'] = 'Define the default model used for different purposes';
