@@ -32,13 +32,36 @@
       <hr>
       <h3>{{#str}} mp_heading_api_keys , local_ai_manager {{/str}}</h3>
       {{#tools}}
-      <div class="row mt-3 col-md-5">
-        <label for="inputEmail3" class="col-md-3 col-form-label">{{toolname}}</label>
-        <div class="col-md-9">
-          <input class="form-control" value="{{apikey}}">
-        </div>
-      </div>
+      <div class="row">
+        <div class='col-md-6 row'>
+            <label for="inputEmail3" class="col-md-3 col-form-label">{{toolname}}</label>
+            <div class="col-md-9">
+              <input class="form-control" value="{{apikey}}">
+            </div>
+          </div>
+          <div class='col-md-6 row'>
+              <label for="inputEmail3" class="col-md-3 col-form-label">Tokenbudget</label>
+              <div class="col-md-9">
+                <input class="form-control" value="1.500.000">
+              </div>
+            </div>
+          </div>
+
       {{/tools}}
+      <div class="row">
+        <div class='col-md-6 row'>
+            <label for="inputEmail3" class="col-md-3 col-form-label">Open LLama v2</label>
+            <div class="col-md-9">
+              <input class="form-control" value="apikey">
+            </div>
+          </div>
+          <div class='col-md-6 row'>
+              <label for="inputEmail3" class="col-md-3 col-form-label">API Endpunkt</label>
+              <div class="col-md-9">
+                <input class="form-control" value="https://...">
+              </div>
+            </div>
+          </div>
       <hr>
       <button class="btn btn-primary" type="submit">{{#str}} save {{/str}}</button>
     </form>
@@ -53,9 +76,11 @@
           <th scope="col">#</th>
           <th scope="col">{{#str}}firstname{{/str}}</th>
           <th scope="col">{{#str}}lastname{{/str}}</th>
+          <th scope="col">Aktiv</th>
           <th scope="col">{{#str}}requests{{/str}}</th>
           <th scope="col">{{#str}}mp_used_tokens, local_ai_manager{{/str}}</th>
-          <th scope="col">{{#str}}mp_estimated_costs, local_ai_manager{{/str}}</th>
+          <th scope="col">Token noch verfügbar</th>
+          <th scope="col">{{#str}} options {{/str}}</th>
         </tr>
       </thead>
       <tbody>
@@ -63,33 +88,41 @@
           <th scope="row">1</th>
           <td>Mark</td>
           <td>Otto</td>
+          <td><i class="fa fa-eye-slash" style="color: red"></td>
           <td>1.234</td>
           <td>17.563</td>
-          <td>4,35 €</td>
+          <td>157.437</td>
+          <td><button class="btn btn-primary">Guthaben auffüllen</button><button class="btn btn-primary">Nutzer entsperren</button></td>
         </tr>
         <tr>
           <th scope="row">2</th>
           <td>Jacob</td>
           <td>Thornton</td>
+          <td><i class="fa fa-eye" style="color: green"></td>
           <td>254</td>
           <td>1.563</td>
-          <td>0,35 €</td>
+          <td>173.437</td>
+          <td><button class="btn btn-primary">Guthaben auffüllen</button><button class="btn btn-primary">Nutzer sperren</button></td>
         </tr>
         <tr>
           <th scope="row">3</th>
           <td>Larry</td>
           <td>the Bird</td>
+          <td><i class="fa fa-eye" style="color: green"></td>
           <td>58</td>
           <td>163</td>
-          <td>0,05 €</td>
+          <td>174.837</td>
+          <td><button class="btn btn-primary">Guthaben auffüllen</button><button class="btn btn-primary">Nutzer sperren</button></td>
         </tr>
         <tr>
           <th scope="row"></th>
           <th>Total</th>
+          <td></td>
           <th></th>
           <th>1546</th>
           <th>19.289</th>
-          <th>4,75 €</th>
+          <td>155.711</td>
+          <td></td>
         </tr>
       </tbody>
     </table>

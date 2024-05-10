@@ -94,6 +94,14 @@ class manager {
         return $result;
     }
 
+    /**
+     * Log the request metadata (eg. used tokens, userid, timestamps etc.)
+     * @param int $prompttoken
+     * @param int $completiontoken
+     * @param int $tokentotal
+     * @param string $model
+     * @return void
+     */
     public static function log_request(int $prompttoken, int $completiontoken, int $tokentotal, string $model) {
         global $DB, $USER;
 
