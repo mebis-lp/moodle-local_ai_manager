@@ -26,7 +26,7 @@
 $capabilities = [
     'local/ai_manager:use_ai_manager' => [
         'captype' => 'read',
-        'contextlevel' => CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
             'user' => CAP_ALLOW,
             'guest' => CAP_PREVENT,

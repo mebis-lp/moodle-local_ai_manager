@@ -51,7 +51,6 @@ $PAGE->set_secondary_navigation(false);
 
 $templatecontext = [];
 
-$helper = new local_ai_manager\helper();
 $plugininfo = new local_ai_manager\plugininfo\aitool();
 $enabledtools = $plugininfo->get_enabled_plugins();
 
@@ -61,7 +60,7 @@ foreach ($enabledtools as $tool) {
     $options[] = ['tool' => $tool, 'toolname' => get_string('pluginname', 'aitool_' . $tool), 'apikey' => "testkey"];
 }
 
-$purposes = $helper->get_all_purposes();
+$purposes = \local_ai_manager\base_connector::get_all_purposes();
 foreach ($purposes as $purpose) {
 
     $templatecontext['matching']['purposes'][] = [

@@ -33,7 +33,7 @@ namespace aitool_ollama;
  * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class connector extends \local_ai_manager\helper {
+class connector extends \local_ai_manager\base_connector {
 
     const MODEL = 'mixtral';
 
@@ -50,7 +50,7 @@ class connector extends \local_ai_manager\helper {
     public function __construct() {
         $this->model = self::MODEL;
         $this->endpointurl = get_config('aitool_ollama', 'url');
-        $this->temperature = get_config('aitool_ollama', 'temperature', 0.5);
+        $this->temperature = floatval(get_config('aitool_ollama', 'temperature'));
         $this->apikey = get_config('aitool_ollama', 'apikey');
     }
 

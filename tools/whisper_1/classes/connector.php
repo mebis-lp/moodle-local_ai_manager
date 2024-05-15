@@ -26,7 +26,11 @@
 namespace aitool_whisper_1;
 
 use coding_exception;
+use core\http_client;
 use dml_exception;
+use local_ai_manager\local\prompt_response;
+use local_ai_manager\local\request_response;
+use local_ai_manager\local\unit;
 use moodle_exception;
 use invalid_dataroot_permissions;
 use Error;
@@ -41,15 +45,21 @@ use stored_file_creation_exception;
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class connector extends \local_ai_manager\helper {
+class connector extends \local_ai_manager\base_connector {
 
-    const MODEL = 'tts-1';
-    const ENDPOINTURL = 'https://api.openai.com/v1/audio/speech';
-
-    private $model;
-    private $endpointurl;
     private float $temperature;
-    private $apikey;
+
+    public function get_model_name(): string {
+        return 'tts-1';
+    }
+
+    protected function get_endpoint_url(): string {
+        return 'https://api.openai.com/v1/audio/speech';
+    }
+
+    protected function get_api_key(): string {
+        return get_config('aitool_whisper_1', 'openaiapikey');
+    }
 
     /**
      * Construct the connector class for whisper_1
@@ -58,10 +68,7 @@ class connector extends \local_ai_manager\helper {
      * @throws dml_exception
      */
     public function __construct() {
-        $this->model = self::MODEL;
-        $this->endpointurl = self::ENDPOINTURL;
-        $this->temperature = get_config('aitool_whisper_1', 'temperature', 0.5);
-        $this->apikey = get_config('aitool_whisper_1', 'openaiapikey');
+        $this->temperature = floatval(get_config('aitool_whisper_1', 'temperature'));
     }
 
     /**
@@ -75,21 +82,36 @@ class connector extends \local_ai_manager\helper {
      * @param string $fileformat
      * @return array
      */
-    public function make_request($url, $data, $apikey, $multipart = null, object $options = null, string $fileformat = 'mp3') {
+    public function make_request(array $data, bool $multipart = false): request_response {
         global $CFG, $USER;
-
-        if ($options === null) {
-            $options = new \stdClass();
-        }
 
         require_once($CFG->libdir . '/filelib.php');
 
-        if (empty($apikey)) {
-            throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty API Key.');
-        }
+        $client = new http_client();
 
-        $headers = $multipart ? ["Content-Type: multipart/form-data"] : ["Content-Type: application/json;charset=utf-8"];
-        $headers[] = "Authorization: Bearer $apikey";
+        $contenttype = $multipart ? 'multipart/form-data' : 'application/json;charset=utf-8';
+        $options['headers'] = [
+                'Authorization' => 'Bearer ' . $this->get_api_key(),
+                'Content-Type' => $contenttype,
+        ];
+        $options['body'] = json_encode($data);
+
+        $start = microtime(true);
+
+        $response = $client->post($this->get_endpoint_url(), $options);
+        $end = microtime(true);
+        $executiontime = round($end - $start, 2);
+        $return['execution_time'] = $executiontime;
+        if ($response->getStatusCode() === 200) {
+            $return = request_response::create_from_result(json_decode($response->getBody(), true));
+        } else {
+            // TODO localize
+            $return = request_response::create_from_error(
+                    'Sending request to tool api endpoint failed with code ' . $response->getStatusCode(),
+                    $response->getBody()
+            );
+        }
+        return $return;
 
         // Store the file to a temporary location.
         $filedir = make_temp_directory(true);
@@ -154,37 +176,6 @@ class connector extends \local_ai_manager\helper {
         return ['response' => $filepath, 'execution_time' => $executiontime];
     }
 
-    /**
-     * Generates a completion for the given prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @param object $options Options to be used during processing.
-     * @return string|array The generated completion or null if the model is empty.
-     * @throws moodle_exception If the model is empty.
-     */
-    public function prompt_completion($prompttext, object $options = null) {
-
-        if ($options === null) {
-            $options = new \stdClass();
-        }
-
-        if (empty($this->model)) {
-            throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty query model.');
-        }
-
-        $data = $this->get_prompt_data($prompttext, $options);
-        $result = $this->make_request($this->endpointurl, $data, $this->apikey, null,  $options);
-
-        if (!empty($result['response']['choices'][0]['text'])) {
-            return $result['response']['choices'][0]['text'];
-        } else if (!empty($result['response']['choices'][0]['message'])) {
-            return $result['response']['choices'][0]['message']['content'];
-        } else if (empty($result['response']['choices']) && !empty ($result['response'])) {
-            return $result['response'];
-        }else {
-            return $result;
-        }
-    }
 
     /**
      * Retrieves the data for the prompt based on the prompt text.
@@ -198,7 +189,7 @@ class connector extends \local_ai_manager\helper {
         if (!empty($options->language)) {
             $data['language'] = $options->language;
             $manager = new \local_ai_manager\manager('chat');
-            $prompt = 'Translate the follwing text into ' . $options->language .':' . $prompttext;
+            $prompt = 'Translate the following text into ' . $options->language .':' . $prompttext;
             $prompttext = $manager->make_request($prompt);
         }
 
@@ -217,8 +208,16 @@ class connector extends \local_ai_manager\helper {
      */
     public function get_additional_options(): array {
         global $CFG;
-        require_once($CFG->dirroot . '/local/ai_manager/tools/whisper_1/classes/language_codes.php');
 
-        return ['languagecodes' => $languagecodes];
+        return ['languagecodes' => language_codes::LANGUAGECODES];
+    }
+
+    public function get_unit(): unit {
+        // TODO Think about this again.
+        return unit::COUNT;
+    }
+
+    public function execute_prompt_completion(array $result): prompt_response {
+        // TODO: Implement execute_prompt_completion() method.
     }
 }

@@ -26,6 +26,8 @@
 namespace local_ai_manager;
 
 use dml_exception;
+use local_ai_manager\local\prompt_response;
+use local_ai_manager\local\userinfo;
 use stdClass;
 
 /**
@@ -38,24 +40,24 @@ use stdClass;
  */
 class manager {
 
-    /** @var Toolconnector object */
-    var $toolconnector;
+    /** @var base_connector $toolconnector The tool connector object. */
+    private base_connector $toolconnector;
 
     /**
      * Constructor of manager class.
      *
      * @param string $purpose
-     * @param string $usetool
+     * @param string $tooltouse
      * @return string|void
      * @throws dml_exception
      */
-    public function __construct(string $purpose, string $usetool = '') {
+    public function __construct(string $purpose, string $tooltouse = '') {
 
-        if (!empty($usetool)) {
-            $tool = $usetool;
+        if (!empty($tooltouse)) {
+            $tool = $tooltouse;
         }
 
-        if (empty($usetool)) {
+        if (empty($tooltouse)) {
             $tool = self::get_default_tool($purpose);
         }
 
@@ -64,6 +66,7 @@ class manager {
             return "Class '\aitool_" . $tool . "\connector' is missing in tool " . $tool;
         }
         \local_debugger\performance\debugger::print_debug('test', 'make_request constructor', [$purpose, $tool, $classname]);
+
         $this->toolconnector = new $classname();
     }
 
@@ -72,40 +75,57 @@ class manager {
     }
 
     /**
-     * Get the completion of the LLM.
+     * Get the prompt completion from the LLM.
      *
      * @param string $prompttext The prompt text.
-     * @param object $options Options to be used during processing.
-     * @return string The generated completion.
+     * @param array $options Options to be used during processing.
+     * @return prompt_response The generated prompt response object
      */
-    public function make_request(string $prompttext, object $options = null): string {
+    public function perform_request(string $prompttext, array $options = []): prompt_response {
 
         if ($options === null) {
             $options = new \stdClass();
         }
         \local_debugger\performance\debugger::print_debug('test', 'make_request options', $options);
-
-        $result = $this->toolconnector->prompt_completion($prompttext, $options);
-
-        if (is_array($result)) {
-            $result = json_encode($result);
+        $promptdata = $this->toolconnector->get_prompt_data($prompttext);
+        try {
+            $requestresult = $this->toolconnector->make_request($promptdata, !empty($options['multipart']));
+        } catch (\Exception $exception) {
+            return prompt_response::create_from_error($exception->getMessage(), $exception->getTraceAsString());
         }
-
-        return $result;
+        if ($requestresult->is_error()) {
+            return prompt_response::create_from_error($requestresult->get_errormessage(), $requestresult->get_debuginfo());
+        }
+        $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response());
+        $this->log_request($promptcompletion);
+        return $promptcompletion;
     }
 
-    public static function log_request(int $prompttoken, int $completiontoken, int $tokentotal, string $model) {
+    private function log_request(prompt_response $promptcompletion): void {
         global $DB, $USER;
+
+        if ($promptcompletion->is_error()) {
+            // TODO We probably used some tokens despite an error? Need to properly log this.
+            return;
+        }
 
         $data = new stdClass();
         $data->userid = $USER->id;
-        $data->prompttoken = $prompttoken;
-        $data->completiontoken = $completiontoken;
-        $data->tokentotal = $tokentotal;
-        $data->model = $model;
+        $data->value = $promptcompletion->get_usage()->value;
+        $data->model = $this->toolconnector->get_model_name();
+        if (!$this->toolconnector->has_customvalue1()) {
+            $data->customvalue1 = $promptcompletion->get_usage()->customvalue1;
+        }
+        if (!$this->toolconnector->has_customvalue2()) {
+            $data->customvalue2 = $promptcompletion->get_usage()->customvalue2;
+        }
+        $data->modelinfo = $promptcompletion->get_modelinfo();
         $data->timecreated = time();
+        $DB->insert_record('local_ai_manager_request_log', $data);
 
-        $DB->insert_record('local_ai_manager_request_log',$data);
+        $userinfo = new userinfo($data->userid);
+        $userinfo->set_currentusage($userinfo->get_currentusage() + 1);
+        $userinfo->store();
 
     }
 }

@@ -35,121 +35,27 @@ use dml_exception;
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class connector extends \local_ai_manager\helper {
+class connector extends \aitool_chatgpt_35\connector {
 
-    const MODEL = 'gpt-4-turbo';
-    const ENDPOINTURL = 'https://api.openai.com/v1/chat/completions';
+    public function get_model_name(): string {
+        return 'gpt-4-turbo';
+    }
 
-    private $model;
-    private $endpointurl;
-    private float $temperature;
-    private $apikey;
+    public function get_endpoint_url(): string {
+        return 'https://api.openai.com/v1/chat/completions';
+    }
+    protected function get_api_key(): string {
+        return get_config('aitool_chatgpt_4_turbo', 'openaiapikey');
+    }
 
     /**
-     * Construct the connector class for chatgpt_4
+     * Construct the connector class for chatgpt_4.
      *
      * @return void
      * @throws dml_exception
      */
     public function __construct() {
-        $this->model = self::MODEL;
-        $this->endpointurl = self::ENDPOINTURL;
-        $this->temperature = get_config('aitool_chatgpt_4_turbo', 'temperature', 0.5);
-        $this->apikey = get_config('aitool_chatgpt_4_turbo', 'openaiapikey');
-    }
-
-    /**
-     * Makes a request to the specified URL with the given data and API key.
-     *
-     * @param string $url The URL to make the request to.
-     * @param array $data The data to send with the request.
-     * @param string $apikey The API key to authenticate the request.
-     * @return array The response from the request.
-     * @throws moodle_exception If the API key is empty.
-     */
-    private function make_request($url, $data, $apikey, $multipart = null) {
-        global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
-        if (empty($apikey)) {
-            throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty API Key.');
-        }
-        $headers = $multipart ? [
-            "Content-Type: multipart/form-data"
-        ] : [
-            "Content-Type: application/json;charset=utf-8"
-        ];
-
-        $headers[] = "Authorization: Bearer $apikey";
-        $curl = new \curl();
-        $options = [
-            "CURLOPT_RETURNTRANSFER" => true,
-            "CURLOPT_HTTPHEADER" => $headers,
-        ];
-        $start = microtime(true);
-
-        $response = $curl->post($url, json_encode($data), $options);
-
-        $end = microtime(true);
-        $executiontime = round($end - $start, 2);
-
-        if (json_decode($response) == null) {
-            return ['curl_error' => $response, 'execution_time' => $executiontime];
-        }
-        return ['response' => json_decode($response, true), 'execution_time' => $executiontime];
-    }
-
-    /**
-     * Generates a completion for the given prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @param array $options Options to be used during processing.
-     * @return string|array The generated completion or null if the model is empty.
-     * @throws moodle_exception If the model is empty.
-     */
-    public function prompt_completion($prompttext, $options = []) {
-
-        if (empty($this->model)) {
-            throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty query model.');
-        }
-
-        $data = $this->get_prompt_data($prompttext);
-        $result = $this->make_request($this->endpointurl, $data, $this->apikey);
-
-        if (!empty($result['response']['usage'])) {
-            \local_ai_manager\manager::log_request(
-                $result['response']['usage']['prompt_tokens'],
-                $result['response']['usage']['completion_tokens'],
-                $result['response']['usage']['total_tokens'],
-                $result['response']['model']
-            );
-        }
-
-        if (!empty($result['response']['choices'][0]['text'])) {
-            return $result['response']['choices'][0]['text'];
-        } else if (!empty($result['response']['choices'][0]['message'])) {
-            return $result['response']['choices'][0]['message']['content'];
-        } else {
-            return $result;
-        }
-    }
-
-    /**
-     * Retrieves the data for the prompt based on the prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @return array The prompt data.
-     */
-    private function get_prompt_data($prompttext): array {
-        $data = [
-            'model' => $this->model,
-            'temperature' => $this->temperature,
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => $prompttext
-                ],
-            ],
-        ];
-        return $data;
+        parent::__construct();
+        $this->temperature = floatval(get_config('aitool_chatgpt_4_turbo', 'temperature'));
     }
 }

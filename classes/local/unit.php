@@ -14,34 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * aipurpose_chat privacy provider class.
- *
- * @package    aipurpose_chat
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-namespace aipurpose_chat\privacy;
+namespace local_ai_manager\local;
 
 /**
- * aipurpose_chat privacy provider class.
+ * Enum for defining different units in which the AI tool costs are being calculated.
  *
- * @package    aipurpose_chat
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    local_ai_manager
+ * @copyright  2024, ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\null_provider {
-
-    /**
-     * Get the language string identifier with the component's language
-     * file to explain why this plugin stores no data.
-     *
-     * @return  string
-     */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
-    }
+enum unit {
+    case TOKEN;
+    case COUNT;
 }

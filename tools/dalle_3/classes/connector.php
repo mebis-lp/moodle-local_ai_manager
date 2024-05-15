@@ -62,7 +62,7 @@ class connector extends \aitool_whisper_1\connector {
     public function __construct() {
         $this->model = self::MODEL;
         $this->endpointurl = self::ENDPOINTURL;
-        $this->temperature = get_config('aitool_dalle_3', 'temperature', 0.5);
+        $this->temperature = floatval(get_config('aitool_dalle_3', 'temperature'));
         $this->apikey = get_config('aitool_dalle_3', 'openaiapikey');
     }
 

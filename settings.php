@@ -49,7 +49,6 @@ if ($hassiteconfig) {
 
     $settings = new admin_settingpage('settingsgeneral', get_string('settingsgeneral', 'local_ai_manager'));
 
-    $helper = new local_ai_manager\helper();
     $plugininfotools = new local_ai_manager\plugininfo\aitool();
     $enabledtools = $plugininfotools->get_enabled_plugins();
     $plugininfopurposes = new local_ai_manager\plugininfo\aipurpose();
@@ -86,7 +85,7 @@ if ($hassiteconfig) {
         $options[$tool] = get_string('pluginname', 'aitool_' . $tool);
     }
 
-    $purposes = $helper->get_all_purposes();
+    $purposes = \local_ai_manager\base_connector::get_all_purposes();
     foreach ($purposes as $purpose) {
 
         $settings->add(new admin_setting_configselect(
