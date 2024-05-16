@@ -52,38 +52,27 @@ class submit_query extends external_api {
      * @param string $options additional options which should be passed to the request to the AI tool
      * @return array associative array containing the result of the request
      */
-    public static function execute(string $purpose, string $prompt, string $options, int $contextid): array {
+    public static function execute(string $purpose, string $prompt, string $options): array {
 
         [
             'purpose' => $purpose,
             'prompt' => $prompt,
             'options' => $options,
-            'contextid' => $contextid,
         ] = self::validate_parameters(self::execute_parameters(), [
             'purpose' => $purpose,
             'prompt' => $prompt,
             'options' => $options,
-            'contextid' => $contextid,
         ]);
-        if (empty($contextid)) {
-            $context = \context_system::instance();
-        } else {
-            $context = \context::instance_by_id($contextid);
-            if (!$context) {
-                $context = \context_system::instance();
-            }
-        }
+        $context = \context_system::instance();
         self::validate_context($context);
         require_capability('local/ai_manager:use_ai_manager', $context);
 
-        // TODO Think about sanitizing the raw parameters
-
         try {
-            $aimanager = new \local_ai_manager\manager($purpose);
-            \local_debugger\performance\debugger::print_debug('test','submit_query execute',$options);
             if (!empty($options)) {
                 $options = json_decode($options, true);
             }
+            $aimanager = new \local_ai_manager\manager($purpose);
+            \local_debugger\performance\debugger::print_debug('test','submit_query execute',$options);
             $result = $aimanager->perform_request($prompt, $options);
 
             if ($result->is_error()) {

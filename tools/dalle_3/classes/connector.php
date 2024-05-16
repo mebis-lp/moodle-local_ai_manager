@@ -25,13 +25,13 @@
 
 namespace aitool_dalle_3;
 
-use coding_exception;
+use aitool_whisper_1\language_codes;
 use dml_exception;
-use moodle_exception;
-use invalid_dataroot_permissions;
-use Error;
-use file_exception;
-use stored_file_creation_exception;
+use local_ai_manager\base_connector;
+use local_ai_manager\local\prompt_response;
+use local_ai_manager\local\unit;
+use local_ai_manager\local\usage;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Connector - dalle_3
@@ -41,17 +41,10 @@ use stored_file_creation_exception;
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class connector extends \aitool_whisper_1\connector {
+class connector extends base_connector {
 
-    const MODEL = 'dall-e-3';
-    const EDIT_ENDPOINT = 'https://api.openai.com/v1/images/edits';
-    const ENDPOINTURL = 'https://api.openai.com/v1/images/generations';
-    const VARIATIONS_ENDPOINT = 'https://api.openai.com/v1/images/variations';
-
-    private $model;
-    private $endpointurl;
     private float $temperature;
-    private $apikey;
+
 
     /**
      * Construct the connector class for dalle_3
@@ -60,48 +53,73 @@ class connector extends \aitool_whisper_1\connector {
      * @throws dml_exception
      */
     public function __construct() {
-        $this->model = self::MODEL;
-        $this->endpointurl = self::ENDPOINTURL;
         $this->temperature = floatval(get_config('aitool_dalle_3', 'temperature'));
-        $this->apikey = get_config('aitool_dalle_3', 'openaiapikey');
+    }
+
+    public function get_model_name(): string {
+        return 'dall-e-3';
+    }
+
+    protected function get_endpoint_url(): string {
+        return 'https://api.openai.com/v1/images/generations';
+    }
+
+    protected function get_api_key(): string {
+        return get_config('aitool_dalle_3', 'openaiapikey');
+    }
+
+
+    /**
+     * Retrieves the data for the prompt based on the prompt text.
+     *
+     * @param string $prompttext The prompt text.
+     * @return array The prompt data.
+     */
+    public function get_prompt_data(string $prompttext): array {
+        // TODO we do not have options here yet, but apparently will need them both here and in the execute_promptcompletion method,
+        //  so we probably need this in the connector object inserted
+        return [
+                'prompt' => $prompttext,
+                'size' => (empty($options->imagesize)) ? "256x256" : $options->imagesize,
+                'n' => (empty($options->numberofresponses)) ? 1 : $options->numberofresponses,
+        ];
     }
 
     /**
-     * Generates a completion for the given prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @param object $options Options to be used during processing.
-     * @return string|array The generated completion or null if the model is empty.
-     * @throws moodle_exception If the model is empty.
+     * Getter method to get additional, language model specific options.
+     * @return array
      */
-    public function prompt_completion($prompttext, object $options = null) {
-
-        if ($options === null) {
-            $options = new \stdClass();
-        }
-
-        if (empty($this->model)) {
-            throw new \moodle_exception('prompterror', 'local_ai_connector', '', null, 'Empty query model.');
-        }
-
-        $data = [
-            'prompt' => $prompttext,
-            'size' => (empty($options->imagesize)) ? "256x256" : $options->imagesize,
-            'n' => (empty($options->numberofresponses)) ? 1 : $options->numberofresponses,
-        ];
-
-
-        \local_debugger\performance\debugger::print_debug('test', 'prompt completion dalle', $data);
-        $result = $this->make_request($this->endpointurl, $data, $this->apikey, null, $options, 'png');
-
-        if (!empty($result['error'])) {
-            return $result;
-        }
-
-        if (!empty($result)) {
-            if (!empty($result['response'])) {
-                return $result['response'];
-            }
-        }
+    public function get_additional_options(): array {
+        return ['languagecodes' => language_codes::LANGUAGECODES];
     }
+
+    public function get_unit(): unit {
+        // TODO Think about this again.
+        return unit::COUNT;
+    }
+
+    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+        global $USER;
+        $content = json_decode($result->getContents(), true);
+        $fs = get_file_storage();
+        $fileinfo = [
+                'contextid' => \context_user::instance($USER->id)->id,
+                'component' => 'user',
+                'filearea'  => 'draft',
+                'itemid'    => $options['itemid'],
+                'filepath'  => '/',
+                'filename'  => $options['filename'],
+        ];
+        $file = $fs->create_file_from_url($fileinfo, $content['data'][0]['url'], [], true);
+
+        $filepath = \moodle_url::make_draftfile_url(
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+        )->out();
+
+        return prompt_response::create_from_result($this->get_model_name(), new usage(1.0), $filepath);
+    }
+
+
 }

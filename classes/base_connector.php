@@ -20,6 +20,7 @@ use core\http_client;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Base class for connector subplugins.
@@ -64,7 +65,7 @@ abstract class base_connector {
      */
     public abstract function get_prompt_data(string $prompttext): array;
 
-    public abstract function execute_prompt_completion(array $result): prompt_response;
+    public abstract function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response;
 
     public function has_customvalue1(): bool {
         return false;
@@ -100,9 +101,8 @@ abstract class base_connector {
         $response = $client->post($this->get_endpoint_url(), $options);
         $end = microtime(true);
         $executiontime = round($end - $start, 2);
-        $return['execution_time'] = $executiontime;
         if ($response->getStatusCode() === 200) {
-            $return = request_response::create_from_result(json_decode($response->getBody(), true));
+            $return = request_response::create_from_result($response->getBody(), $executiontime);
         } else {
             // TODO localize
             $return = request_response::create_from_error(

@@ -31,10 +31,12 @@ use dml_exception;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
+use local_ai_manager\local\usage;
 use moodle_exception;
 use invalid_dataroot_permissions;
 use Error;
 use file_exception;
+use Psr\Http\Message\StreamInterface;
 use stored_file_creation_exception;
 
 /**
@@ -71,6 +73,7 @@ class connector extends \local_ai_manager\base_connector {
         $this->temperature = floatval(get_config('aitool_whisper_1', 'temperature'));
     }
 
+
     /**
      * Makes a request to the specified URL with the given data and API key.
      *
@@ -82,11 +85,7 @@ class connector extends \local_ai_manager\base_connector {
      * @param string $fileformat
      * @return array
      */
-    public function make_request(array $data, bool $multipart = false): request_response {
-        global $CFG, $USER;
-
-        require_once($CFG->libdir . '/filelib.php');
-
+    /*public function make_request(array $data, bool $multipart = false): request_response {
         $client = new http_client();
 
         $contenttype = $multipart ? 'multipart/form-data' : 'application/json;charset=utf-8';
@@ -101,80 +100,19 @@ class connector extends \local_ai_manager\base_connector {
         $response = $client->post($this->get_endpoint_url(), $options);
         $end = microtime(true);
         $executiontime = round($end - $start, 2);
-        $return['execution_time'] = $executiontime;
-        if ($response->getStatusCode() === 200) {
-            $return = request_response::create_from_result(json_decode($response->getBody(), true));
-        } else {
+        if ($response->getStatusCode() !== 200) {
             // TODO localize
-            $return = request_response::create_from_error(
+            return request_response::create_from_error(
                     'Sending request to tool api endpoint failed with code ' . $response->getStatusCode(),
                     $response->getBody()
             );
-        }
-        return $return;
-
-        // Store the file to a temporary location.
-        $filedir = make_temp_directory(true);
-        $filepath = $filedir . '/' . uniqid() . "." . $fileformat;
-
-        if ($fileformat == 'mp3') {
-            $data['file'] = curl_file_create($filepath);
-        }
-
-        $curl = new \curl();
-        $curloptions = [
-            "CURLOPT_RETURNTRANSFER" => true,
-            "CURLOPT_HTTPHEADER" => $headers,
-        ];
-
-        $response = $curl->post($url, json_encode($data), $curloptions);
-
-        if (!empty(json_decode($response, true)['error'])) {
-            return ['error' => json_decode($response, true)['error']];
-        }
-
-        $fs = get_file_storage();
-        $fileinfo = [
-            'contextid' => \context_user::instance($USER->id)->id,
-            'component' => 'user',
-            'filearea'  => 'draft',
-            'itemid'    => $options->itemid,
-            'filepath'  => '/',
-            'filename'  => $options->filename,
-        ];
-
-        if ($fileformat == 'png') {
-            $file = $fs->create_file_from_url($fileinfo, json_decode($response,true)['data'][0]['url'], [], true);
-            $filecreated = true;
         } else {
-            $filecreated = file_put_contents($filepath, $response);
-            $file = $fs->create_file_from_pathname($fileinfo, $filepath);
+            return request_response::create_from_result(['response' => $response->getBody(),
+                    'execution_time' => $executiontime]);
         }
+    }*/
 
-        // Finally delete the temporarily file.
-        unlink($filepath);
 
-        $filepath = \moodle_url::make_draftfile_url(
-            $file->get_itemid(),
-            $file->get_filepath(),
-            $file->get_filename(),
-            false
-        )->out();
-
-        // if (!empty($response['response']['usage'])) {
-        //     \local_ai_manager\manager::log_request(
-        //         $result['response']['usage']['prompt_tokens'],
-        //         $result['response']['usage']['completion_tokens'],
-        //         $result['response']['usage']['total_tokens'],
-        //         $result['response']['model']
-        //     );
-        // }
-
-        if ($filecreated != true) {
-            return ['curl_error' => $response, 'execution_time' => $executiontime];
-        }
-        return ['response' => $filepath, 'execution_time' => $executiontime];
-    }
 
 
     /**
@@ -183,20 +121,18 @@ class connector extends \local_ai_manager\base_connector {
      * @param string $prompttext The prompt text.
      * @return array The prompt data.
      */
-    private function get_prompt_data(string $prompttext, object $options): array {
+    public function get_prompt_data(string $prompttext): array {
 
         // If empty, use text language, else translate to the mentioned language.
         if (!empty($options->language)) {
             $data['language'] = $options->language;
-            $manager = new \local_ai_manager\manager('chat');
-            $prompt = 'Translate the following text into ' . $options->language .':' . $prompttext;
-            $prompttext = $manager->make_request($prompt);
+            $prompttext = 'Translate the following text into ' . $options->language .':' . $prompttext;
         }
 
         $data = [
-            'model' => $this->model,
+            'model' => $this->get_model_name(),
             'input' => $prompttext,
-            'voice' => (empty($options->voice)) ? 'alloy' : $options->voice,
+            'voice' => 'alloy',
         ];
 
         return $data;
@@ -207,8 +143,6 @@ class connector extends \local_ai_manager\base_connector {
      * @return array
      */
     public function get_additional_options(): array {
-        global $CFG;
-
         return ['languagecodes' => language_codes::LANGUAGECODES];
     }
 
@@ -217,7 +151,33 @@ class connector extends \local_ai_manager\base_connector {
         return unit::COUNT;
     }
 
-    public function execute_prompt_completion(array $result): prompt_response {
-        // TODO: Implement execute_prompt_completion() method.
+    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+        global $USER;
+        $fs = get_file_storage();
+        $fileinfo = [
+                'contextid' => \context_user::instance($USER->id)->id,
+                'component' => 'user',
+                'filearea'  => 'draft',
+                'itemid'    => $options['itemid'],
+                'filepath'  => '/',
+                'filename'  => $options['filename'],
+        ];
+        // TODO: Entweder separat handeln für dalle etc. oder hier schön allgemein auseinanderdröseln
+        /*if ($fileformat == 'png') {
+            $file = $fs->create_file_from_url($fileinfo, json_decode($response,true)['data'][0]['url'], [], true);
+            $filecreated = true;
+        } else {
+            $filecreated = file_put_contents($filepath, $response);
+            $file = $fs->create_file_from_pathname($fileinfo, $filepath);
+        }*/
+        $file = $fs->create_file_from_string($fileinfo, $result);
+
+        $filepath = \moodle_url::make_draftfile_url(
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+        )->out();
+
+        return prompt_response::create_from_result($this->get_model_name(), new usage(1.0), $filepath);
     }
 }

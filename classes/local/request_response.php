@@ -16,6 +16,8 @@
 
 namespace local_ai_manager\local;
 
+use Psr\Http\Message\StreamInterface;
+
 /**
  * Data object class for storing prompt result information in a defined way.
  *
@@ -26,8 +28,8 @@ namespace local_ai_manager\local;
  */
 readonly class request_response {
 
-    private array $response;
-    private int $executiontime;
+    private StreamInterface $response;
+    private float $executiontime;
 
     private string $errormessage;
 
@@ -36,11 +38,11 @@ readonly class request_response {
     private function __construct(
     ) {}
 
-    public function set_response(array $response): void {
+    public function set_response(StreamInterface $response): void {
         $this->response = $response;
     }
 
-    public function set_execution_time(int $executiontime): void {
+    public function set_executiontime(float $executiontime): void {
         $this->executiontime = $executiontime;
     }
 
@@ -60,11 +62,11 @@ readonly class request_response {
         return $this->debuginfo;
     }
 
-    public function get_response(): array {
+    public function get_response(): StreamInterface {
         return $this->response;
     }
 
-    public function get_executiontime(): int {
+    public function get_executiontime(): float {
         return $this->executiontime;
     }
 
@@ -81,9 +83,10 @@ readonly class request_response {
         return $requestresponse;
     }
 
-    public static function create_from_result(array $response): request_response {
+    public static function create_from_result(StreamInterface $response, float $executiontime): request_response {
         $requestresponse = new self();
         $requestresponse->set_response($response);
+        $requestresponse->set_executiontime($executiontime);
         return $requestresponse;
     }
 

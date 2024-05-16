@@ -28,6 +28,7 @@ namespace aitool_chatgpt_35;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Connector - chatgpt_35
@@ -64,18 +65,18 @@ class connector extends \local_ai_manager\base_connector {
         return unit::TOKEN;
     }
 
-    public function execute_prompt_completion(array $result): prompt_response {
+    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
         // TODO error handling: check if answer contains "stop", then the LLM will have successfully done something.
         //  If not, we need to do some error handling and return prompt_response::create_from_error(...
-
+        $content = json_decode($result->getContents(), true);
 
         return prompt_response::create_from_result(
-                $result['model'],
+                $content['model'],
                 new usage(
-                        (float) $result['usage']['total_tokens'],
-                        (float) $result['usage']['prompt_tokens'],
-                        (float) $result['usage']['completion_tokens']),
-                $result['choices'][0]['message']['content']
+                        (float) $content['usage']['total_tokens'],
+                        (float) $content['usage']['prompt_tokens'],
+                        (float) $content['usage']['completion_tokens']),
+                $content['choices'][0]['message']['content']
         );
     }
 

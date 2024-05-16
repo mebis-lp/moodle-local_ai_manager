@@ -51,7 +51,7 @@ class manager {
      * @return string|void
      * @throws dml_exception
      */
-    public function __construct(string $purpose, string $tooltouse = '') {
+    public function __construct(string $purpose, string $tooltouse = '', private readonly array $options = []) {
 
         if (!empty($tooltouse)) {
             $tool = $tooltouse;
@@ -96,7 +96,7 @@ class manager {
         if ($requestresult->is_error()) {
             return prompt_response::create_from_error($requestresult->get_errormessage(), $requestresult->get_debuginfo());
         }
-        $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response());
+        $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response(), $options);
         $this->log_request($promptcompletion);
         return $promptcompletion;
     }

@@ -24,7 +24,7 @@ namespace local_ai_manager\local;
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-readonly class prompt_response {
+class prompt_response {
 
     private string $model;
     private usage $usage;
