@@ -32,18 +32,6 @@ use Psr\Http\Message\StreamInterface;
  */
 abstract class base_connector {
 
-    /** @var string key for defining the chat purpose. */
-    const PURPOSE_CHAT = 'chat';
-
-    /** @var string key for defining the image generation purpose. */
-    const PURPOSE_IMAGEGENERATION = 'imggen';
-
-    /** @var string key for defining the text to speech purpose. */
-    const PURPOSE_TTS = 'tts';
-
-    /** @var string key for defining the speech to text purpose. */
-    const PURPOSE_STT = 'stt';
-
     /**
      * Define the name of the model.
      *
@@ -56,6 +44,10 @@ abstract class base_connector {
     protected abstract function get_api_key(): string;
 
     public abstract function get_unit(): unit;
+
+    public function supported_purposes(): array {
+        return base_purpose::get_all_purposes();
+    }
 
     /**
      * Retrieves the data for the prompt based on the prompt text.
@@ -111,14 +103,5 @@ abstract class base_connector {
             );
         }
         return $return;
-    }
-
-    /**
-     * Get an array of all existing purposes.
-     *
-     * @return array array of string containing the purposes keys
-     */
-    public static function get_all_purposes(): array {
-        return [self::PURPOSE_CHAT, self::PURPOSE_IMAGEGENERATION, self::PURPOSE_STT, self::PURPOSE_TTS];
     }
 }

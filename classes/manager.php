@@ -25,6 +25,7 @@
 
 namespace local_ai_manager;
 
+use core_plugin_manager;
 use dml_exception;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\userinfo;
@@ -72,6 +73,21 @@ class manager {
 
     public static function get_default_tool(string $purpose): string {
         return get_config('local_ai_manager', 'default_' . $purpose);
+    }
+
+    public static function get_tools_for_purpose(string $purpose): array {
+        $tools = [];
+        foreach (core_plugin_manager::instance()->get_enabled_plugins('aitool') as $tool) {
+            $toolplugininfo = core_plugin_manager::instance()->get_plugin_info('aitool_' . $tool);
+            $classname = "\\aitool_" . $tool . "\\connector";
+            $toolconnector = new $classname();
+            $supportspurpose = in_array($purpose, $toolconnector->supported_purposes());
+            if ($supportspurpose) {
+                $tools[$tool] = $toolplugininfo->displayname;
+            }
+        }
+        return $tools;
+
     }
 
     /**
