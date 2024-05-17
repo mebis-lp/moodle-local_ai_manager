@@ -25,6 +25,11 @@
 
 namespace aitool_ollama;
 
+use local_ai_manager\local\prompt_response;
+use local_ai_manager\local\unit;
+use local_ai_manager\local\usage;
+use Psr\Http\Message\StreamInterface;
+
 /**
  * Connector - ollama
  *
@@ -35,12 +40,8 @@ namespace aitool_ollama;
  */
 class connector extends \local_ai_manager\base_connector {
 
-    const MODEL = 'mixtral';
 
-    private string $model;
-    private string $endpointurl;
     private float $temperature;
-    private string $apikey;
 
     /**
      * Construct the connector class for ollama
@@ -48,77 +49,37 @@ class connector extends \local_ai_manager\base_connector {
      * @return void
      */
     public function __construct() {
-        $this->model = self::MODEL;
-        $this->endpointurl = get_config('aitool_ollama', 'url');
         $this->temperature = floatval(get_config('aitool_ollama', 'temperature'));
-        $this->apikey = get_config('aitool_ollama', 'apikey');
     }
 
-    /**
-     * Makes a request to the specified URL with the given data and API key.
-     *
-     * @param string $url The URL to make the request to.
-     * @param array $data The data to send with the request.
-     * @return array The response from the request.
-     */
-    private function make_request($url, $data) {
-        global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
-
-        $headers = ['Content-Type: application/json;charset=utf-8'];
-
-        if (!empty($this->apikey)) {
-            $headers[] = 'Authorization: Bearer ' . $this->apikey;
-        }
-
-        $curl = new \curl();
-        $options = [
-            "CURLOPT_RETURNTRANSFER" => true,
-            "CURLOPT_HTTPHEADER" => $headers,
-        ];
-        $start = microtime(true);
-
-        $response = $curl->post($url, json_encode($data), $options);
-
-        $end = microtime(true);
-        $executiontime = round($end - $start, 2);
-
-        if (json_decode($response) == null) {
-            return ['curl_error' => $response, 'execution_time' => $executiontime];
-        }
-        return ['response' => json_decode($response, true), 'execution_time' => $executiontime];
+    public function get_model_name(): string {
+        return 'tinyllama';
     }
 
-    /**
-     * Generates a completion for the given prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @return string|array The generated completion or null if the model is empty.
-     * @throws moodle_exception If the model is empty.
-     */
-    public function prompt_completion($prompttext) {
+    protected function get_endpoint_url(): string {
+        return get_config('aitool_ollama', 'url');
+    }
 
-        if (empty($this->model)) {
-            throw new \moodle_exception('prompterror', 'local_ai_manager', '', null, 'Empty query model.');
-        }
+    protected function get_api_key(): string {
+        return get_config('aitool_ollama', 'apikey');
+    }
 
-        $data = $this->get_prompt_data($prompttext);
-        $result = $this->make_request($this->endpointurl, $data, '');
+    public function get_unit(): unit {
+        return unit::TOKEN;
+    }
 
-        if (!empty($result['response']['usage'])) {
-            \local_ai_manager\manager::log_request(
-                $result['response']['prompt_eval_count'],
-                0,
-                $result['response']['eval_count'],
-                $result['response']['model']
-            );
-        }
+    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
 
-        if (!empty($result['response']['response'])) {
-            return $result['response']['response'];
-        } else {
-            return $result;
-        }
+        $content = json_decode($result->getContents(), true);
+
+        // On cached results there is no prompt token count in the response.
+        $prompttokencount = isset($content['prompt_eval_count']) ? $content['prompt_eval_count'] : 0.0;
+        $responsetokencount = $content['eval_count'];
+        $totaltokencount = $prompttokencount + $responsetokencount;
+
+        return prompt_response::create_from_result($content['model'],
+            new usage($totaltokencount, $prompttokencount, $prompttokencount),
+            $content['response']);
     }
 
     /**
@@ -127,9 +88,9 @@ class connector extends \local_ai_manager\base_connector {
      * @param string $prompttext The prompt text.
      * @return array The prompt data.
      */
-    private function get_prompt_data($prompttext): array {
+    public function get_prompt_data(string $prompttext): array {
         $data = [
-            'model' => $this->model,
+            'model' => $this->get_model_name(),
             'prompt' => $prompttext,
             'stream' => false,
             'keep_alive' => '60m',
