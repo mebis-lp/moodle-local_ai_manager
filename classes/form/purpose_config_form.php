@@ -45,7 +45,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class modelconfigform extends \moodleform {
+class purpose_config_form extends \moodleform {
 
     /**
      * Form definition.

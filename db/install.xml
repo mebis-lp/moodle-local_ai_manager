@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/ai_manager/db" VERSION="20240515" COMMENT="XMLDB file for Moodle local/ai_manager"
+<XMLDB PATH="local/ai_manager/db" VERSION="20240521" COMMENT="XMLDB file for Moodle local/ai_manager"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="local_ai_manager_request_log" COMMENT="Table to log the used tokens">
+    <TABLE NAME="local_ai_manager_instance" COMMENT="Table storing connector instances">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="value" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
-        <FIELD NAME="customvalue1" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
-        <FIELD NAME="customvalue2" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
-        <FIELD NAME="model" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="modelinfo" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="prompttext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The prompt which has been sent to the AI tool"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="tenant" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="connector" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="endpoint" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="model" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="customfield1" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="customfield2" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="customfield3" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="customfield4" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="model" UNIQUE="false" FIELDS="model"/>
-      </INDEXES>
     </TABLE>
     <TABLE NAME="local_ai_manager_config" COMMENT="Table for storing the tenant specific configurations">
       <FIELDS>
@@ -51,6 +51,28 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
+    </TABLE>
+    <TABLE NAME="local_ai_manager_request_log" COMMENT="Table to log the used tokens">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="value" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="customvalue1" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="customvalue2" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="model" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="modelinfo" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="prompttext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The prompt which has been sent to the AI tool"/>
+        <FIELD NAME="promptcompletion" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="component" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="model" UNIQUE="false" FIELDS="model"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

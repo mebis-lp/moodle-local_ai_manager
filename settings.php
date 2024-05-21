@@ -85,7 +85,7 @@ if ($hassiteconfig) {
         $options[$tool] = get_string('pluginname', 'aitool_' . $tool);
     }
 
-    $purposes = \local_ai_manager\base_connector::get_all_purposes();
+    /*$purposes = \local_ai_manager\base_connector::get_all_purposes();
     foreach ($purposes as $purpose) {
 
         $settings->add(new admin_setting_configselect(
@@ -95,7 +95,7 @@ if ($hassiteconfig) {
             '',
             $options
         ));
-    }
+    }*/
 
     $tabs->add($settings);
 

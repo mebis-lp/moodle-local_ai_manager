@@ -23,15 +23,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_mbsnewcourse\local\mbsnewcourse;
+use block_mbsnewcourse\form\mbs_restore_form;
 use core\output\notification;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
-global $CFG, $DB, $OUTPUT, $PAGE, $USER;
+global $CFG, $DB, $PAGE, $USER;
 
 $tenant = optional_param('tenant', '', PARAM_ALPHANUM);
+$connector = optional_param('connector', '', PARAM_TEXT);
+$id = optional_param('id', 0, PARAM_INT);
 
-$url = new moodle_url('/local/ai_manager/tenantconfig.php');
+$url = new moodle_url('/local/ai_manager/edit_instance.php');
 $PAGE->set_url($url);
 
 $returnurl = new moodle_url('/course/index.php');
@@ -52,7 +56,7 @@ if (empty($tenant)) {
 
 $school = new \local_bycsauth\school($tenant);
 if (!$school->record_exists()) {
-    throw new moodle_exception('Invalid tenant "' . $tenant. '"!');
+    throw new moodle_exception('Invalid tenant "' . $tenant . '"!');
 }
 $schoolcategorycontext = \context_coursecat::instance($school->get_school_categoryid());
 $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
@@ -62,18 +66,32 @@ if (!user_has_role_assignment($USER->id, $coordinatorrole->id, $schoolcategoryco
 
 $PAGE->set_context($schoolcategorycontext);
 
-$strtitle = 'SCHULKONFIGURATION';
+$strtitle = 'INSTANZ BEARBEITEN';
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
-$purposeconfig = new \local_ai_manager\form\purpose_config_form(null, ['tenant' => $tenant, 'returnurl' => $PAGE->url]);
+if (!empty($id)) {
+    // Make sure we have the correct connector, no matter what has been passed as parameter.
+        $connector = new \local_ai_manager\connector_instance($id);
+        if (!$connector->record_exists()) {
+            throw new moodle_exception('ID COULD NOT BE FOUND');
+        }
+        $connector = $connector->get_connector();
+} else {
+    if (empty($connector) || !in_array($connector, \local_ai_manager\plugininfo\aitool::get_enabled_plugins())) {
+        throw new moodle_exception('No valid connector specified');
+    }
+}
+
+$editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url('/local/ai_manager/edit_instance.php', ['id' => $id, 'connector' => $connector]),
+        ['id' => $id, 'tenant' => $tenant, 'connector' => $connector, 'returnurl' => $PAGE->url]);
+
 
 // Standard form processing if statement.
-if ($purposeconfig->is_cancelled()) {
+if ($editinstanceform->is_cancelled()) {
     redirect($returnurl);
-} else if ($data = $purposeconfig->get_data()) {
-    print_r($data);
+} else if ($data = $editinstanceform->get_data()) {
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
@@ -82,43 +100,21 @@ if ($purposeconfig->is_cancelled()) {
     echo $OUTPUT->notification('Config saved', NOTIFICATION::NOTIFY_SUCCESS);
     // Reset the form for maybe a new course restore. We have to create a new object to force the form to reread the list of backup
     // files.
-    /*$modelconfigform = new \local_ai_manager\form\modelconfigform(null, ['categoryid' => $categoryid, 'returnurl' => $PAGE->url]);
-    $modelconfigform->reset_form();
-    $modelconfigform->display();*/
+    $classname = '\\aitool_' . $connector . '\\instance';
+    $id = empty($data->id) ? 0 : $data->id;
+    $connectorinstance = new $classname($id);
+    $connectorinstance->store_formdata($data);
+    redirect(new moodle_url('/local/ai_manager/tenantconfig.php'), 'DATA SAVED', '');
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
-    $instanceaddbuttons = [];
-    foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $tool) {
-        $instanceaddbuttons[] = [
-                'label' => $tool,
-                'addurl' => (new moodle_url('/local/ai_manager/edit_instance.php',
-                        ['tenant' => $tenant, 'returnurl' => $PAGE->url, 'connector' => $tool]))->out()
-        ];
-    }
-    $instances = [];
-    foreach (\local_ai_manager\connector_instance::get_all_instances() as $instance) {
-        $instances[] = [
-                'id' => $instance->get_id(),
-                'name' => $instance->get_name(),
-                'tenant' => $instance->get_tenant(),
-                'connector' => $instance->get_connector(),
-                'endpoint' => $instance->get_endpoint(),
-                'model' => $instance->get_model(),
-                'customfield1' => $instance->get_customfield1(),
-                'customfield2' => $instance->get_customfield2(),
-                'customfield3' => $instance->get_customfield3(),
-                'customfield4' => $instance->get_customfield4(),
-        ];
-    }
-    echo $PAGE->get_renderer('core')->render_from_template('local_ai_manager/instancetable',
-            [
-                    'instances' => $instances,
-                    'instanceaddbuttons' => $instanceaddbuttons,
-            ]
-    );
-    $purposeconfig->display();
-}
 
+    if (!empty($id)) {
+        $instance = new \local_ai_manager\connector_instance($id);
+        $instance->set_connector($connector);
+        $editinstanceform->set_data($instance->get_formdata());
+    }
+    $editinstanceform->display();
+}
 
 echo $OUTPUT->footer();
