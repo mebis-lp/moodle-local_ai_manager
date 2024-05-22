@@ -66,6 +66,10 @@ class connector extends \local_ai_manager\base_connector {
         return unit::TOKEN;
     }
 
+    public function supported_purposes(): array {
+        return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['chat']));
+    }
+
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
         // TODO error handling: check if answer contains "stop", then the LLM will have successfully done something.
         //  If not, we need to do some error handling and return prompt_response::create_from_error(...

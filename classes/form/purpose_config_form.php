@@ -27,7 +27,6 @@
 
 namespace local_ai_manager\form;
 
-
 use core_plugin_manager;
 use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
@@ -61,7 +60,12 @@ class purpose_config_form extends \moodleform {
 
         $mform->addElement('header', 'purposeheader', 'PURPOSES');
         foreach (base_purpose::get_all_purposes() as $purpose) {
-            $mform->addElement('select', 'purpose_' . $purpose . '_tool', 'Modell auswählen', manager::get_tools_for_purpose($purpose));
+            $instances = manager::get_connector_instances_for_purpose($purpose);
+            if (empty($instances)) {
+                $instances = ['0' => 'KEINE GEEIGNETE INSTANZ DEFINIERT'];
+            }
+            $mform->addElement('select', 'purpose_' . $purpose . '_tool', 'TOOL FÜR PURPOSE ' . $purpose . ' AUSWÄHLEN:',
+                    $instances);
 
             // TODO Select-Element
         }
@@ -128,7 +132,6 @@ class purpose_config_form extends \moodleform {
         }
         return $errors;
     }
-
 
     /**
      * Resets the form to its default values.

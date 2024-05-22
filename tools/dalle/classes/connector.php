@@ -68,6 +68,10 @@ class connector extends base_connector {
         return get_config('aitool_dalle', 'openaiapikey');
     }
 
+    public function supported_purposes(): array {
+        return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['imggen']));
+    }
+
 
     /**
      * Retrieves the data for the prompt based on the prompt text.

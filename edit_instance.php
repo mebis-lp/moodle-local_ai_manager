@@ -71,23 +71,31 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
+$connectorclassname = '\\aitool_' . $connector . '\\instance';
+
 if (!empty($id)) {
+    $connectorrecord = $DB->get_record('local_ai_manager_instance', ['id' => $id]);
+    if ($connectorrecord) {
+        $connector = $connectorrecord->connector;
+    }
     // Make sure we have the correct connector, no matter what has been passed as parameter.
-        $connector = new \local_ai_manager\connector_instance($id);
-        if (!$connector->record_exists()) {
-            throw new moodle_exception('ID COULD NOT BE FOUND');
-        }
-        $connector = $connector->get_connector();
+    $connectorinstance = new $connectorclassname($id);
+    $connectorinstance->set_connector($connector);
+    if (!$connectorinstance->record_exists()) {
+        throw new moodle_exception('ID COULD NOT BE FOUND');
+    }
+    \core\di::set($connectorclassname, $connectorinstance);
 } else {
     if (empty($connector) || !in_array($connector, \local_ai_manager\plugininfo\aitool::get_enabled_plugins())) {
         throw new moodle_exception('No valid connector specified');
     }
+    \core\di::get($connectorclassname)->set_connector($connector);
 }
 
 $editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url('/local/ai_manager/edit_instance.php', ['id' => $id, 'connector' => $connector]),
         ['id' => $id, 'tenant' => $tenant, 'connector' => $connector, 'returnurl' => $PAGE->url]);
 
-
+$connectorinstance = \core\di::get($connectorclassname);
 // Standard form processing if statement.
 if ($editinstanceform->is_cancelled()) {
     redirect($returnurl);
@@ -100,20 +108,14 @@ if ($editinstanceform->is_cancelled()) {
     echo $OUTPUT->notification('Config saved', NOTIFICATION::NOTIFY_SUCCESS);
     // Reset the form for maybe a new course restore. We have to create a new object to force the form to reread the list of backup
     // files.
-    $classname = '\\aitool_' . $connector . '\\instance';
-    $id = empty($data->id) ? 0 : $data->id;
-    $connectorinstance = new $classname($id);
+
     $connectorinstance->store_formdata($data);
     redirect(new moodle_url('/local/ai_manager/tenantconfig.php'), 'DATA SAVED', '');
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
 
-    if (!empty($id)) {
-        $instance = new \local_ai_manager\connector_instance($id);
-        $instance->set_connector($connector);
-        $editinstanceform->set_data($instance->get_formdata());
-    }
+    $editinstanceform->set_data($connectorinstance->get_formdata());
     $editinstanceform->display();
 }
 

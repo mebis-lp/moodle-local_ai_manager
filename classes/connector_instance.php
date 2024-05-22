@@ -224,12 +224,13 @@ class connector_instance {
         }
     }
 
-    public final function get_formdata() {
+    public final function get_formdata(): stdClass {
         $this->load();
         $data = new stdClass();
         if (is_null($this->record)) {
             return $data;
         }
+        $data->name = $this->get_name();
         $data->connector = $this->get_connector();
         $data->model = $this->get_model();
         $data->endpoint = $this->get_endpoint();

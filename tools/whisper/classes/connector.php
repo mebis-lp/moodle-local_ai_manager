@@ -63,6 +63,10 @@ class connector extends \local_ai_manager\base_connector {
         return get_config('aitool_whisper', 'openaiapikey');
     }
 
+    public function supported_purposes(): array {
+        return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['tts']));
+    }
+
     /**
      * Construct the connector class for whisper
      *

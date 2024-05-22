@@ -49,15 +49,10 @@ class edit_instance_form extends \moodleform {
         $connector = $this->_customdata['connector'];
 
         $mform = &$this->_form;
-
-        $classname = '\\aitool_' . $connector . '\\instance';
-        if (!empty($this->_customdata['id'])) {
-            $mform->addElement('hidden', 'id', $this->_customdata['id']);
-            $connectorinstance = new $classname($this->_customdata['id']);
-        } else {
-            $connectorinstance = new $classname();
+        $connectorinstance = \core\di::get('\\aitool_' . $connector . '\\instance');
+        if (empty($connectorinstance->get_connector())) {
+            $connectorinstance->set_connector($connector);
         }
-        $connectorinstance->set_connector($connector);
         $connectorinstance->edit_form_definition($mform, $this->_customdata);
 
         $this->add_action_buttons();
