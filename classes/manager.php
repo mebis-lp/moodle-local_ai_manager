@@ -128,7 +128,7 @@ class manager {
         $data = new stdClass();
         $data->userid = $USER->id;
         $data->value = $promptcompletion->get_usage()->value;
-        $data->model = $this->toolconnector->get_model_name();
+        $data->model = $this->toolconnector->get_models();
         if (!$this->toolconnector->has_customvalue1()) {
             $data->customvalue1 = $promptcompletion->get_usage()->customvalue1;
         }

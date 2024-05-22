@@ -28,11 +28,6 @@
 namespace local_ai_manager\form;
 
 
-use core_plugin_manager;
-use local_ai_manager\base_connector;
-use local_ai_manager\base_purpose;
-use local_ai_manager\manager;
-
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
@@ -117,7 +112,7 @@ class edit_instance_form extends \moodleform {
      */
     public function validation($data, $files): array {
         $errors = [];
-
+        // TODO Implement
         return $errors;
     }
 

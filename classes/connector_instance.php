@@ -96,7 +96,7 @@ class connector_instance {
         ];
     }
 
-    public static function create_from_tenant_and_model(string $connector, string $tenant): ?connector_instance {
+    public static function create_from_tenant_and_connector(string $connector, string $tenant): ?connector_instance {
         global $DB;
         $record = $DB->get_record('local_ai_manager_instance', ['tenant' => $tenant, 'connector' => $connector]);
         if (!$record) {
@@ -258,15 +258,23 @@ class connector_instance {
         $connector = $customdata['connector'];
         $mform->addElement('text', 'connector', 'CONNECTOR');
         $mform->setType('connector', PARAM_TEXT);
-        if (!empty($connector)) {
-            // That we have a valid connector here is being ensured by edit_instance.php.
-            $mform->setDefault('connector', $connector);
-        }
+        // That we have a valid connector here is being ensured by edit_instance.php.
+        $mform->setDefault('connector', $connector);
         $mform->freeze('connector');
 
 
         $mform->addElement('text', 'endpoint', 'ENDPOINT');
         $mform->setType('endpoint', PARAM_URL);
+
+        $classname = '\\aitool_' . $connector . '\\connector';
+        $connectorobject = new $classname();
+        $availablemodels = [];
+        foreach ($connectorobject->get_models() as $modelname) {
+            // TODO maybe add lang strings for models, so we have
+            //  $availablemodels[$modelname] = get_string($modelname); or sth similar
+            $availablemodels[$modelname] = $modelname;
+        }
+        $mform->addElement('select', 'model', 'MODEL', $availablemodels);
 
         $this->extend_form_definition($mform);
     }

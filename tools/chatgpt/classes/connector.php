@@ -15,53 +15,51 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Connector - ollama
+ * Connector - chatgpt.
  *
- * @package    aitool_ollama
+ * @package    aitool_chatgpt
  * @copyright  ISB Bayern, 2024
- * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
+ * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aitool_ollama;
+namespace aitool_chatgpt;
 
+use local_ai_manager\base_purpose;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Connector - ollama
+ * Connector - chatgpt
  *
- * @package    aitool_ollama
+ * @package    aitool_chatgpt
  * @copyright  ISB Bayern, 2024
- * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
+ * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class connector extends \local_ai_manager\base_connector {
 
-
-    private float $temperature;
+    protected float $temperature;
 
     /**
-     * Construct the connector class for ollama
-     *
-     * @return void
+     * Construct for the connector class for chatgpt
      */
     public function __construct() {
-        $this->temperature = floatval(get_config('aitool_ollama', 'temperature'));
+        $this->temperature = floatval(get_config('aitool_chatgpt', 'temperature'));
     }
 
     public function get_models(): array {
-        return ['tinyllama', 'mixtral'];
+        return ['gpt-3.5-turbo', 'gpt-4-turbo'];
     }
 
     protected function get_endpoint_url(): string {
-        return get_config('aitool_ollama', 'url');
+        return 'https://api.openai.com/v1/chat/completions';
     }
 
     protected function get_api_key(): string {
-        return get_config('aitool_ollama', 'apikey');
+        return get_config('aitool_chatgpt', 'openaiapikey');
     }
 
     public function get_unit(): unit {
@@ -69,35 +67,45 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
-
+        // TODO error handling: check if answer contains "stop", then the LLM will have successfully done something.
+        //  If not, we need to do some error handling and return prompt_response::create_from_error(...
         $content = json_decode($result->getContents(), true);
 
-        // On cached results there is no prompt token count in the response.
-        $prompttokencount = isset($content['prompt_eval_count']) ? $content['prompt_eval_count'] : 0.0;
-        $responsetokencount = $content['eval_count'];
-        $totaltokencount = $prompttokencount + $responsetokencount;
-
-        return prompt_response::create_from_result($content['model'],
-            new usage($totaltokencount, $prompttokencount, $prompttokencount),
-            $content['response']);
+        return prompt_response::create_from_result(
+                $content['model'],
+                new usage(
+                        (float) $content['usage']['total_tokens'],
+                        (float) $content['usage']['prompt_tokens'],
+                        (float) $content['usage']['completion_tokens']),
+                $content['choices'][0]['message']['content']
+        );
     }
 
-    /**
-     * Retrieves the data for the prompt based on the prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @return array The prompt data.
-     */
     public function get_prompt_data(string $prompttext): array {
-        $data = [
-            'model' => $this->get_models(),
-            'prompt' => $prompttext,
-            'stream' => false,
-            'keep_alive' => '60m',
-            'options' => [
+        return [
+                'model' => $this->get_models(),
                 'temperature' => $this->temperature,
-            ],
+                'messages' => [
+                        [
+                                'role' => 'system',
+                                'content' => $prompttext
+                        ],
+                ],
         ];
-        return $data;
     }
+
+    public function has_customvalue1(): bool {
+        return true;
+    }
+
+    public function has_customvalue2(): bool {
+        return true;
+    }
+
+    public function get_temperature(): float {
+        return $this->temperature;
+    }
+
+
+
 }

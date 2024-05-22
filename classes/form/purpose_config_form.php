@@ -66,9 +66,6 @@ class purpose_config_form extends \moodleform {
             // TODO Select-Element
         }
 
-
-
-        $mform->addElement('text', $purpose . '_apikey', 'Hier API-Key eintragen', ['size'=>'20']);
         /*
 
 

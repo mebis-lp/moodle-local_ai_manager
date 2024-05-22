@@ -33,11 +33,11 @@ use Psr\Http\Message\StreamInterface;
 abstract class base_connector {
 
     /**
-     * Define the name of the model.
+     * Define available models.
      *
-     * @return string the name of the model
+     * @return array names of the available models
      */
-    public abstract function get_model_name(): string;
+    public abstract function get_models(): array;
 
     protected abstract function get_endpoint_url(): string;
 
