@@ -87,6 +87,7 @@ foreach (\local_ai_manager\connector_instance::get_all_instances() as $instance)
             'tenant' => $instance->get_tenant(),
             'connector' => $instance->get_connector(),
             'endpoint' => $instance->get_endpoint(),
+            'apikey' => $instance->get_apikey(),
             'model' => $instance->get_model(),
             'customfield1' => $instance->get_customfield1(),
             'customfield2' => $instance->get_customfield2(),

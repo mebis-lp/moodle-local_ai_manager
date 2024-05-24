@@ -27,9 +27,11 @@ namespace local_ai_manager;
 
 use core_plugin_manager;
 use dml_exception;
+use local_ai_manager\local\config_manager;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\userinfo;
 use stdClass;
+use function Sabre\Event\Loop\instance;
 
 /**
  * Helper
@@ -52,23 +54,14 @@ class manager {
      * @return string|void
      * @throws dml_exception
      */
-    public function __construct(string $purpose, string $tooltouse = '', private readonly array $options = []) {
+    public function __construct(string $purpose, private readonly array $options = []) {
 
-        if (!empty($tooltouse)) {
-            $tool = $tooltouse;
-        }
-
-        if (empty($tooltouse)) {
-            $tool = self::get_default_tool($purpose);
-        }
-
-        $classname = "\\aitool_" . $tool . "\\connector";
-        if (!class_exists($classname)) {
-            return "Class '\aitool_" . $tool . "\connector' is missing in tool " . $tool;
-        }
-        \local_debugger\performance\debugger::print_debug('test', 'make_request constructor', [$purpose, $tool, $classname]);
-
-        $this->toolconnector = new $classname();
+        // This will automatically inject the tenant object which will default to the institution of the current user.
+        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+        $instanceid = $configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose));
+        self::setup_connector_and_instance($instanceid);
+        $connectorname = \core\di::get(\local_ai_manager\connector_instance::class)->get_connector();
+        $this->toolconnector = \core\di::get('\\aitool_' . $connectorname . '\\connector');
     }
 
     public static function get_default_tool(string $purpose): string {
@@ -103,6 +96,18 @@ class manager {
             }
         }
         return $instances;
+    }
+
+    public static function setup_connector_and_instance(int $instanceid) {
+        global $DB;
+        $instancerecord = $DB->get_record('local_ai_manager_instance', ['id' => $instanceid]);
+        if (!$instancerecord) {
+            throw new \moodle_exception('Cannot find connector instance with id ' . $instanceid);
+        }
+        $connectorname = $instancerecord->connector;
+        $classname = '\\aitool_' . $connectorname . '\\instance';
+        $connectorinstance = new $classname($instanceid);
+        \core\di::set(\local_ai_manager\connector_instance::class, $connectorinstance);
     }
 
     /**
@@ -143,7 +148,7 @@ class manager {
         $data = new stdClass();
         $data->userid = $USER->id;
         $data->value = $promptcompletion->get_usage()->value;
-        $data->model = $this->toolconnector->get_models();
+        $data->model = $this->toolconnector->get_instance()->get_model();
         if (!$this->toolconnector->has_customvalue1()) {
             $data->customvalue1 = $promptcompletion->get_usage()->customvalue1;
         }

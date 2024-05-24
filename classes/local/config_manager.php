@@ -26,18 +26,23 @@ namespace local_ai_manager\local;
  */
 class config_manager {
 
-    public function __construct(private readonly string $tenant){}
+    private tenant $tenant;
 
+    public function __construct(tenant $tenant) {
+        $this->tenant = $tenant;
+    }
 
-    public function get_config(string $key): false|string {
+    public function get_config(string $configkey): false|string {
         global $DB;
-        return $DB->get_field('local_ai_manager_config', 'configvalue', ['configkey' => $key, 'tenant' => $this->tenant]);
+        return $DB->get_field('local_ai_manager_config', 'configvalue',
+                ['configkey' => $configkey, 'tenant' => $this->tenant->get_tenantidentifier()]);
     }
 
     public function set_config(string $configkey, string $configvalue): void {
         global $DB;
         // TODO Eventually do a validation of which config keys are allowed
-        $configrecord = $DB->get_record('local_ai_manager_config', ['configkey' => $configkey, 'tenant' => $this->tenant]);
+        $configrecord = $DB->get_record('local_ai_manager_config',
+                ['configkey' => $configkey, 'tenant' => $this->tenant->get_tenantidentifier()]);
         if ($configrecord) {
             $configrecord->configvalue = $configvalue;
             $DB->update_record('local_ai_manager_config', $configrecord);
@@ -45,7 +50,7 @@ class config_manager {
             $configrecord = new \stdClass();
             $configrecord->configkey = $configkey;
             $configrecord->configvalue = $configvalue;
-            $configrecord->tenant = $this->tenant;
+            $configrecord->tenant = $this->tenant->get_tenantidentifier();
             $DB->insert_record('local_ai_manager_config', $configrecord);
         }
     }
@@ -53,7 +58,7 @@ class config_manager {
     /**
      * @return string
      */
-    public function get_tenant(): string {
+    public function get_tenant(): tenant {
         return $this->tenant;
     }
 

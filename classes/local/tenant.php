@@ -14,38 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace aitool_chatgpt;
+namespace local_ai_manager\local;
 
-use local_ai_manager\connector_instance;
 use stdClass;
 
 /**
- * Instance class for the connector instance of aitool_chatgpt.
+ * Data object class for handling usage information when using an AI tool.
  *
  * @package    local_ai_manager
- * @copyright  2024 ISB Bayern
+ * @copyright  2024, ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class instance extends connector_instance {
+class tenant {
 
-    protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('text', 'temperature', 'TEMPERATURE');
-        $mform->setType('temperature', PARAM_FLOAT);
+    private string $tenantidentifier;
+
+    public function __construct(string $tenantidentifier = '') {
+        global $USER;
+        if (empty($tenantidentifier)) {
+            if (empty($USER->institution)) {
+                throw new \moodle_exception('Cannot determine tenant identifier based on the current user');
+            }
+            $this->tenantidentifier = $USER->institution;
+        } else {
+            $this->tenantidentifier = $tenantidentifier;
+        }
     }
 
-    protected function get_extended_formdata(): stdClass {
-        $data = new stdClass();
-        $data->temperature = floatval($this->get_customfield1());
-        $data->model = $this->get_model();
-        return $data;
+    public function get_tenantidentifier(): string {
+        return $this->tenantidentifier;
     }
 
-    protected function extend_store_formdata(stdClass $data): void {
-        $this->set_customfield1(strval($data->temperature));
-    }
 
-    public function get_temperature(): float {
-        return floatval($this->get_customfield1());
-    }
+
 }

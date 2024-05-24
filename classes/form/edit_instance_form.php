@@ -49,7 +49,7 @@ class edit_instance_form extends \moodleform {
         $connector = $this->_customdata['connector'];
 
         $mform = &$this->_form;
-        $connectorinstance = \core\di::get('\\aitool_' . $connector . '\\instance');
+        $connectorinstance = \core\di::get(\local_ai_manager\connector_instance::class);
         if (empty($connectorinstance->get_connector())) {
             $connectorinstance->set_connector($connector);
         }
@@ -108,6 +108,8 @@ class edit_instance_form extends \moodleform {
     public function validation($data, $files): array {
         $errors = [];
         // TODO Implement
+
+        // TODO Validieren, dass die URL https ist
         return $errors;
     }
 

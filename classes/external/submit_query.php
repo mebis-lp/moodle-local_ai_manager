@@ -72,7 +72,7 @@ class submit_query extends external_api {
                 $options = json_decode($options, true);
             }
             $aimanager = new \local_ai_manager\manager($purpose);
-            \core\di::set('\local_ai_manager\manager', $aimanager);
+            //\core\di::set('\local_ai_manager\manager', $aimanager);
 
             \local_debugger\performance\debugger::print_debug('test','submit_query execute',$options);
             $result = $aimanager->perform_request($prompt, $options);

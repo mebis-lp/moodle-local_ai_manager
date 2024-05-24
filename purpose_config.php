@@ -27,12 +27,13 @@ use core\output\notification;
 use local_ai_manager\base_purpose;
 use local_ai_manager\form\purpose_config_form;
 use local_ai_manager\local\config_manager;
+use local_ai_manager\local\tenant;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
-$tenant = optional_param('tenant', '', PARAM_ALPHANUM);
+$tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 
 $url = new moodle_url('/local/ai_manager/purpose_config.php');
 $PAGE->set_url($url);
@@ -46,16 +47,18 @@ if (isguestuser()) {
     throw new moodle_exception('guestsarenotallowed', '', $returnurl);
 }
 
-if (empty($tenant)) {
-    $tenant = $USER->institution;
+if (empty($tenantid)) {
+    // Will throw an exception if no tenant can be found.
+    $tenant = \core\di::get(tenant::class);
+} else {
+    $tenant = new tenant($tenantid);
+    \core\di::set(tenant::class, $tenant);
 }
-if (empty($tenant)) {
-    throw new moodle_exception('No tenant could be found. Please specify the "tenant" parameter.');
-}
+$tenantid = $tenant->get_tenantidentifier();
 
-$school = new \local_bycsauth\school($tenant);
+$school = new \local_bycsauth\school($tenantid);
 if (!$school->record_exists()) {
-    throw new moodle_exception('Invalid tenant "' . $tenant . '"!');
+    throw new moodle_exception('Invalid tenant "' . $tenantid . '"!');
 }
 $schoolcategorycontext = \context_coursecat::instance($school->get_school_categoryid());
 $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
@@ -70,8 +73,9 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
-$purposeconfig = new purpose_config_form(null, ['tenant' => $tenant, 'returnurl' => $PAGE->url]);
-$configmanager = new config_manager($tenant);
+$purposeconfig = new purpose_config_form(null, ['tenant' => $tenantid, 'returnurl' => $PAGE->url]);
+// Will return the config manager for the current user.
+$configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 
 // Standard form processing if statement.
 if ($purposeconfig->is_cancelled()) {

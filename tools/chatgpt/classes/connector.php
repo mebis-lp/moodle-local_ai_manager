@@ -26,6 +26,7 @@
 namespace aitool_chatgpt;
 
 use local_ai_manager\base_purpose;
+use local_ai_manager\local\config_manager;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
@@ -41,25 +42,9 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends \local_ai_manager\base_connector {
 
-    protected float $temperature;
-
-    /**
-     * Construct for the connector class for chatgpt
-     */
-    public function __construct() {
-        $this->temperature = floatval(get_config('aitool_chatgpt', 'temperature'));
-    }
 
     public function get_models(): array {
         return ['gpt-3.5-turbo', 'gpt-4-turbo'];
-    }
-
-    protected function get_endpoint_url(): string {
-        return 'https://api.openai.com/v1/chat/completions';
-    }
-
-    protected function get_api_key(): string {
-        return get_config('aitool_chatgpt', 'openaiapikey');
     }
 
     public function get_unit(): unit {
@@ -87,8 +72,8 @@ class connector extends \local_ai_manager\base_connector {
 
     public function get_prompt_data(string $prompttext): array {
         return [
-                'model' => $this->get_models(),
-                'temperature' => $this->temperature,
+                'model' => $this->instance->get_model(),
+                'temperature' => $this->instance->get_temperature(),
                 'messages' => [
                         [
                                 'role' => 'system',
@@ -105,11 +90,5 @@ class connector extends \local_ai_manager\base_connector {
     public function has_customvalue2(): bool {
         return true;
     }
-
-    public function get_temperature(): float {
-        return $this->temperature;
-    }
-
-
 
 }

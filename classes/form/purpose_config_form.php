@@ -61,7 +61,8 @@ class purpose_config_form extends \moodleform {
         $mform->addElement('header', 'purposeheader', 'PURPOSES');
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $instances = [0 => 'KEINE AUSWAHL'];
-            $instances = array_merge($instances, manager::get_connector_instances_for_purpose($purpose));
+            // We do not use merge, because we must not re-index the array, keys are the ids of the instances.
+            $instances = $instances + manager::get_connector_instances_for_purpose($purpose);
             $mform->addElement('select', 'purpose_' . $purpose . '_tool', 'TOOL FÜR PURPOSE ' . $purpose . ' AUSWÄHLEN:',
                     $instances);
 

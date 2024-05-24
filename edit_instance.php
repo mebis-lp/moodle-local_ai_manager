@@ -26,6 +26,7 @@
 use block_mbsnewcourse\local\mbsnewcourse;
 use block_mbsnewcourse\form\mbs_restore_form;
 use core\output\notification;
+use local_ai_manager\local\tenant;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
@@ -47,16 +48,18 @@ if (isguestuser()) {
     throw new moodle_exception('guestsarenotallowed', '', $returnurl);
 }
 
-if (empty($tenant)) {
-    $tenant = $USER->institution;
+if (empty($tenantid)) {
+    // Will throw an exception if no tenant can be found.
+    $tenant = \core\di::get(tenant::class);
+} else {
+    $tenant = new tenant($tenantid);
+    \core\di::set(tenant::class, $tenant);
 }
-if (empty($tenant)) {
-    throw new moodle_exception('No tenant could be found. Please specify the "tenant" parameter.');
-}
+$tenantid = $tenant->get_tenantidentifier();
 
-$school = new \local_bycsauth\school($tenant);
+$school = new \local_bycsauth\school($tenantid);
 if (!$school->record_exists()) {
-    throw new moodle_exception('Invalid tenant "' . $tenant . '"!');
+    throw new moodle_exception('Invalid tenant "' . $tenantid . '"!');
 }
 $schoolcategorycontext = \context_coursecat::instance($school->get_school_categoryid());
 $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
@@ -71,31 +74,20 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
-$connectorclassname = '\\aitool_' . $connector . '\\instance';
-
 if (!empty($id)) {
-    $connectorrecord = $DB->get_record('local_ai_manager_instance', ['id' => $id]);
-    if ($connectorrecord) {
-        $connector = $connectorrecord->connector;
-    }
-    // Make sure we have the correct connector, no matter what has been passed as parameter.
-    $connectorinstance = new $connectorclassname($id);
-    $connectorinstance->set_connector($connector);
-    if (!$connectorinstance->record_exists()) {
-        throw new moodle_exception('ID COULD NOT BE FOUND');
-    }
-    \core\di::set($connectorclassname, $connectorinstance);
+    \local_ai_manager\manager::setup_connector_and_instance($id);
+    $connector = \core\di::get(\local_ai_manager\connector_instance::class)->get_connector();
 } else {
     if (empty($connector) || !in_array($connector, \local_ai_manager\plugininfo\aitool::get_enabled_plugins())) {
         throw new moodle_exception('No valid connector specified');
     }
-    \core\di::get($connectorclassname)->set_connector($connector);
 }
 
-$editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url('/local/ai_manager/edit_instance.php', ['id' => $id, 'connector' => $connector]),
-        ['id' => $id, 'tenant' => $tenant, 'connector' => $connector, 'returnurl' => $PAGE->url]);
+$editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url('/local/ai_manager/edit_instance.php',
+        ['id' => $id, 'connector' => $connector]),
+        ['id' => $id, 'tenant' => $tenant->get_tenantidentifier(), 'connector' => $connector, 'returnurl' => $PAGE->url]);
 
-$connectorinstance = \core\di::get($connectorclassname);
+$connectorinstance = \core\di::get(\local_ai_manager\connector_instance::class);
 // Standard form processing if statement.
 if ($editinstanceform->is_cancelled()) {
     redirect($returnurl);
@@ -107,7 +99,7 @@ if ($editinstanceform->is_cancelled()) {
     // started or that trying to trigger it caused an error.
 
     $connectorinstance->store_formdata($data);
-    redirect(new moodle_url('/local/ai_manager/instaces_config.php'), 'DATA SAVED', '');
+    redirect(new moodle_url('/local/ai_manager/instances_config.php'), 'DATA SAVED', '');
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);

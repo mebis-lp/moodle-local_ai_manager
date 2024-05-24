@@ -45,6 +45,8 @@ class connector_instance {
 
     protected ?string $endpoint = null;
 
+    protected ?string $apikey = null;
+
     protected ?string $model = null;
 
     /** @var ?string First customfield attribute. */
@@ -77,6 +79,7 @@ class connector_instance {
                 $this->tenant,
                 $this->connector,
                 $this->endpoint,
+                $this->apikey,
                 $this->model,
                 $this->customfield1,
                 $this->customfield2,
@@ -88,6 +91,7 @@ class connector_instance {
                 $record->tenant,
                 $record->connector,
                 $record->endpoint,
+                $record->apikey,
                 $record->model,
                 $record->customfield1,
                 $record->customfield2,
@@ -113,6 +117,7 @@ class connector_instance {
         $record->tenant = $this->tenant;
         $record->connector = $this->connector;
         $record->endpoint = $this->endpoint;
+        $record->apikey = $this->apikey;
         $record->model = $this->model;
         $record->customfield1 = $this->customfield1;
         $record->customfield2 = $this->customfield2;
@@ -175,6 +180,14 @@ class connector_instance {
         $this->endpoint = $endpoint;
     }
 
+    public function get_apikey(): ?string {
+        return $this->apikey;
+    }
+
+    public function set_apikey(?string $apikey): void {
+        $this->apikey = $apikey;
+    }
+
     public function get_model(): string {
         return $this->model;
     }
@@ -234,6 +247,7 @@ class connector_instance {
         $data->connector = $this->get_connector();
         $data->model = $this->get_model();
         $data->endpoint = $this->get_endpoint();
+        $data->apikey = $this->get_apikey();
         foreach ($this->get_extended_formdata() as $key => $value) {
             $data->{$key} = $value;
         }
@@ -267,8 +281,11 @@ class connector_instance {
         $mform->addElement('text', 'endpoint', 'ENDPOINT');
         $mform->setType('endpoint', PARAM_URL);
 
+        $mform->addElement('text', 'apikey', 'APIKEY');
+        $mform->setType('endpoint', PARAM_TEXT);
+
         $classname = '\\aitool_' . $connector . '\\connector';
-        $connectorobject = new $classname();
+        $connectorobject = \core\di::get($classname);
         $availablemodels = [];
         foreach ($connectorobject->get_models() as $modelname) {
             // TODO maybe add lang strings for models, so we have
@@ -283,6 +300,7 @@ class connector_instance {
     public final function store_formdata($data): void {
         $this->set_name($data->name);
         $this->set_endpoint($data->endpoint);
+        $this->set_apikey($data->apikey);
         $this->set_connector($data->connector);
         $this->set_tenant($data->tenant);
         $this->set_model($data->model);
