@@ -26,31 +26,25 @@ namespace local_ai_manager\local;
  */
 class config_manager {
 
-    public const ALLOWED_CONFIG_KEYS = [
-        ''
-    ];
-
     public function __construct(private readonly string $tenant){}
 
 
     public function get_config(string $key): false|string {
         global $DB;
-        return $DB->get_record('local_ai_manager_config', ['key' => $key, 'tenant' => $this->tenant]);
+        return $DB->get_field('local_ai_manager_config', 'configvalue', ['configkey' => $key, 'tenant' => $this->tenant]);
     }
 
-    public function set_config(string $key, string $value): void {
+    public function set_config(string $configkey, string $configvalue): void {
         global $DB;
-        if (!in_array($key, self::ALLOWED_CONFIG_KEYS)) {
-            throw new \coding_exception('Key "' . $key . '" is not an allowed config key to be set!');
-        }
-        $configrecord = $DB->get_record('local_ai_manager_config', ['key' => $key, 'tenant' => $this->tenant]);
+        // TODO Eventually do a validation of which config keys are allowed
+        $configrecord = $DB->get_record('local_ai_manager_config', ['configkey' => $configkey, 'tenant' => $this->tenant]);
         if ($configrecord) {
-            $configrecord->value = $value;
+            $configrecord->configvalue = $configvalue;
             $DB->update_record('local_ai_manager_config', $configrecord);
         } else {
             $configrecord = new \stdClass();
-            $configrecord->key = $key;
-            $configrecord->value = $value;
+            $configrecord->configkey = $configkey;
+            $configrecord->configvalue = $configvalue;
             $configrecord->tenant = $this->tenant;
             $DB->insert_record('local_ai_manager_config', $configrecord);
         }

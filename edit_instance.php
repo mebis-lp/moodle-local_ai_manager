@@ -105,12 +105,9 @@ if ($editinstanceform->is_cancelled()) {
     echo $OUTPUT->heading($strtitle);
     // As the restore process is being done asynchronously, the user should get notified, that the process has successfully been
     // started or that trying to trigger it caused an error.
-    echo $OUTPUT->notification('Config saved', NOTIFICATION::NOTIFY_SUCCESS);
-    // Reset the form for maybe a new course restore. We have to create a new object to force the form to reread the list of backup
-    // files.
 
     $connectorinstance->store_formdata($data);
-    redirect(new moodle_url('/local/ai_manager/tenantconfig.php'), 'DATA SAVED', '');
+    redirect(new moodle_url('/local/ai_manager/instaces_config.php'), 'DATA SAVED', '');
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);

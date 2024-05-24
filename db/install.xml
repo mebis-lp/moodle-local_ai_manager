@@ -26,8 +26,8 @@
     <TABLE NAME="local_ai_manager_config" COMMENT="Table for storing the tenant specific configurations">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="key" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="The key for the configuration"/>
-        <FIELD NAME="value" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Value for the config key"/>
+        <FIELD NAME="configkey" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="The key for the configuration"/>
+        <FIELD NAME="configvalue" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Value for the config key"/>
         <FIELD NAME="tenant" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="String identifier of the tenant the config key-value-pair belongs to"/>
       </FIELDS>
       <KEYS>

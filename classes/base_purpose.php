@@ -37,4 +37,8 @@ class base_purpose {
         return core_plugin_manager::instance()->get_enabled_plugins('aipurpose');
     }
 
+    public static function get_purpose_tool_config_key(string $purpose): string {
+        return 'purpose_' . $purpose . '_tool';
+    }
+
 }

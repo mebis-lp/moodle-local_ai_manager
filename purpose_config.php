@@ -24,6 +24,9 @@
  */
 
 use core\output\notification;
+use local_ai_manager\base_purpose;
+use local_ai_manager\form\purpose_config_form;
+use local_ai_manager\local\config_manager;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
@@ -52,7 +55,7 @@ if (empty($tenant)) {
 
 $school = new \local_bycsauth\school($tenant);
 if (!$school->record_exists()) {
-    throw new moodle_exception('Invalid tenant "' . $tenant. '"!');
+    throw new moodle_exception('Invalid tenant "' . $tenant . '"!');
 }
 $schoolcategorycontext = \context_coursecat::instance($school->get_school_categoryid());
 $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
@@ -67,31 +70,42 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
-$purposeconfig = new \local_ai_manager\form\purpose_config_form(null, ['tenant' => $tenant, 'returnurl' => $PAGE->url]);
+$purposeconfig = new purpose_config_form(null, ['tenant' => $tenant, 'returnurl' => $PAGE->url]);
+$configmanager = new config_manager($tenant);
 
 // Standard form processing if statement.
 if ($purposeconfig->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $purposeconfig->get_data()) {
-    print_r($data);
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
+    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
+
     // As the restore process is being done asynchronously, the user should get notified, that the process has successfully been
     // started or that trying to trigger it caused an error.
+    foreach (base_purpose::get_all_purposes() as $purpose) {
+        if (!empty($data->{base_purpose::get_purpose_tool_config_key($purpose)})) {
+            $configmanager->set_config(base_purpose::get_purpose_tool_config_key($purpose),
+                    $data->{base_purpose::get_purpose_tool_config_key($purpose)});
+        }
+    }
     echo $OUTPUT->notification('Config saved', NOTIFICATION::NOTIFY_SUCCESS);
-    // Reset the form for maybe a new course restore. We have to create a new object to force the form to reread the list of backup
-    // files.
-    /*$modelconfigform = new \local_ai_manager\form\modelconfigform(null, ['categoryid' => $categoryid, 'returnurl' => $PAGE->url]);
-    $modelconfigform->reset_form();
-    $modelconfigform->display();*/
+    redirect($PAGE->url, 'CONFIG SAVED');
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
+    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
 
-
+    $data = new stdClass();
+    foreach (base_purpose::get_all_purposes() as $purpose) {
+        if (!empty($configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose)))) {
+            $data->{base_purpose::get_purpose_tool_config_key($purpose)} =
+                    $configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose));
+        }
+    }
+    $purposeconfig->set_data($data);
     $purposeconfig->display();
 }
-
 
 echo $OUTPUT->footer();

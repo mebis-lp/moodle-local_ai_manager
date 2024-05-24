@@ -60,16 +60,14 @@ class purpose_config_form extends \moodleform {
 
         $mform->addElement('header', 'purposeheader', 'PURPOSES');
         foreach (base_purpose::get_all_purposes() as $purpose) {
-            $instances = manager::get_connector_instances_for_purpose($purpose);
-            if (empty($instances)) {
-                $instances = ['0' => 'KEINE GEEIGNETE INSTANZ DEFINIERT'];
-            }
+            $instances = [0 => 'KEINE AUSWAHL'];
+            $instances = array_merge($instances, manager::get_connector_instances_for_purpose($purpose));
             $mform->addElement('select', 'purpose_' . $purpose . '_tool', 'TOOL FÜR PURPOSE ' . $purpose . ' AUSWÄHLEN:',
                     $instances);
 
             // TODO Select-Element
         }
-
+        $this->add_action_buttons();
         /*
 
 
@@ -120,16 +118,7 @@ class purpose_config_form extends \moodleform {
      */
     public function validation($data, $files): array {
         $errors = [];
-        $draftitemid = file_get_submitted_draft_itemid('backupfile');
-        if ($data['course'] == self::UPLOAD_FILE_OPTION && empty(file_get_all_files_in_draftarea($draftitemid))) {
-            $errors['errornocoursefile'] = get_string('error_nocoursefilechosen', 'block_mbsnewcourse');
-        }
-        if (file_get_all_files_in_draftarea($draftitemid)
-                && file_get_all_files_in_draftarea($draftitemid)[0]
-                && strpos(implode('', array_values($this->backupfilesinformation)),
-                        file_get_all_files_in_draftarea($draftitemid)[0]->filename)) {
-            $errors['backupfile'] = get_string('error_filealreadyexists', 'block_mbsnewcourse');
-        }
+        // TODO validate
         return $errors;
     }
 
