@@ -40,28 +40,12 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends \local_ai_manager\base_connector {
 
-
-    private float $temperature;
-
-    /**
-     * Construct the connector class for ollama
-     *
-     * @return void
-     */
-    public function __construct() {
-        $this->temperature = floatval(get_config('aitool_ollama', 'temperature'));
+    public function __construct(instance $instance) {
+        $this->instance = $instance;
     }
 
     public function get_models(): array {
-        return ['tinyllama', 'mixtral'];
-    }
-
-    protected function get_endpoint_url(): string {
-        return get_config('aitool_ollama', 'url');
-    }
-
-    protected function get_api_key(): string {
-        return get_config('aitool_ollama', 'apikey');
+        return ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava'];
     }
 
     public function get_unit(): unit {
@@ -95,7 +79,7 @@ class connector extends \local_ai_manager\base_connector {
             'stream' => false,
             'keep_alive' => '60m',
             'options' => [
-                'temperature' => $this->temperature,
+                'temperature' => $this->instance->get_temperature(),
             ],
         ];
         return $data;

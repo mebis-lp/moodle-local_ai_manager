@@ -46,12 +46,12 @@ class edit_instance_form extends \moodleform {
      * Form definition.
      */
     public function definition() {
-        $connector = $this->_customdata['connector'];
+        $connectorname = $this->_customdata['connector'];
 
         $mform = &$this->_form;
-        $connectorinstance = \core\di::get(\local_ai_manager\connector_instance::class);
+        $connectorinstance = \core\di::get('\\aitool_' . $connectorname . '\\instance');
         if (empty($connectorinstance->get_connector())) {
-            $connectorinstance->set_connector($connector);
+            $connectorinstance->set_connector($connectorname);
         }
         $connectorinstance->edit_form_definition($mform, $this->_customdata);
 

@@ -20,6 +20,7 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
+use stdClass;
 
 /**
  * Web service to submit a query to an AI tool.
@@ -49,7 +50,7 @@ class submit_query extends external_api {
      *
      * @param string $purpose the purpose to use
      * @param string $prompt the user's prompt
-     * @param string $options additional options which should be passed to the request to the AI tool
+     * @param array $options additional options which should be passed to the request to the AI tool
      * @return array associative array containing the result of the request
      */
     public static function execute(string $purpose, string $prompt, string $options): array {

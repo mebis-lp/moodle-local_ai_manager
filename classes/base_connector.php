@@ -32,6 +32,7 @@ use Psr\Http\Message\StreamInterface;
  */
 abstract class base_connector {
 
+    protected connector_instance $instance;
 
     /**
      * Define available models.
@@ -42,11 +43,11 @@ abstract class base_connector {
 
     public abstract function get_unit(): unit;
 
-    protected function get_endpoint_url(): string {
+    private function get_endpoint_url(): string {
         return $this->instance->get_endpoint();
     }
 
-    protected function get_api_key(): string {
+    private function get_api_key(): string {
         return $this->instance->get_apikey();
     }
 
@@ -74,9 +75,6 @@ abstract class base_connector {
 
     public function get_instance(): connector_instance {
         return $this->instance;
-    }
-
-    public function __construct(protected readonly connector_instance $instance) {
     }
 
     /**

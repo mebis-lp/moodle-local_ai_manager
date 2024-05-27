@@ -164,7 +164,7 @@ class connector_instance {
         $this->tenant = $tenant;
     }
 
-    public function get_connector(): string {
+    public function get_connector(): ?string {
         return $this->connector;
     }
 
@@ -262,7 +262,7 @@ class connector_instance {
         $mform->addElement('text', 'name', 'NAME');
         $mform->setType('name', PARAM_TEXT);
         $mform->addElement('text', 'tenant', 'SCHULE');
-        $mform->setType('name', PARAM_ALPHANUM);
+        $mform->setType('tenant', PARAM_ALPHANUM);
         if (empty($this->_customdata['id'])) {
             $mform->setDefault('tenant', $customdata['tenant']);
         }
@@ -282,7 +282,7 @@ class connector_instance {
         $mform->setType('endpoint', PARAM_URL);
 
         $mform->addElement('text', 'apikey', 'APIKEY');
-        $mform->setType('endpoint', PARAM_TEXT);
+        $mform->setType('apikey', PARAM_TEXT);
 
         $classname = '\\aitool_' . $connector . '\\connector';
         $connectorobject = \core\di::get($classname);
@@ -309,7 +309,17 @@ class connector_instance {
     }
 
     protected function extend_store_formdata(stdClass $data): void {
-        return;
+    }
+
+    public function delete(): void {
+        global $DB;
+        if (empty($this->id)) {
+            $this->load();
+            if (empty($this->id)) {
+                throw new \moodle_exception('Instance with id ' . $this->id . ' does not exist');
+            }
+        }
+        $DB->delete_records('local_ai_manager_instance', ['id' => $this->id]);
     }
 
 

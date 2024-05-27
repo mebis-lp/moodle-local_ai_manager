@@ -25,8 +25,6 @@
 
 namespace aitool_chatgpt;
 
-use local_ai_manager\base_purpose;
-use local_ai_manager\local\config_manager;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
@@ -42,6 +40,9 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends \local_ai_manager\base_connector {
 
+    public function __construct(instance $instance) {
+        $this->instance = $instance;
+    }
 
     public function get_models(): array {
         return ['gpt-3.5-turbo', 'gpt-4-turbo'];

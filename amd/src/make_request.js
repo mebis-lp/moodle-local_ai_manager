@@ -43,7 +43,7 @@ const execMakeRequest = (
  * @param {array} options
  * @returns {mixed}
  */
-export const makeRequest = async (purpose, prompt, options = []) => {
+export const makeRequest = async (purpose, prompt, options = {}) => {
 
     const response = await execMakeRequest(purpose, prompt, options);
     return response;

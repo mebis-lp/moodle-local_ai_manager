@@ -25,19 +25,11 @@
 
 namespace aitool_whisper;
 
-use coding_exception;
-use core\http_client;
 use dml_exception;
 use local_ai_manager\local\prompt_response;
-use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
-use moodle_exception;
-use invalid_dataroot_permissions;
-use Error;
-use file_exception;
 use Psr\Http\Message\StreamInterface;
-use stored_file_creation_exception;
 
 /**
  * Connector - whisper
@@ -49,34 +41,17 @@ use stored_file_creation_exception;
  */
 class connector extends \local_ai_manager\base_connector {
 
-    private float $temperature;
+    public function __construct(instance $instance) {
+        $this->instance = $instance;
+    }
 
     public function get_models(): array {
         return ['tts-1'];
     }
 
-    protected function get_endpoint_url(): string {
-        return 'https://api.openai.com/v1/audio/speech';
-    }
-
-    protected function get_api_key(): string {
-        return get_config('aitool_whisper', 'openaiapikey');
-    }
-
     public function supported_purposes(): array {
         return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['tts']));
     }
-
-    /**
-     * Construct the connector class for whisper
-     *
-     * @return void
-     * @throws dml_exception
-     */
-    public function __construct() {
-        $this->temperature = floatval(get_config('aitool_whisper', 'temperature'));
-    }
-
 
     /**
      * Makes a request to the specified URL with the given data and API key.
@@ -134,7 +109,7 @@ class connector extends \local_ai_manager\base_connector {
         }
 
         $data = [
-            'model' => $this->get_models(),
+            'model' => $this->instance->get_model(),
             'input' => $prompttext,
             'voice' => 'alloy',
         ];
@@ -182,6 +157,6 @@ class connector extends \local_ai_manager\base_connector {
                 $file->get_filename()
         )->out();
 
-        return prompt_response::create_from_result($this->get_models(), new usage(1.0), $filepath);
+        return prompt_response::create_from_result($this->instance->get_model(), new usage(1.0), $filepath);
     }
 }

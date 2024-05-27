@@ -25,8 +25,7 @@
 
 namespace aitool_dalle;
 
-use aitool_whisper_1\language_codes;
-use dml_exception;
+use aitool_whisper\language_codes;
 use local_ai_manager\base_connector;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
@@ -43,29 +42,12 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends base_connector {
 
-    private float $temperature;
-
-
-    /**
-     * Construct the connector class for dalle
-     *
-     * @return void
-     * @throws dml_exception
-     */
-    public function __construct() {
-        $this->temperature = floatval(get_config('aitool_dalle', 'temperature'));
+    public function __construct(instance $instance) {
+        $this->instance = $instance;
     }
 
     public function get_models(): array {
         return ['dall-e-2', 'dall-e-3'];
-    }
-
-    protected function get_endpoint_url(): string {
-        return 'https://api.openai.com/v1/images/generations';
-    }
-
-    protected function get_api_key(): string {
-        return get_config('aitool_dalle', 'openaiapikey');
     }
 
     public function supported_purposes(): array {
@@ -122,7 +104,7 @@ class connector extends base_connector {
                 $file->get_filename()
         )->out();
 
-        return prompt_response::create_from_result($this->get_models(), new usage(1.0), $filepath);
+        return prompt_response::create_from_result($this->instance->get_model(), new usage(1.0), $filepath);
     }
 
 

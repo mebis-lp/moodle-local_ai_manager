@@ -44,4 +44,8 @@ class instance extends connector_instance {
     protected function extend_store_formdata(stdClass $data): void {
         $this->set_customfield1(strval($data->temperature));
     }
+
+    public function get_temperature(): float {
+        return floatval($this->get_customfield1());
+    }
 }
