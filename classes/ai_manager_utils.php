@@ -54,7 +54,7 @@ class ai_manager_utils {
     public static function get_next_free_itemid(string $component, int $contextid): int {
         global $DB;
         $sql = "SELECT MAX(itemid) as maxitemid FROM {local_ai_manager_request_log} "
-                . "WHERE 'component' = :component AND 'contextid' = :contextid";
+                . "WHERE component = :component AND contextid = :contextid";
         $max =
                 intval($DB->get_field_sql($sql, ['component' => $component, 'contextid' => $contextid]));
         return empty($max) ? 1 : $max + 1;
