@@ -29,6 +29,7 @@ class prompt_response {
     private string $model;
     private usage $usage;
     private string $content;
+    private int $code;
     private string $errormessage;
     private string $debuginfo;
 
@@ -77,14 +78,20 @@ class prompt_response {
         return $this->debuginfo;
     }
 
-
-
-    public function is_error(): bool {
-        return !empty($this->errormessage);
+    public function get_code(): int {
+        return $this->code;
     }
 
-    public static function create_from_error(string $errormessage, string $debuginfo): prompt_response {
+    public function set_code(int $code): void {
+        $this->code = $code;
+    }
+
+    public static function create_from_error(int $code, string $errormessage, string $debuginfo): prompt_response {
+        if ($code === 200) {
+            throw new \coding_exception('You cannot create an error with code 200');
+        }
         $promptresponse = new self();
+        $promptresponse->set_code($code);
         $promptresponse->set_errormessage($errormessage);
         $promptresponse->set_debuginfo($debuginfo);
         return $promptresponse;
@@ -92,6 +99,7 @@ class prompt_response {
 
     public static function create_from_result(string $model, usage $usage, string $content): prompt_response {
         $promptresponse = new self();
+        $promptresponse->set_code(200);
         $promptresponse->set_model($model);
         $promptresponse->set_usage($usage);
         $promptresponse->set_content($content);

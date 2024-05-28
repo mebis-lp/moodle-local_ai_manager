@@ -107,6 +107,7 @@ class manager {
      * @return prompt_response The generated prompt response object
      */
     public function perform_request(string $prompttext, array $options = []): prompt_response {
+        global $DB;
 
         if ($options === null) {
             $options = new \stdClass();
@@ -122,6 +123,15 @@ class manager {
             return prompt_response::create_from_error($requestresult->get_errormessage(), $requestresult->get_debuginfo());
         }
         $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response(), $options);
+        if (!empty($options['forcenewitemid']) && !empty($options['component']) && !empty($options['contextid'] && !empty($options['itemid']))) {
+            if ($DB->record_exists('local_ai_manager_request_log', ['component' => $options['component'], 'contextid' => $options['contextid'], 'itemid' => $options['itemid']])) {
+                $existingitemid = $options['itemid'];
+                unset($options['itemid']);
+                $this->log_request($prompttext, $promptcompletion, $requestoptions, $options);
+                return prompt_response::create_from_error(409, 'The itemid ' . $existingitemid . ' already taken', '');
+            }
+        }
+
         $this->log_request($prompttext, $promptcompletion, $requestoptions, $options);
         return $promptcompletion;
     }
@@ -129,7 +139,7 @@ class manager {
     public function log_request(string $prompttext, prompt_response $promptcompletion, array $requestoptions = [], array $options = []): void {
         global $DB, $USER;
 
-        if ($promptcompletion->is_error()) {
+        if ($promptcompletion->get_code() !== 200) {
             // TODO We probably used some tokens despite an error? Need to properly log this.
             return;
         }

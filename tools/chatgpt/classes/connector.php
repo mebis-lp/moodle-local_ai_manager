@@ -72,15 +72,33 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_prompt_data(string $prompttext, array $requestoptions): array {
+        $messages = [];
+        if (array_key_exists('conversationcontext', $requestoptions)) {
+            foreach ($requestoptions['conversationcontext'] as $message) {
+                switch ($message['sender']) {
+                    case 'user':
+                        $role = 'user';
+                        break;
+                    case 'ai':
+                        $role = 'assistant';
+                        break;
+                    case 'system':
+                        $role = 'system';
+                        break;
+                    default:
+                        throw new \moodle_exception('Bad message format');
+                }
+                $messages[] = [
+                        'role' => $role,
+                        'content' => $message['message'],
+                ];
+            }
+        }
+        $messages[] = ['role' => 'user', 'content' => $prompttext];
         return [
                 'model' => $this->instance->get_model(),
                 'temperature' => $this->instance->get_temperature(),
-                'messages' => [
-                        [
-                                'role' => 'system',
-                                'content' => $prompttext
-                        ],
-                ],
+                'messages' => $messages,
         ];
     }
 
