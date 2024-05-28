@@ -36,7 +36,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="tenant" UNIQUE="false" FIELDS="tenant"/>
-        <INDEX NAME="key_tenant" UNIQUE="false" FIELDS="key, tenant"/>
+        <INDEX NAME="configkey_tenant" UNIQUE="false" FIELDS="configkey, tenant"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="local_ai_manager_userinfo" COMMENT="Storing of user specific information for the local_ai_manager plugin">
@@ -64,6 +64,7 @@
         <FIELD NAME="modelinfo" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="prompttext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The prompt which has been sent to the AI tool"/>
         <FIELD NAME="promptcompletion" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="requestoptions" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="component" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>

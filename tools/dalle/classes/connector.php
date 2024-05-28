@@ -61,7 +61,7 @@ class connector extends base_connector {
      * @param string $prompttext The prompt text.
      * @return array The prompt data.
      */
-    public function get_prompt_data(string $prompttext): array {
+    public function get_prompt_data(string $prompttext, array $requestoptions): array {
         // TODO we do not have options here yet, but apparently will need them both here and in the execute_promptcompletion method,
         //  so we probably need this in the connector object inserted
         return [

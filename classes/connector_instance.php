@@ -124,10 +124,12 @@ class connector_instance {
         $record->customfield3 = $this->customfield3;
         $record->customfield4 = $this->customfield4;
         if (is_null($this->record)) {
+            $record->timecreated = time();
             $record->id = $DB->insert_record('local_ai_manager_instance', $record);
             $this->id = $record->id;
         } else {
             $record->id = $this->id;
+            $record->timemodified = time();
             $DB->update_record('local_ai_manager_instance', $record);
         }
         $this->record = $record;

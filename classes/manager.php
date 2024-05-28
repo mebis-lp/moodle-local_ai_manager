@@ -42,8 +42,14 @@ use stdClass;
  */
 class manager {
 
+    private base_purpose $purpose;
+
     /** @var base_connector $toolconnector The tool connector object. */
     private base_connector $toolconnector;
+    /**
+     * @var local\connector_factory|mixed
+     */
+    private \local_ai_manager\local\connector_factory $factory;
 
     /**
      * Constructor of manager class.
@@ -54,8 +60,9 @@ class manager {
      * @throws dml_exception
      */
     public function __construct(string $purpose, private readonly array $options = []) {
-        $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
-        $this->toolconnector = $factory->get_connector_by_purpose($purpose);
+        $this->factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+        $this->purpose = $this->factory->get_purpose_by_purpose_string($purpose);
+        $this->toolconnector = $this->factory->get_connector_by_purpose($purpose);
     }
 
     public static function get_default_tool(string $purpose): string {
@@ -99,13 +106,13 @@ class manager {
      * @param array $options Options to be used during processing.
      * @return prompt_response The generated prompt response object
      */
-    public function perform_request(string $prompttext, $options = []): prompt_response {
+    public function perform_request(string $prompttext, array $options = []): prompt_response {
 
         if ($options === null) {
             $options = new \stdClass();
         }
-        \local_debugger\performance\debugger::print_debug('test', 'make_request options', $options);
-        $promptdata = $this->toolconnector->get_prompt_data($prompttext);
+        $requestoptions = $this->purpose->get_request_options($options);
+        $promptdata = $this->toolconnector->get_prompt_data($prompttext, $requestoptions);
         try {
             $requestresult = $this->toolconnector->make_request($promptdata, !empty($options['multipart']));
         } catch (\Exception $exception) {
@@ -115,11 +122,11 @@ class manager {
             return prompt_response::create_from_error($requestresult->get_errormessage(), $requestresult->get_debuginfo());
         }
         $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response(), $options);
-        $this->log_request($promptcompletion);
+        $this->log_request($prompttext, $promptcompletion, $requestoptions, $options);
         return $promptcompletion;
     }
 
-    private function log_request(prompt_response $promptcompletion): void {
+    public function log_request(string $prompttext, prompt_response $promptcompletion, array $requestoptions = [], array $options = []): void {
         global $DB, $USER;
 
         if ($promptcompletion->is_error()) {
@@ -130,14 +137,28 @@ class manager {
         $data = new stdClass();
         $data->userid = $USER->id;
         $data->value = $promptcompletion->get_usage()->value;
-        $data->model = $this->toolconnector->get_instance()->get_model();
         if ($this->toolconnector->has_customvalue1()) {
             $data->customvalue1 = $promptcompletion->get_usage()->customvalue1;
         }
         if ($this->toolconnector->has_customvalue2()) {
             $data->customvalue2 = $promptcompletion->get_usage()->customvalue2;
         }
+        $data->model = $this->toolconnector->get_instance()->get_model();
         $data->modelinfo = $promptcompletion->get_modelinfo();
+        $data->prompttext = $prompttext;
+        $data->promptcompletion = $promptcompletion->get_content();
+        if (!empty($requestoptions)) {
+            $data->requestoptions = json_encode($requestoptions);
+        }
+        if (array_key_exists('component', $options)) {
+            $data->component = $options['component'];
+        }
+        if (array_key_exists('contextid', $options)) {
+            $data->contextid = intval($options['contextid']);
+        }
+        if (array_key_exists('itemid', $options)) {
+            $data->itemid = intval($options['itemid']);
+        }
         $data->timecreated = time();
         $DB->insert_record('local_ai_manager_request_log', $data);
 

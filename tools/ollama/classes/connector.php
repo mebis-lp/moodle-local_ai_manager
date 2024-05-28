@@ -45,7 +45,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_models(): array {
-        return ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava'];
+        return ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava', 'tinyllama'];
     }
 
     public function get_unit(): unit {
@@ -58,12 +58,12 @@ class connector extends \local_ai_manager\base_connector {
 
         // On cached results there is no prompt token count in the response.
         $prompttokencount = isset($content['prompt_eval_count']) ? $content['prompt_eval_count'] : 0.0;
-        $responsetokencount = $content['eval_count'];
+        $responsetokencount = isset($content['eval_count']) ? $content['eval_count'] : 0.0;
         $totaltokencount = $prompttokencount + $responsetokencount;
 
         return prompt_response::create_from_result($content['model'],
-            new usage($totaltokencount, $prompttokencount, $prompttokencount),
-            $content['response']);
+                new usage($totaltokencount, $prompttokencount, $prompttokencount),
+                $content['message']['content']);
     }
 
     /**
@@ -72,15 +72,22 @@ class connector extends \local_ai_manager\base_connector {
      * @param string $prompttext The prompt text.
      * @return array The prompt data.
      */
-    public function get_prompt_data(string $prompttext): array {
+    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+        $messages = [];
+        if (array_key_exists('conversationcontext', $requestoptions)) {
+            foreach ($requestoptions['conversationcontext'] as $message) {
+                $messages[] = ['role' => $message['sender'] === 'user' ? 'user' : 'assistant'];
+            }
+        }
+        $messages[] = ['role' => 'user', 'content' => $prompttext];
         $data = [
-            'model' => $this->get_models(),
-            'prompt' => $prompttext,
-            'stream' => false,
-            'keep_alive' => '60m',
-            'options' => [
-                'temperature' => $this->instance->get_temperature(),
-            ],
+                'model' => $this->instance->get_model(),
+                'messages' => $messages,
+                'stream' => false,
+                'keep_alive' => '60m',
+                'options' => [
+                        'temperature' => $this->instance->get_temperature(),
+                ],
         ];
         return $data;
     }

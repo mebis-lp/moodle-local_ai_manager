@@ -61,7 +61,7 @@ abstract class base_connector {
      * @param string $prompttext The prompt text.
      * @return array The prompt data.
      */
-    public abstract function get_prompt_data(string $prompttext): array;
+    public abstract function get_prompt_data(string $prompttext, array $requestoptions): array;
 
     public abstract function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response;
 
@@ -88,7 +88,10 @@ abstract class base_connector {
      * @throws \moodle_exception If the API key is empty.
      */
     public function make_request(array $data, bool $multipart = false): request_response {
-        $client = new http_client();
+        $client = new http_client([
+                // TODO Make timeout higher, LLM requests can take quite a bit of time
+                'timeout' => 20,
+        ]);
 
         $contenttype = $multipart ? 'multipart/form-data' : 'application/json;charset=utf-8';
 

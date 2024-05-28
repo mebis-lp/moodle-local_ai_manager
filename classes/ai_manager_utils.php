@@ -24,18 +24,39 @@ namespace local_ai_manager;
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class api {
+class ai_manager_utils {
     public static function get_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0): array {
         global $DB;
-
+        $params = [
+                'component' => $component,
+                'contextid' => $contextid,
+        ];
+        if (!empty($userid)) {
+            $params['userid'] = $userid;
+        }
+        if (!empty($itemid)) {
+            $params['itemid'] = $itemid;
+        }
+        $records = $DB->get_records('local_ai_manager_request_log', $params);
+        return !empty($records) ? $records : [];
     }
 
     public static function itemid_exists(string $component, int $contextid, int $itemid): bool {
-
+        global $DB;
+        return $DB->record_exists('local_ai_manager_request_log',
+                [
+                        'component' => $component,
+                        'contextid' => $contextid,
+                        'itemid' => $itemid,
+                ]);
     }
 
     public static function get_next_free_itemid(string $component, int $contextid): bool {
         global $DB;
-        $DB->get_record_sql("SELECT MAX(")
+        $sql = "SELECT MAX(itemid) as maxitemid FROM {local_ai_manager_request_log} "
+                . "WHERE 'component' = :component AND 'contextid' = :contextid";
+        $max =
+                intval($DB->get_field_sql($sql, ['component' => $component, 'contextid' => $contextid]));
+        return empty($max) ? 1 : $max + 1;
     }
 }

@@ -33,6 +33,10 @@ use Psr\Http\Message\StreamInterface;
  */
 class base_purpose {
 
+    public function get_request_options(array $options): array {
+        return [];
+    }
+
     public static function get_all_purposes(): array {
         return core_plugin_manager::instance()->get_enabled_plugins('aipurpose');
     }

@@ -15,28 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Purpose chat methods
+ * Purpose tts methods
  *
- * @package    aipurpose_chat
+ * @package    aipurpose_tts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aipurpose_chat;
+namespace aipurpose_tts;
 
-global $CFG;
-
-require_once($CFG->libdir . '/filelib.php');
+use local_ai_manager\base_purpose;
 
 /**
- * Purpose chat methods
+ * Purpose tts methods
  *
- * @package    aipurpose_chat
+ * @package    aipurpose_tts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class chat {
+class purpose extends base_purpose {
 
 }

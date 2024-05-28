@@ -100,7 +100,7 @@ class connector extends \local_ai_manager\base_connector {
      * @param string $prompttext The prompt text.
      * @return array The prompt data.
      */
-    public function get_prompt_data(string $prompttext): array {
+    public function get_prompt_data(string $prompttext, array $requestoptions): array {
 
         // If empty, use text language, else translate to the mentioned language.
         if (!empty($options->language)) {

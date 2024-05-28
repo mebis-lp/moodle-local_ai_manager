@@ -30,6 +30,8 @@ use local_ai_manager\connector_instance;
  */
 class connector_factory {
 
+    private base_purpose $purpose;
+
     private connector_instance $connectorinstance;
 
     private base_connector $connector;
@@ -87,6 +89,15 @@ class connector_factory {
     public function instance_exists(int $id): bool {
         global $DB;
         return $DB->record_exists('local_ai_manager_instance', ['id' => $id]);
+    }
+
+    public function get_purpose_by_purpose_string(string $purpose): base_purpose {
+        if (empty($purpose) || !in_array($purpose, \local_ai_manager\plugininfo\aipurpose::get_enabled_plugins())) {
+            throw new \coding_exception('Purpose ' . $purpose . ' does not exist or is not enabled');
+        }
+        $purposeclassname = '\\aipurpose_' . $purpose . '\\purpose';
+        $this->purpose = new $purposeclassname();
+        return $this->purpose;
     }
 
 }

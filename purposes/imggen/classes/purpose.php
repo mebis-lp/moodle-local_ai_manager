@@ -25,9 +25,7 @@
 
 namespace aipurpose_imggen;
 
-global $CFG;
-
-require_once($CFG->libdir . '/filelib.php');
+use local_ai_manager\base_purpose;
 
 /**
  * Purpose imggen methods
@@ -37,6 +35,6 @@ require_once($CFG->libdir . '/filelib.php');
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class imggen {
+class purpose extends base_purpose {
 
 }

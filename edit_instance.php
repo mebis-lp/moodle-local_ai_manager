@@ -93,7 +93,7 @@ if (!empty($id)) {
     if (empty($connectorname) || !in_array($connectorname, \local_ai_manager\plugininfo\aitool::get_enabled_plugins())) {
         throw new moodle_exception('No valid connector specified');
     }
-    $connectorinstance = $factory->get_connector_by_connectorname($connectorname);
+    $connectorinstance = $factory->get_new_instance($connectorname);
 }
 
 $editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url('/local/ai_manager/edit_instance.php',

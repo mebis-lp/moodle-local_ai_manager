@@ -71,7 +71,7 @@ class connector extends \local_ai_manager\base_connector {
         );
     }
 
-    public function get_prompt_data(string $prompttext): array {
+    public function get_prompt_data(string $prompttext, array $requestoptions): array {
         return [
                 'model' => $this->instance->get_model(),
                 'temperature' => $this->instance->get_temperature(),
