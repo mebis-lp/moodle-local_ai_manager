@@ -117,10 +117,10 @@ class manager {
         try {
             $requestresult = $this->toolconnector->make_request($promptdata, !empty($options['multipart']));
         } catch (\Exception $exception) {
-            return prompt_response::create_from_error($exception->getMessage(), $exception->getTraceAsString());
+            return prompt_response::create_from_error(500, $exception->getMessage(), $exception->getTraceAsString());
         }
-        if ($requestresult->is_error()) {
-            return prompt_response::create_from_error($requestresult->get_errormessage(), $requestresult->get_debuginfo());
+        if ($requestresult->get_code() !== 200) {
+            return prompt_response::create_from_error($requestresult->get_code(), $requestresult->get_errormessage(), $requestresult->get_debuginfo());
         }
         $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response(), $options);
         if (!empty($options['forcenewitemid']) && !empty($options['component']) && !empty($options['contextid'] && !empty($options['itemid']))) {

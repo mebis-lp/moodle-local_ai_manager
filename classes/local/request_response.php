@@ -31,6 +31,7 @@ readonly class request_response {
     private StreamInterface $response;
     private float $executiontime;
 
+    private int $code;
     private string $errormessage;
 
     private string $debuginfo;
@@ -54,6 +55,11 @@ readonly class request_response {
         $this->errormessage = $debuginfo;
     }
 
+
+    public function set_code(int $code): void {
+        $this->code = $code;
+    }
+
     public function get_errormessage(): string {
         return $this->errormessage;
     }
@@ -70,14 +76,13 @@ readonly class request_response {
         return $this->executiontime;
     }
 
-
-
-    public function is_error(): bool {
-        return !empty($this->errormessage);
+    public function get_code(): int {
+        return $this->code;
     }
 
-    public static function create_from_error(string $errormessage, string $debuginfo): request_response {
+    public static function create_from_error(int $code, string $errormessage, string $debuginfo): request_response {
         $requestresponse = new self();
+        $requestresponse->set_code($code);
         $requestresponse->set_errormessage($errormessage);
         $requestresponse->set_debuginfo($debuginfo);
         return $requestresponse;
