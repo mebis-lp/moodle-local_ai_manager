@@ -75,7 +75,6 @@ class submit_query extends external_api {
             $aimanager = new \local_ai_manager\manager($purpose);
             //\core\di::set('\local_ai_manager\manager', $aimanager);
 
-            \local_debugger\performance\debugger::print_debug('test','submit_query execute',$options);
             $result = $aimanager->perform_request($prompt, $options);
 
             if ($result->is_error()) {

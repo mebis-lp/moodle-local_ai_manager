@@ -26,10 +26,7 @@ namespace local_ai_manager\local;
  */
 class config_manager {
 
-    private tenant $tenant;
-
-    public function __construct(tenant $tenant) {
-        $this->tenant = $tenant;
+    public function __construct(private readonly tenant $tenant) {
     }
 
     public function get_config(string $configkey): false|string {

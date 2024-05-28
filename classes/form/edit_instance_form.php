@@ -28,6 +28,8 @@
 namespace local_ai_manager\form;
 
 
+use local_ai_manager\local\connector_factory;
+
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
@@ -42,16 +44,18 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class edit_instance_form extends \moodleform {
 
-    /**
+   /**
      * Form definition.
      */
     public function definition() {
         $connectorname = $this->_customdata['connector'];
 
         $mform = &$this->_form;
-        $connectorinstance = \core\di::get('\\aitool_' . $connectorname . '\\instance');
-        if (empty($connectorinstance->get_connector())) {
-            $connectorinstance->set_connector($connectorname);
+        $factory = \core\di::get(connector_factory::class);
+        if (!empty($this->_customdata['id'])) {
+            $connectorinstance = $factory->get_connector_instance_by_id($this->_customdata['id']);
+        } else {
+            $connectorinstance = $factory->get_new_instance($connectorname);
         }
         $connectorinstance->edit_form_definition($mform, $this->_customdata);
 
@@ -111,15 +115,5 @@ class edit_instance_form extends \moodleform {
 
         // TODO Validieren, dass die URL https ist
         return $errors;
-    }
-
-
-    /**
-     * Resets the form to its default values.
-     *
-     * @return void
-     */
-    public function reset_form() {
-        $this->_form->updateSubmission(null, null);
     }
 }

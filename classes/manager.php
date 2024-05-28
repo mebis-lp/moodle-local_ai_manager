@@ -54,52 +54,8 @@ class manager {
      * @throws dml_exception
      */
     public function __construct(string $purpose, private readonly array $options = []) {
-        ['connectorclassname' => $connectorclassname] = self::setup_objects($purpose);
-        $this->toolconnector = \core\di::get($connectorclassname);
-    }
-
-    public static function setup_objects(string $purpose, string $tenantidentifier = ''): array {
-        global $DB;
-        // This will automatically inject the tenant object which will default to the institution of the current user.
-        if (!empty($tenantidentifier)) {
-            $tenant = new tenant($tenantidentifier);
-            \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
-        }
-        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
-        $instanceid = $configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose));
-        $instancerecord = $DB->get_record('local_ai_manager_instance', ['id' => $instanceid]);
-        if (!$instancerecord) {
-            throw new \moodle_exception('Cannot find connector instance with id ' . $instanceid);
-        }
-        return self::setup_instance_and_connector('', $instancerecord->id);
-    }
-
-    public static function setup_instance_and_connector(string $connectorname = '', int $instanceid = 0): array {
-        global $DB;
-        if (empty($connectorname) && empty($instanceid)) {
-            throw new \coding_exception('You must specify either an instance id or a connector name');
-        }
-        if (empty($connectorname)) {
-            $instancerecord = $DB->get_record('local_ai_manager_instance', ['id' => $instanceid]);
-            $connectorname = $instancerecord->connector;
-            if (!$instancerecord) {
-                throw new \moodle_exception('Cannot find connector instance with id ' . $instanceid);
-            }
-        }
-
-        $instanceclassname = '\\aitool_' . $connectorname . '\\instance';
-        $connectorclassname = '\\aitool_' . $connectorname . '\\connector';
-        // Will create an instance with loaded data if instanceid = 0, otherwise with empty data.
-        $instance = new $instanceclassname($instanceid);
-        \core\di::set($instanceclassname, $instance);
-        $connectorinstance = new $connectorclassname($instance);
-        \core\di::set($connectorclassname, $connectorinstance);
-
-
-        return [
-                'connectorclassname' => $connectorclassname,
-                'instanceclassname' => $instanceclassname,
-        ];
+        $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+        $this->toolconnector = $factory->get_connector_by_purpose($purpose);
     }
 
     public static function get_default_tool(string $purpose): string {
@@ -143,7 +99,7 @@ class manager {
      * @param array $options Options to be used during processing.
      * @return prompt_response The generated prompt response object
      */
-    public function perform_request(string $prompttext, [] $options = []): prompt_response {
+    public function perform_request(string $prompttext, $options = []): prompt_response {
 
         if ($options === null) {
             $options = new \stdClass();

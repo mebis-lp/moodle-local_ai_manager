@@ -75,23 +75,25 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
+$factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+
 if (!empty($del)) {
     if (empty($id)) {
         throw new moodle_exception('You have to specify the id of the instance to delete');
     }
-    ['instanceclassname' => $instanceclassname] = \local_ai_manager\manager::setup_instance_and_connector('', $id);
-    \core\di::get($instanceclassname)->delete();
+
+    $factory->get_connector_instance_by_id($id)->delete();
     redirect($returnurl, 'Instance with id ' . $id . ' deleted');
 }
 
 if (!empty($id)) {
-    ['connectorclassname' => $connectorclassname, 'instanceclassname' => $instanceclassname] = \local_ai_manager\manager::setup_instance_and_connector('', $id);
-    $connectorname = \core\di::get($instanceclassname)->get_connector();
+    $connectorinstance = $factory->get_connector_instance_by_id($id);
+    $connectorname = $connectorinstance->get_connector();
 } else {
     if (empty($connectorname) || !in_array($connectorname, \local_ai_manager\plugininfo\aitool::get_enabled_plugins())) {
         throw new moodle_exception('No valid connector specified');
     }
-    ['connectorclassname' => $connectorclassname, 'instanceclassname' => $instanceclassname] = \local_ai_manager\manager::setup_instance_and_connector($connectorname);
+    $connectorinstance = $factory->get_connector_by_connectorname($connectorname);
 }
 
 $editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url('/local/ai_manager/edit_instance.php',
@@ -108,13 +110,13 @@ if ($editinstanceform->is_cancelled()) {
     // As the restore process is being done asynchronously, the user should get notified, that the process has successfully been
     // started or that trying to trigger it caused an error.
 
-    \core\di::get($instanceclassname)->store_formdata($data);
+    $connectorinstance->store_formdata($data);
     redirect(new moodle_url('/local/ai_manager/instances_config.php'), 'DATA SAVED', '');
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
 
-    $editinstanceform->set_data(\core\di::get($instanceclassname)->get_formdata());
+    $editinstanceform->set_data($connectorinstance->get_formdata());
     $editinstanceform->display();
 }
 
