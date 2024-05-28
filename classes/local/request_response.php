@@ -90,6 +90,7 @@ readonly class request_response {
 
     public static function create_from_result(StreamInterface $response, float $executiontime): request_response {
         $requestresponse = new self();
+        $requestresponse->set_code(200);
         $requestresponse->set_response($response);
         $requestresponse->set_executiontime($executiontime);
         return $requestresponse;
