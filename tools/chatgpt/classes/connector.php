@@ -53,7 +53,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function supported_purposes(): array {
-        return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['chat']));
+        return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['chat', 'feedback', 'question']));
     }
 
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {

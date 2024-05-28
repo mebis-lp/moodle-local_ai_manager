@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * aipurpose_chat page for API testing.
+ * aipurpose_feedback page for API testing.
  *
- * @package    aipurpose_chat
+ * @package    aipurpose_feedback
  * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+* @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aipurpose_chat;
+namespace aipurpose_feedback;
 
 use admin_setting;
 
@@ -32,11 +32,11 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/adminlib.php");
 
 /**
- * aipurpose_chat page for API testing.
+ * aipurpose_feedback page for API testing.
  *
- * @package    aipurpose_chat
+ * @package    aipurpose_feedback
  * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+* @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class settings_test_requests extends admin_setting {
@@ -87,15 +87,15 @@ class settings_test_requests extends admin_setting {
     public function output_html($data, $query = '') {
         global $OUTPUT;
 
-        $url = new moodle_url('/local/ai_manager/purposes/chat/settings_page_make_request.php');
+        $url = new moodle_url('/local/ai_manager/purposes/feedback/settings_page_make_request.php');
 
-        $return = $OUTPUT->heading(get_string('settings_test_tool_heading', 'aipurpose_chat'), 3, 'main', true);
+        $return = $OUTPUT->heading(get_string('settings_test_tool_heading', 'aipurpose_feedback'), 3, 'main', true);
 
 
         $return .= $OUTPUT->box_start('generalbox loggingui');
 
         $renderdata['url'] = $url;
-        $return .= $OUTPUT->render_from_template('aipurpose_chat/settings_test_requests', $renderdata);
+        $return .= $OUTPUT->render_from_template('aipurpose_feedback/settings_test_requests', $renderdata);
 
         $return .= $OUTPUT->box_end();
         return highlight($query, $return);
