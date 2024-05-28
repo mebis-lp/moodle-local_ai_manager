@@ -76,7 +76,23 @@ class connector extends \local_ai_manager\base_connector {
         $messages = [];
         if (array_key_exists('conversationcontext', $requestoptions)) {
             foreach ($requestoptions['conversationcontext'] as $message) {
-                $messages[] = ['role' => $message['sender'] === 'user' ? 'user' : 'assistant'];
+                switch ($message['sender']) {
+                    case 'user':
+                        $role = 'user';
+                        break;
+                    case 'ai':
+                        $role = 'assistant';
+                        break;;
+                    case 'system':
+                        $role = 'system';
+                        break;
+                    default:
+                        throw new \moodle_exception('Bad message format');
+                }
+                $messages[] = [
+                        'role' => $role,
+                        'content' => $message['message'],
+                ];
             }
         }
         $messages[] = ['role' => 'user', 'content' => $prompttext];
