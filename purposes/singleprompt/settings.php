@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use aipurpose_singleprompt\settings_test_requests;
+
 defined('MOODLE_INTERNAL') || die();
 
 $settings = new admin_settingpage('tab_aipurpose_singleprompt', get_string('pluginname', 'aipurpose_singleprompt'));
