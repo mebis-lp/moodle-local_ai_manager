@@ -82,7 +82,7 @@ class connector extends \local_ai_manager\base_connector {
                         break;
                     case 'ai':
                         $role = 'assistant';
-                        break;;
+                        break;
                     case 'system':
                         $role = 'system';
                         break;

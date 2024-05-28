@@ -37,7 +37,7 @@ class ai_manager_utils {
         if (!empty($itemid)) {
             $params['itemid'] = $itemid;
         }
-        $records = $DB->get_records('local_ai_manager_request_log', $params);
+        $records = $DB->get_records('local_ai_manager_request_log', $params, 'timecreated DESC');
         return !empty($records) ? $records : [];
     }
 
@@ -51,7 +51,7 @@ class ai_manager_utils {
                 ]);
     }
 
-    public static function get_next_free_itemid(string $component, int $contextid): bool {
+    public static function get_next_free_itemid(string $component, int $contextid): int {
         global $DB;
         $sql = "SELECT MAX(itemid) as maxitemid FROM {local_ai_manager_request_log} "
                 . "WHERE 'component' = :component AND 'contextid' = :contextid";
