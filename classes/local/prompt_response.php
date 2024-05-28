@@ -55,7 +55,7 @@ class prompt_response {
     }
 
     public function set_debuginfo(string $debuginfo): void {
-        $this->errormessage = $debuginfo;
+        $this->debuginfo = $debuginfo;
     }
 
     public function get_modelinfo(): string {

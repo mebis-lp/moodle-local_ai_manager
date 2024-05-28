@@ -114,6 +114,7 @@ class manager {
         }
         $requestoptions = $this->purpose->get_request_options($options);
         $promptdata = $this->toolconnector->get_prompt_data($prompttext, $requestoptions);
+        return prompt_response::create_from_error(500, 'bla', 'some more bla');
         try {
             $requestresult = $this->toolconnector->make_request($promptdata, !empty($options['multipart']));
         } catch (\Exception $exception) {

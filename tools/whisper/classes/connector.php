@@ -25,7 +25,6 @@
 
 namespace aitool_whisper;
 
-use dml_exception;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
