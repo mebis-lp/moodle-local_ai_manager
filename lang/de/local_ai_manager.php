@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['ai_manager:manage'] = 'Manage configuration of ai_manager';
+$string['ai_manager:use'] = 'Use ai_manager';
 $string['empty_api_key'] = 'Leerer API-Schlüssel';
 $string['pleaseselect'] = 'Bitte, wählen Sie';
 $string['pluginname'] = 'AI Manager';

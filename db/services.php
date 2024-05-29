@@ -26,12 +26,18 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'local_ai_manager_post_query' => [
-        'classname'     => 'local_ai_manager\external\submit_query',
-        'methodname'    => 'execute',
-        'description'   => 'Send a query to a LLM.',
-        'type'          => 'read',
-        'ajax'          => true,
-        'capabilities'  => 'local/ai_manager:use_ai_manager',
-    ],
+        'local_ai_manager_post_query' => [
+                'classname' => 'local_ai_manager\external\submit_query',
+                'description' => 'Send a query to a LLM.',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
+        'local_ai_manager_get_purpose_config' => [
+                'classname' => 'local_ai_manager\external\get_purpose_config',
+                'description' => 'Send a query to a LLM.',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
 ];

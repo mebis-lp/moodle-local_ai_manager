@@ -66,7 +66,7 @@ class submit_query extends external_api {
         ]);
         $context = \context_system::instance();
         self::validate_context($context);
-        require_capability('local/ai_manager:use_ai_manager', $context);
+        require_capability('local/ai_manager:use', $context);
 
         try {
             if (!empty($options)) {

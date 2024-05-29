@@ -29,7 +29,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
-$tenant = optional_param('tenant', '', PARAM_ALPHANUM);
+$tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 
 $url = new moodle_url('/local/ai_manager/tenantconfig.php');
 $PAGE->set_url($url);
@@ -39,28 +39,15 @@ $returnurl = new moodle_url('/course/index.php');
 // Check permissions.
 require_login();
 
-if (isguestuser()) {
-    throw new moodle_exception('guestsarenotallowed', '', $returnurl);
+if (!empty($tenantid)) {
+    $tenant = new \local_ai_manager\local\tenant($tenantid);
+    \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
 }
+$tenant = \core\di::get(\local_ai_manager\local\tenant::class);
+$accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
+$accessmanager->require_tenant_manager();
 
-if (empty($tenant)) {
-    $tenant = $USER->institution;
-}
-if (empty($tenant)) {
-    throw new moodle_exception('No tenant could be found. Please specify the "tenant" parameter.');
-}
-
-$school = new \local_bycsauth\school($tenant);
-if (!$school->record_exists()) {
-    throw new moodle_exception('Invalid tenant "' . $tenant. '"!');
-}
-$schoolcategorycontext = \context_coursecat::instance($school->get_school_categoryid());
-$coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
-if (!user_has_role_assignment($USER->id, $coordinatorrole->id, $schoolcategorycontext->id) && !is_siteadmin()) {
-    throw new moodle_exception('Only admins and ByCS admins have access to this page');
-}
-
-$PAGE->set_context($schoolcategorycontext);
+$PAGE->set_context($tenant->get_tenant_context());
 
 $strtitle = 'SCHULKONFIGURATION';
 $PAGE->set_title($strtitle);
@@ -70,4 +57,5 @@ $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strtitle);
 echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
+$PAGE->requires->js_call_amd('local_ai_manager/config', 'init');
 echo $OUTPUT->footer();

@@ -46,6 +46,14 @@ class tenant {
         return $this->tenantidentifier;
     }
 
+    public function get_tenant_context(): \context {
+        if (empty($this->get_tenantidentifier())) {
+            return \context_system::instance();
+        }
+        $school = new \local_bycsauth\school($this->get_tenantidentifier());
+        return \context_coursecat::instance($school->get_school_categoryid());
+    }
+
 
 
 }

@@ -45,30 +45,15 @@ $returnurl = new moodle_url('/local/ai_manager/instances_config.php');
 // Check permissions.
 require_login();
 
-if (isguestuser()) {
-    throw new moodle_exception('guestsarenotallowed', '', $returnurl);
+if (!empty($tenantid)) {
+    $tenant = new \local_ai_manager\local\tenant($tenantid);
+    \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
 }
+$tenant = \core\di::get(\local_ai_manager\local\tenant::class);
+$accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
+$accessmanager->require_tenant_manager();
 
-if (empty($tenantid)) {
-    // Will throw an exception if no tenant can be found.
-    $tenant = \core\di::get(tenant::class);
-} else {
-    $tenant = new tenant($tenantid);
-    \core\di::set(tenant::class, $tenant);
-}
-$tenantid = $tenant->get_tenantidentifier();
-
-$school = new \local_bycsauth\school($tenantid);
-if (!$school->record_exists()) {
-    throw new moodle_exception('Invalid tenant "' . $tenantid . '"!');
-}
-$schoolcategorycontext = \context_coursecat::instance($school->get_school_categoryid());
-$coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
-if (!user_has_role_assignment($USER->id, $coordinatorrole->id, $schoolcategorycontext->id) && !is_siteadmin()) {
-    throw new moodle_exception('Only admins and ByCS admins have access to this page');
-}
-
-$PAGE->set_context($schoolcategorycontext);
+$PAGE->set_context($tenant->get_tenant_context());
 
 $strtitle = 'INSTANZ BEARBEITEN';
 $PAGE->set_title($strtitle);

@@ -24,16 +24,28 @@
  */
 
 $capabilities = [
-    'local/ai_manager:use_ai_manager' => [
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => [
-            'user' => CAP_ALLOW,
-            'guest' => CAP_PREVENT,
-            'student' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        ]
-    ],
+        'local/ai_manager:use' => [
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_ALLOW,
+                        'guest' => CAP_PREVENT,
+                        'student' => CAP_ALLOW,
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW,
+                ]
+        ],
+        'local/ai_manager:manage' => [
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_PREVENT,
+                        'guest' => CAP_PREVENT,
+                        'student' => CAP_PREVENT,
+                        'teacher' => CAP_PREVENT,
+                        'editingteacher' => CAP_PREVENT,
+                        'manager' => CAP_ALLOW,
+                ]
+        ],
 ];

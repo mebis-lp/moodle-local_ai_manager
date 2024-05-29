@@ -16,6 +16,8 @@
 
 namespace local_ai_manager\local;
 
+use local_ai_manager\base_purpose;
+
 /**
  * Class for managing the configuration of tenants.
  *
@@ -26,13 +28,52 @@ namespace local_ai_manager\local;
  */
 class config_manager {
 
+    private array $config = [];
+
     public function __construct(private readonly tenant $tenant) {
+        $this->load_config();
+    }
+
+    private function load_config(): void {
+        global $DB;
+        if (empty($this->tenant->get_tenantidentifier())) {
+            $this->config = [];
+            return;
+        }
+        $records = $DB->get_records('local_ai_manager_config', ['tenant' => $this->tenant->get_tenantidentifier()]);
+        foreach ($records as $record) {
+            $this->config[$record->configkey] = $record->configvalue;
+        }
     }
 
     public function get_config(string $configkey): false|string {
+        if (!array_key_exists($configkey, $this->config)) {
+            return false;
+        }
+        return $this->config[$configkey];
+    }
+
+    public function unset_config(string $configkey): void {
         global $DB;
-        return $DB->get_field('local_ai_manager_config', 'configvalue',
-                ['configkey' => $configkey, 'tenant' => $this->tenant->get_tenantidentifier()]);
+        if (empty($this->tenant->get_tenantidentifier())) {
+            return;
+        }
+        $DB->delete_records('local_ai_manager_config',
+                [
+                        'tenant' => $this->tenant->get_tenantidentifier(),
+                        'configkey' => $configkey,
+                ]
+        );
+    }
+
+    public function get_purpose_config(): array {
+        $purposeconfig = [];
+        foreach (base_purpose::get_all_purposes() as $purpose) {
+            if (array_key_exists(base_purpose::get_purpose_tool_config_key($purpose), $this->config)) {
+                $purposeconfig[$purpose] = $this->config[base_purpose::get_purpose_tool_config_key($purpose)];
+            }
+        }
+        return $purposeconfig;
     }
 
     public function set_config(string $configkey, string $configvalue): void {
@@ -50,6 +91,7 @@ class config_manager {
             $configrecord->tenant = $this->tenant->get_tenantidentifier();
             $DB->insert_record('local_ai_manager_config', $configrecord);
         }
+        $this->load_config();
     }
 
     /**

@@ -43,30 +43,15 @@ $returnurl = new moodle_url('/course/index.php');
 // Check permissions.
 require_login();
 
-if (isguestuser()) {
-    throw new moodle_exception('guestsarenotallowed', '', $returnurl);
+if (!empty($tenantid)) {
+    $tenant = new \local_ai_manager\local\tenant($tenantid);
+    \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
 }
+$tenant = \core\di::get(\local_ai_manager\local\tenant::class);
+$accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
+$accessmanager->require_tenant_manager();
 
-if (empty($tenantid)) {
-    // Will throw an exception if no tenant can be found.
-    $tenant = \core\di::get(tenant::class);
-} else {
-    $tenant = new tenant($tenantid);
-    \core\di::set(tenant::class, $tenant);
-}
-$tenantid = $tenant->get_tenantidentifier();
-
-$school = new \local_bycsauth\school($tenantid);
-if (!$school->record_exists()) {
-    throw new moodle_exception('Invalid tenant "' . $tenantid . '"!');
-}
-$schoolcategorycontext = \context_coursecat::instance($school->get_school_categoryid());
-$coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
-if (!user_has_role_assignment($USER->id, $coordinatorrole->id, $schoolcategorycontext->id) && !is_siteadmin()) {
-    throw new moodle_exception('Only admins and ByCS admins have access to this page');
-}
-
-$PAGE->set_context($schoolcategorycontext);
+$PAGE->set_context($tenant->get_tenant_context());
 
 $strtitle = 'SCHULKONFIGURATION';
 $PAGE->set_title($strtitle);
@@ -89,6 +74,9 @@ if ($purposeconfig->is_cancelled()) {
     // As the restore process is being done asynchronously, the user should get notified, that the process has successfully been
     // started or that trying to trigger it caused an error.
     foreach (base_purpose::get_all_purposes() as $purpose) {
+        if (property_exists($data, base_purpose::get_purpose_tool_config_key($purpose)) && intval($data->{base_purpose::get_purpose_tool_config_key($purpose)}) === 0) {
+            $configmanager->unset_config(base_purpose::get_purpose_tool_config_key($purpose));
+        }
         if (!empty($data->{base_purpose::get_purpose_tool_config_key($purpose)})) {
             $configmanager->set_config(base_purpose::get_purpose_tool_config_key($purpose),
                     $data->{base_purpose::get_purpose_tool_config_key($purpose)});
