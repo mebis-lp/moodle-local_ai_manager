@@ -63,7 +63,7 @@ foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $tool) {
     $instanceaddbuttons[] = [
             'label' => $tool,
             'addurl' => (new moodle_url('/local/ai_manager/edit_instance.php',
-                    ['tenant' => $tenant, 'returnurl' => $PAGE->url, 'connectorname' => $tool]))->out()
+                    ['tenant' => $tenant->get_tenantidentifier(), 'returnurl' => $PAGE->url, 'connectorname' => $tool]))->out()
     ];
 }
 $instances = [];
