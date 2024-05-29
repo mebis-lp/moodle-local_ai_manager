@@ -29,6 +29,7 @@ $string['empty_api_key'] = 'Leerer API-Schlüssel';
 $string['pleaseselect'] = 'Bitte, wählen Sie';
 $string['pluginname'] = 'AI Manager';
 $string['privacy:metadata'] = 'Das lokale ai_manager Plugin speichert keine persönlichen Daten.';
+$string['resetuserusagetask'] = 'AI-Manager-Nutzungsdaten zurücksetzen';
 $string['zweck_chat'] = 'Chatbot';
 $string['zweck_defaults_heading'] = 'Zwecke\' Standardmodell';
 $string['purpose_defaults_heading_desc'] = 'Definieren Sie das für verschiedene Zwecke verwendete Standardmodell';

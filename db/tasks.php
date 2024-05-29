@@ -15,17 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * Tasks definition for local_ai_manager.
  *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    local_bycsauth
+ * @copyright  2024 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2023121209;
-$plugin->requires = 2023042403;
-$plugin->release = '0.0.1';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_ALPHA;
+$tasks = [
+        [
+                'classname' => 'local_ai_manager\task\reset_user_usage',
+                'minute' => '0',
+                'hour' => '0',
+                'day' => '*',
+                'dayofweek' => '*',
+                'month' => '*',
+        ],
+];

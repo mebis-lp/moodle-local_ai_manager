@@ -101,4 +101,29 @@ class config_manager {
         return $this->tenant;
     }
 
+    public function get_max_requests(int $role): int {
+        $maxrequests = false;
+        switch ($role) {
+            case userinfo::ROLE_BASIC:
+                $maxrequests = $this->get_config('max_requests_basic');
+                break;
+            case userinfo::ROLE_EXTENDED:
+                $maxrequests = $this->get_config('max_requests_basic');
+                break;
+            case userinfo::ROLE_UNLIMITED:
+                $maxrequests = userinfo::UNLIMITED_REQUESTS_PER_USER;
+                break;
+        }
+        return $maxrequests !== false ? $maxrequests : 0;
+
+    }
+
+    public function get_max_requests_period(): int {
+        $period = $this->get_config('max_requests_period');
+        if (!$period) {
+            return userinfo::MAX_REQUESTS_DEFAULT_PERIOD;
+        }
+        return $period;
+    }
+
 }

@@ -36,6 +36,7 @@ $string['purpose_defaults_heading_desc'] = 'Define the default model used for di
 $string['purpose_imggen'] = 'Imagegeneration';
 $string['purpose_stt'] = 'Speech to text';
 $string['purpose_tts'] = 'Text to speech';
+$string['resetuserusagetask'] = 'Reset AI manager user usage data';
 $string['settingsgeneral'] = 'Allgemein';
 $string['temperature'] = 'Temperature';
 $string['temperature_desc'] = 'This describes "randomness" or "creativity". Low temperature will generate more coherent but predictable text. High numbers means more creative but not accurate. The range is from 0 to 1.';

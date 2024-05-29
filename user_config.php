@@ -26,6 +26,8 @@
 use core\output\notification;
 use local_ai_manager\base_purpose;
 use local_ai_manager\form\purpose_config_form;
+use local_ai_manager\form\user_config_form;
+use local_ai_manager\local\userinfo;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
@@ -33,7 +35,7 @@ global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 $tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 
-$url = new moodle_url('/local/ai_manager/purpose_config.php');
+$url = new moodle_url('/local/ai_manager/user_config.php');
 $PAGE->set_url($url);
 
 $returnurl = new moodle_url('/course/index.php');
@@ -51,33 +53,40 @@ $accessmanager->require_tenant_manager();
 
 $PAGE->set_context($tenant->get_tenant_context());
 
-$strtitle = 'SCHULKONFIGURATION';
+$strtitle = 'USER CONFIG';
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
-$purposeconfigform = new purpose_config_form(null, ['tenant' => $tenantid, 'returnurl' => $PAGE->url]);
+$userconfigform = new user_config_form(null, ['tenant' => $tenantid, 'returnurl' => $PAGE->url]);
 // Will return the config manager for the current user.
+/** @var \local_ai_manager\local\config_manager $configmanager */
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 
 // Standard form processing if statement.
-if ($purposeconfigform->is_cancelled()) {
+if ($userconfigform->is_cancelled()) {
     redirect($returnurl);
-} else if ($data = $purposeconfigform->get_data()) {
+} else if ($data = $userconfigform->get_data()) {
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
     echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
 
-    foreach (base_purpose::get_all_purposes() as $purpose) {
-        if (property_exists($data, base_purpose::get_purpose_tool_config_key($purpose)) && intval($data->{base_purpose::get_purpose_tool_config_key($purpose)}) === 0) {
-            $configmanager->unset_config(base_purpose::get_purpose_tool_config_key($purpose));
-        }
-        if (!empty($data->{base_purpose::get_purpose_tool_config_key($purpose)})) {
-            $configmanager->set_config(base_purpose::get_purpose_tool_config_key($purpose),
-                    $data->{base_purpose::get_purpose_tool_config_key($purpose)});
+    foreach (['max_requests_basic', 'max_requests_extended'] as $configkey) {
+        if (property_exists($data, $configkey)) {
+            $configmanager->set_config($configkey,
+                    intval($data->{$configkey}) > 0 ? intval($data->{$configkey}) : userinfo::UNLIMITED_REQUESTS_PER_USER);
+        } else {
+            $configmanager->unset_config($configkey);
         }
     }
+
+    if (property_exists($data, 'max_requests_period')) {
+        $configmanager->set_config('max_requests_period', intval($data->max_requests_period));
+    } else {
+        $configmanager->unset_config('max_requests_period');
+    }
+
     redirect($PAGE->url, 'CONFIG SAVED');
 } else {
     echo $OUTPUT->header();
@@ -85,14 +94,18 @@ if ($purposeconfigform->is_cancelled()) {
     echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
 
     $data = new stdClass();
-    foreach (base_purpose::get_all_purposes() as $purpose) {
-        if (!empty($configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose)))) {
-            $data->{base_purpose::get_purpose_tool_config_key($purpose)} =
-                    $configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose));
-        }
+    if ($configmanager->get_config('max_requests_basic')) {
+        $data->max_requests_basic = $configmanager->get_config('max_requests_basic');
     }
-    $purposeconfigform->set_data($data);
-    $purposeconfigform->display();
+    if ($configmanager->get_config('max_requests_extended')) {
+        $data->max_requests_extended = $configmanager->get_config('max_requests_extended');
+    }
+    if ($configmanager->get_config('max_requests_period')) {
+        $data->max_requests_period = $configmanager->get_config('max_requests_period');
+    }
+
+    $userconfigform->set_data($data);
+    $userconfigform->display();
 }
 
 echo $OUTPUT->footer();

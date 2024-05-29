@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Purpose config form.
+ * User config form.
  *
- * This form enables a tenant manager to select the AI tools for the existing purposes.
+ * This form gathers information for configuring user specific configurations for local_ai_manager.
  *
  * @package    local_ai_manager
  * @copyright  2024, ISB Bayern
@@ -30,6 +30,7 @@ namespace local_ai_manager\form;
 use core_plugin_manager;
 use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
+use local_ai_manager\local\userinfo;
 use local_ai_manager\manager;
 
 defined('MOODLE_INTERNAL') || die;
@@ -44,7 +45,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class purpose_config_form extends \moodleform {
+class user_config_form extends \moodleform {
 
     /**
      * Form definition.
@@ -59,16 +60,20 @@ class purpose_config_form extends \moodleform {
         $mform->addElement('hidden', 'tenant', $tenant);
         $mform->setType('tenant', PARAM_ALPHANUM);
 
-        $mform->addElement('header', 'purposeheader', 'PURPOSES');
-        foreach (base_purpose::get_all_purposes() as $purpose) {
-            $instances = [0 => 'KEINE AUSWAHL'];
-            // We do not use merge, because we must not re-index the array, keys are the ids of the instances.
-            $instances = $instances + manager::get_connector_instances_for_purpose($purpose);
-            $mform->addElement('select', 'purpose_' . $purpose . '_tool', 'TOOL FÜR PURPOSE ' . $purpose . ' AUSWÄHLEN:',
-                    $instances);
+        $mform->addElement('header', 'userconfigheader', 'USER CONFIG');
 
-            // TODO Select-Element
-        }
+        $mform->addElement('text', 'max_requests_basic', 'MAXIMALE REQUESTS BASIC');
+        $mform->setType('max_requests_basic', PARAM_INT);
+        $mform->setDefault('max_requests_basic', 10);
+
+        $mform->addElement('text', 'max_requests_extended', 'MAXIMALE REQUESTS EXTENDED');
+        $mform->setType('max_requests_extended', PARAM_INT);
+        $mform->setDefault('max_requests_extended', 50);
+
+        $mform->addElement('duration', 'max_requests_period', 'ZEITSPANNE FÜR MAXIMALE REQUESTS', ['units' => [DAYSECS, WEEKSECS]]);
+        $mform->setType('max_requests_period', PARAM_INT);
+        $mform->setDefault('max_requests_period', userinfo::MAX_REQUESTS_DEFAULT_PERIOD);
+
         $this->add_action_buttons();
         /*
 
@@ -120,6 +125,10 @@ class purpose_config_form extends \moodleform {
      */
     public function validation($data, $files): array {
         $errors = [];
+        if (isset($data['max_requests_period']) && intval($data['max_requests_period']) < userinfo::MAX_REQUESTS_MIN_PERIOD) {
+            // TODO localize
+            $errors['max_requests_period'] = 'Period needs to be at least 1 day';
+        }
         // TODO validate
         return $errors;
     }

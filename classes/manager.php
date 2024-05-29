@@ -25,11 +25,15 @@
 
 namespace local_ai_manager;
 
+use core_date;
 use core_plugin_manager;
+use DateInterval;
 use dml_exception;
+use local_ai_manager\local\config_manager;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
+use local_bycsauth\school;
 use stdClass;
 
 /**
@@ -50,6 +54,10 @@ class manager {
      * @var local\connector_factory|mixed
      */
     private \local_ai_manager\local\connector_factory $factory;
+    /**
+     * @var local\config_manager|mixed
+     */
+    private config_manager $configmanager;
 
     /**
      * Constructor of manager class.
@@ -63,6 +71,7 @@ class manager {
         $this->factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
         $this->purpose = $this->factory->get_purpose_by_purpose_string($purpose);
         $this->toolconnector = $this->factory->get_connector_by_purpose($purpose);
+        $this->configmanager = \core\di::get(config_manager::class);
     }
 
     public static function get_default_tool(string $purpose): string {
@@ -107,11 +116,21 @@ class manager {
      * @return prompt_response The generated prompt response object
      */
     public function perform_request(string $prompttext, array $options = []): prompt_response {
-        global $DB;
+        global $DB, $USER;
 
         if ($options === null) {
             $options = new \stdClass();
         }
+
+        $userinfo = new userinfo($USER->id);
+        if ($userinfo->get_currentusage() >= $this->configmanager->get_max_requests($userinfo->get_role())) {
+            $period = format_time($this->configmanager->get_config('max_requests_period'));
+            return prompt_response::create_from_error(429, 'You have reached the maximum amount of requests. '
+                . 'You are only allowed to send ' . $this->configmanager->get_max_requests($userinfo->get_role())
+                . ' requests in a period of ' . $period . '.',
+                    '');
+        }
+
         $requestoptions = $this->purpose->get_request_options($options);
         $promptdata = $this->toolconnector->get_prompt_data($prompttext, $requestoptions);
         try {
@@ -174,7 +193,18 @@ class manager {
 
         $userinfo = new userinfo($data->userid);
         $userinfo->set_currentusage($userinfo->get_currentusage() + 1);
+        // TODO Extract this into a hook.
+        // TODO Make this more performant
+        $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
+        $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
+        $school = new school($USER->institution);
+        if (user_has_role_assignment($USER->id, $coordinatorrole->id, \context_coursecat::instance($school->get_school_categoryid())->id)) {
+            $userinfo->set_role(userinfo::ROLE_UNLIMITED);
+        } else if (user_has_role_assignment($USER->id. $idmteacherrole->id, \context_system::instance()->id)) {
+            $userinfo->set_role(userinfo::ROLE_EXTENDED);
+        } else {
+            $userinfo->set_role(userinfo::ROLE_BASIC);
+        }
         $userinfo->store();
-
     }
 }
