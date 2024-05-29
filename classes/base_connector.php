@@ -112,7 +112,8 @@ abstract class base_connector {
             // TODO localize
             $return = request_response::create_from_error(
                     'Sending request to tool api endpoint failed with code ' . $response->getStatusCode(),
-                    $response->getBody()
+                    $response->getBody(),
+                    ''
             );
         }
         return $return;
