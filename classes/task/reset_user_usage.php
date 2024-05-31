@@ -16,6 +16,7 @@
 
 namespace local_ai_manager\task;
 
+use local_ai_manager\local\config_manager;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
 
@@ -49,12 +50,13 @@ class reset_user_usage extends \core\task\scheduled_task {
 
         $rs = $DB->get_recordset('local_ai_manager_userusage');
         foreach ($rs as $record) {
+            // Reset tenant and config manager. We cannot use dependency injection container because we would need to reset the
+            // objects for each run of the loop.
             $tenant = userinfo::get_tenant_for_user($record->userid);
             if (is_null($tenant)) {
                 continue;
             }
-            \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
-            $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+            $configmanager = new config_manager($tenant);
             $lastreset = !empty($record->lastreset) ? $record->lastreset : 0;
             if (time() - $lastreset > $configmanager->get_max_requests_period()) {
                 $record->lastreset = time();

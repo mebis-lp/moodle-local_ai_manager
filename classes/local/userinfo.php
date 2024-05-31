@@ -28,11 +28,11 @@ use stdClass;
  */
 class userinfo {
 
-    public const ROLE_BASIC = 1;
+    public const int ROLE_BASIC = 1;
 
-    public const ROLE_EXTENDED = 2;
+    public const int ROLE_EXTENDED = 2;
 
-    public const ROLE_UNLIMITED = 3;
+    public const int ROLE_UNLIMITED = 3;
 
     private false|stdClass $record;
 
