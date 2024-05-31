@@ -25,7 +25,7 @@ namespace local_ai_manager;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ai_manager_utils {
-    public static function get_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0): array {
+    public static function get_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0, bool $includedeleted = true): array {
         global $DB;
         $params = [
                 'component' => $component,
@@ -37,8 +37,34 @@ class ai_manager_utils {
         if (!empty($itemid)) {
             $params['itemid'] = $itemid;
         }
+        if (empty($includedeleted)) {
+            // The column 'deleted' is defined to have the value 0 by default, so we should be safe to use this as query param.
+            $params['deleted'] = 0;
+        }
         $records = $DB->get_records('local_ai_manager_request_log', $params, 'timecreated DESC');
         return !empty($records) ? $records : [];
+    }
+
+    public static function delete_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0): void {
+        global $DB;
+        $params = [
+                'component' => $component,
+                'contextid' => $contextid,
+        ];
+        if (!empty($userid)) {
+            $params['userid'] = $userid;
+        }
+        if (!empty($itemid)) {
+            $params['itemid'] = $itemid;
+        }
+        // We intentionally do this one by one despite maybe not being very efficient to avoid running into transaction size limit
+        // on DB layer.
+        $rs = $DB->get_recordset('local_ai_manager_request_log', $params, '', 'id, deleted');
+        foreach ($rs as $record) {
+            $record->deleted = 1;
+            $DB->update_record('local_ai_manager_request_log', $record);
+        }
+        $rs->close();
     }
 
     public static function itemid_exists(string $component, int $contextid, int $itemid): bool {

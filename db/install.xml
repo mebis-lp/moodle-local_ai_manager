@@ -39,19 +39,6 @@
         <INDEX NAME="configkey_tenant" UNIQUE="false" FIELDS="configkey, tenant"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="local_ai_manager_userinfo" COMMENT="Storing of user specific information for the local_ai_manager plugin">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="role" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="locked" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="userid" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
     <TABLE NAME="local_ai_manager_request_log" COMMENT="Table to log the used tokens">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -67,7 +54,7 @@
         <FIELD NAME="component" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
@@ -76,6 +63,19 @@
       <INDEXES>
         <INDEX NAME="model" UNIQUE="false" FIELDS="model"/>
       </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_ai_manager_userinfo" COMMENT="Storing of user specific information for the local_ai_manager plugin">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="role" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="locked" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
     </TABLE>
     <TABLE NAME="local_ai_manager_userusage" COMMENT="Table tracking the current usage of AI tools by the users">
       <FIELDS>

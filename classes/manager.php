@@ -126,7 +126,7 @@ class manager {
         $userinfo = new userinfo($USER->id);
         $userusage = new userusage($this->purpose, $USER->id);
         if ($userusage->get_currentusage() >= $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) {
-            $period = format_time($this->configmanager->get_config('max_requests_period'));
+            $period = format_time($this->configmanager->get_max_requests_period());
             return prompt_response::create_from_error(429, 'You have reached the maximum amount of requests. '
                 . 'You are only allowed to send ' . $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())
                 . ' requests in a period of ' . $period . '.',
@@ -164,6 +164,8 @@ class manager {
             // TODO We probably used some tokens despite an error? Need to properly log this.
             return;
         }
+
+        // TODO Move this handling to a data class "log_entry".
 
         $data = new stdClass();
         $data->userid = $USER->id;

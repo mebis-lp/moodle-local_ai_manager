@@ -47,7 +47,8 @@ class reset_user_usage extends \core\task\scheduled_task {
     public function execute(): void {
         global $DB;
 
-        foreach ($DB->get_recordset('local_ai_manager_userusage') as $record) {
+        $rs = $DB->get_recordset('local_ai_manager_userusage');
+        foreach ($rs as $record) {
             $tenant = userinfo::get_tenant_for_user($record->userid);
             if (is_null($tenant)) {
                 continue;
@@ -61,5 +62,6 @@ class reset_user_usage extends \core\task\scheduled_task {
                 $DB->update_record('local_ai_manager_userusage', $record);
             }
         }
+        $rs->close();
     }
 }

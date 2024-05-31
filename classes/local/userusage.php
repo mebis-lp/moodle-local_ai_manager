@@ -35,6 +35,9 @@ class userusage {
 
     public const MAX_REQUESTS_MIN_PERIOD = DAYSECS;
 
+    public const MAX_REQUESTS_DEFAULT_ROLE_BASE = 10;
+    public const MAX_REQUESTS_DEFAULT_ROLE_EXTENDED = 50;
+
     private false|stdClass $record;
     private int $currentusage;
     private int $lastreset;

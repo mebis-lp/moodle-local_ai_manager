@@ -73,12 +73,12 @@ class user_config_form extends \moodleform {
             //$purposegroup[] = $mform->createElement('text', $purpose . '_max_requests_basic', 'MAXIMALE REQUESTS BASIC');
             $mform->addElement('text', $purpose . '_max_requests_basic', 'MAXIMALE REQUESTS BASIC');
             $mform->setType($purpose . '_max_requests_basic', PARAM_INT);
-            $mform->setDefault($purpose . '_max_requests_basic', 10);
+            $mform->setDefault($purpose . '_max_requests_basic', userusage::MAX_REQUESTS_DEFAULT_ROLE_BASE);
 
             //$purposegroup[] = $mform->createElement('text', $purpose . '_max_requests_extended', 'MAXIMALE REQUESTS EXTENDED');
             $mform->addElement('text', $purpose . '_max_requests_extended', 'MAXIMALE REQUESTS EXTENDED');
             $mform->setType($purpose . '_max_requests_extended', PARAM_INT);
-            $mform->setDefault($purpose . '_max_requests_extended', 50);
+            $mform->setDefault($purpose . '_max_requests_extended', userusage::MAX_REQUESTS_DEFAULT_ROLE_EXTENDED);
             //$mform->addGroup($purposegroup, $purpose . '_maxrequests_config_group', 'test', [' '], false);
         }
 

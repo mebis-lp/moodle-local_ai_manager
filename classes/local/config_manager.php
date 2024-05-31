@@ -106,15 +106,21 @@ class config_manager {
         switch ($role) {
             case userinfo::ROLE_BASIC:
                 $maxrequests = $this->get_config($purpose->get_plugin_name() . '_max_requests_basic');
+                if (!$maxrequests) {
+                    $maxrequests = userusage::MAX_REQUESTS_DEFAULT_ROLE_BASE;
+                }
                 break;
             case userinfo::ROLE_EXTENDED:
                 $maxrequests = $this->get_config($purpose->get_plugin_name() . 'max_requests_basic');
+                if (!$maxrequests) {
+                    $maxrequests = userusage::MAX_REQUESTS_DEFAULT_ROLE_EXTENDED;
+                }
                 break;
             case userinfo::ROLE_UNLIMITED:
                 $maxrequests = userusage::UNLIMITED_REQUESTS_PER_USER;
                 break;
         }
-        return $maxrequests !== false ? $maxrequests : 0;
+        return $maxrequests;
 
     }
 
