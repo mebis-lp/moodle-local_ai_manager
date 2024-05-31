@@ -28,6 +28,7 @@ use local_ai_manager\base_purpose;
 use local_ai_manager\form\purpose_config_form;
 use local_ai_manager\form\user_config_form;
 use local_ai_manager\local\userinfo;
+use local_ai_manager\local\userusage;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
@@ -72,15 +73,17 @@ if ($userconfigform->is_cancelled()) {
     echo $OUTPUT->heading($strtitle);
     echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
 
-    foreach (['max_requests_basic', 'max_requests_extended'] as $configkey) {
-        if (property_exists($data, $configkey)) {
-            $configmanager->set_config($configkey,
-                    intval($data->{$configkey}) > 0 ? intval($data->{$configkey}) : userinfo::UNLIMITED_REQUESTS_PER_USER);
-        } else {
-            $configmanager->unset_config($configkey);
+    foreach (base_purpose::get_all_purposes() as $purpose) {
+
+        foreach ([$purpose . '_max_requests_basic', $purpose . '_max_requests_extended'] as $configkey) {
+            if (property_exists($data, $configkey)) {
+                $configmanager->set_config($configkey,
+                        intval($data->{$configkey}) > 0 ? intval($data->{$configkey}) : userusage::UNLIMITED_REQUESTS_PER_USER);
+            } else {
+                $configmanager->unset_config($configkey);
+            }
         }
     }
-
     if (property_exists($data, 'max_requests_period')) {
         $configmanager->set_config('max_requests_period', intval($data->max_requests_period));
     } else {
@@ -94,11 +97,14 @@ if ($userconfigform->is_cancelled()) {
     echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
 
     $data = new stdClass();
-    if ($configmanager->get_config('max_requests_basic')) {
-        $data->max_requests_basic = $configmanager->get_config('max_requests_basic');
-    }
-    if ($configmanager->get_config('max_requests_extended')) {
-        $data->max_requests_extended = $configmanager->get_config('max_requests_extended');
+    foreach (base_purpose::get_all_purposes() as $purpose) {
+
+        if ($configmanager->get_config($purpose . '_max_requests_basic')) {
+            $data->{$purpose . '_max_requests_basic'} = $configmanager->get_config($purpose . '_max_requests_basic');
+        }
+        if ($configmanager->get_config($purpose . '_max_requests_extended')) {
+            $data->{$purpose . '_max_requests_extended'} = $configmanager->get_config($purpose . '_max_requests_extended');
+        }
     }
     if ($configmanager->get_config('max_requests_period')) {
         $data->max_requests_period = $configmanager->get_config('max_requests_period');

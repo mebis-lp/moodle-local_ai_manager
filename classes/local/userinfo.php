@@ -28,21 +28,13 @@ use stdClass;
  */
 class userinfo {
 
-    public const UNLIMITED_REQUESTS_PER_USER = 999999;
-
-    public const MAX_REQUESTS_DEFAULT_PERIOD = DAYSECS;
-
     public const ROLE_BASIC = 1;
 
     public const ROLE_EXTENDED = 2;
 
     public const ROLE_UNLIMITED = 3;
 
-    public const MAX_REQUESTS_MIN_PERIOD = DAYSECS;
-
     private false|stdClass $record;
-
-    private int $currentusage;
 
     private int $role;
 
@@ -55,7 +47,6 @@ class userinfo {
     public function load(): void {
         global $DB;
         $this->record = $DB->get_record('local_ai_manager_userinfo', ['userid' => $this->userid]);
-        $this->currentusage = !empty($this->record->currentusage) ? $this->record->currentusage : 0;
         $this->role = !empty($this->record->role) ? $this->record->role : self::ROLE_BASIC;
         $this->locked = !empty($this->record->locked);
     }
@@ -73,7 +64,6 @@ class userinfo {
         $this->record = $DB->get_record('local_ai_manager_userinfo', ['userid' => $this->userid]);
         $newrecord = new stdClass();
         $newrecord->userid = $this->userid;
-        $newrecord->currentusage = $this->currentusage;
         $newrecord->role = $this->role;
         $newrecord->locked = $this->locked ? 1 : 0;
         $newrecord->timemodified = time();
@@ -86,10 +76,6 @@ class userinfo {
         $this->record = $newrecord;
     }
 
-    public function set_currentusage(int $currentusage): void {
-        $this->currentusage = $currentusage;
-    }
-
     public function set_role(int $role): void {
         if (!in_array($role, [self::ROLE_BASIC, self::ROLE_EXTENDED, self::ROLE_UNLIMITED])) {
             throw new \coding_exception('Wrong role specified, use one of ROLE_BASIC, ROLE_EXTENDED or ROLE_UNLIMITED');
@@ -99,10 +85,6 @@ class userinfo {
 
     public function set_locked(bool $locked): void {
         $this->locked = $locked;
-    }
-
-    public function get_currentusage(): int {
-        return $this->currentusage;
     }
 
     public function get_role(): int {

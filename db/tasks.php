@@ -29,7 +29,7 @@ $tasks = [
         [
                 'classname' => 'local_ai_manager\task\reset_user_usage',
                 'minute' => '0',
-                'hour' => '0',
+                'hour' => '*',
                 'day' => '*',
                 'dayofweek' => '*',
                 'month' => '*',

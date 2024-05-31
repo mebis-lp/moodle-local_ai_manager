@@ -45,4 +45,8 @@ class base_purpose {
         return 'purpose_' . $purpose . '_tool';
     }
 
+    public final function get_plugin_name(): string {
+        return preg_replace('/^aipurpose_(.*)\\\\.*/', '$1', get_class($this));
+    }
+
 }

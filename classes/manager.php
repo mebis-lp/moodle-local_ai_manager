@@ -33,6 +33,7 @@ use local_ai_manager\local\config_manager;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
+use local_ai_manager\local\userusage;
 use local_bycsauth\school;
 use stdClass;
 
@@ -123,10 +124,11 @@ class manager {
         }
 
         $userinfo = new userinfo($USER->id);
-        if ($userinfo->get_currentusage() >= $this->configmanager->get_max_requests($userinfo->get_role())) {
+        $userusage = new userusage($this->purpose, $USER->id);
+        if ($userusage->get_currentusage() >= $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) {
             $period = format_time($this->configmanager->get_config('max_requests_period'));
             return prompt_response::create_from_error(429, 'You have reached the maximum amount of requests. '
-                . 'You are only allowed to send ' . $this->configmanager->get_max_requests($userinfo->get_role())
+                . 'You are only allowed to send ' . $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())
                 . ' requests in a period of ' . $period . '.',
                     '');
         }
@@ -191,20 +193,26 @@ class manager {
         $data->timecreated = time();
         $DB->insert_record('local_ai_manager_request_log', $data);
 
+        // Check if we already have a userinfo object for this. If not we need to create one to initially set the correct role.
         $userinfo = new userinfo($data->userid);
-        $userinfo->set_currentusage($userinfo->get_currentusage() + 1);
-        // TODO Extract this into a hook.
-        // TODO Make this more performant
-        $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
-        $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
-        $school = new school($USER->institution);
-        if (user_has_role_assignment($USER->id, $coordinatorrole->id, \context_coursecat::instance($school->get_school_categoryid())->id)) {
-            $userinfo->set_role(userinfo::ROLE_UNLIMITED);
-        } else if (user_has_role_assignment($USER->id. $idmteacherrole->id, \context_system::instance()->id)) {
-            $userinfo->set_role(userinfo::ROLE_EXTENDED);
-        } else {
-            $userinfo->set_role(userinfo::ROLE_BASIC);
+        if (!$userinfo->record_exists()) {
+            // TODO Extract this into a hook.
+            // TODO Make this more performant
+            $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
+            $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
+            $school = new school($USER->institution);
+            if (user_has_role_assignment($USER->id, $coordinatorrole->id, \context_coursecat::instance($school->get_school_categoryid())->id)) {
+                $userinfo->set_role(userinfo::ROLE_UNLIMITED);
+            } else if (user_has_role_assignment($USER->id. $idmteacherrole->id, \context_system::instance()->id)) {
+                $userinfo->set_role(userinfo::ROLE_EXTENDED);
+            } else {
+                $userinfo->set_role(userinfo::ROLE_BASIC);
+            }
+            $userinfo->store();
         }
-        $userinfo->store();
+
+        $userusage = new userusage($this->purpose, $USER->id);
+        $userusage->set_currentusage($userusage->get_currentusage() + 1);
+        $userusage->store();
     }
 }

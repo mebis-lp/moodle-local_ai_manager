@@ -31,6 +31,7 @@ use core_plugin_manager;
 use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
 use local_ai_manager\local\userinfo;
+use local_ai_manager\local\userusage;
 use local_ai_manager\manager;
 
 defined('MOODLE_INTERNAL') || die;
@@ -60,19 +61,27 @@ class user_config_form extends \moodleform {
         $mform->addElement('hidden', 'tenant', $tenant);
         $mform->setType('tenant', PARAM_ALPHANUM);
 
-        $mform->addElement('header', 'userconfigheader', 'USER CONFIG');
 
-        $mform->addElement('text', 'max_requests_basic', 'MAXIMALE REQUESTS BASIC');
-        $mform->setType('max_requests_basic', PARAM_INT);
-        $mform->setDefault('max_requests_basic', 10);
-
-        $mform->addElement('text', 'max_requests_extended', 'MAXIMALE REQUESTS EXTENDED');
-        $mform->setType('max_requests_extended', PARAM_INT);
-        $mform->setDefault('max_requests_extended', 50);
-
+        $mform->addElement('header', 'general_user_config_settings_header', 'ALLGEMEINE USER-EINSTELLUNGEN');
         $mform->addElement('duration', 'max_requests_period', 'ZEITSPANNE FÜR MAXIMALE REQUESTS', ['units' => [DAYSECS, WEEKSECS]]);
         $mform->setType('max_requests_period', PARAM_INT);
-        $mform->setDefault('max_requests_period', userinfo::MAX_REQUESTS_DEFAULT_PERIOD);
+        $mform->setDefault('max_requests_period', userusage::MAX_REQUESTS_DEFAULT_PERIOD);
+
+        foreach (base_purpose::get_all_purposes() as $purpose) {
+            $mform->addElement('header', $purpose . '_purpose_config_header', 'EINSTELLUNGEN FUER PURPOSE ' . $purpose);
+            //$purposegroup = [];
+            //$purposegroup[] = $mform->createElement('text', $purpose . '_max_requests_basic', 'MAXIMALE REQUESTS BASIC');
+            $mform->addElement('text', $purpose . '_max_requests_basic', 'MAXIMALE REQUESTS BASIC');
+            $mform->setType($purpose . '_max_requests_basic', PARAM_INT);
+            $mform->setDefault($purpose . '_max_requests_basic', 10);
+
+            //$purposegroup[] = $mform->createElement('text', $purpose . '_max_requests_extended', 'MAXIMALE REQUESTS EXTENDED');
+            $mform->addElement('text', $purpose . '_max_requests_extended', 'MAXIMALE REQUESTS EXTENDED');
+            $mform->setType($purpose . '_max_requests_extended', PARAM_INT);
+            $mform->setDefault($purpose . '_max_requests_extended', 50);
+            //$mform->addGroup($purposegroup, $purpose . '_maxrequests_config_group', 'test', [' '], false);
+        }
+
 
         $this->add_action_buttons();
         /*
@@ -125,7 +134,7 @@ class user_config_form extends \moodleform {
      */
     public function validation($data, $files): array {
         $errors = [];
-        if (isset($data['max_requests_period']) && intval($data['max_requests_period']) < userinfo::MAX_REQUESTS_MIN_PERIOD) {
+        if (isset($data['max_requests_period']) && intval($data['max_requests_period']) < userusage::MAX_REQUESTS_MIN_PERIOD) {
             // TODO localize
             $errors['max_requests_period'] = 'Period needs to be at least 1 day';
         }

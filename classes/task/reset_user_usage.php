@@ -47,7 +47,7 @@ class reset_user_usage extends \core\task\scheduled_task {
     public function execute(): void {
         global $DB;
 
-        foreach ($DB->get_recordset('local_ai_manager_userinfo') as $record) {
+        foreach ($DB->get_recordset('local_ai_manager_userusage') as $record) {
             $tenant = userinfo::get_tenant_for_user($record->userid);
             if (is_null($tenant)) {
                 continue;
@@ -58,7 +58,7 @@ class reset_user_usage extends \core\task\scheduled_task {
             if (time() - $lastreset > $configmanager->get_max_requests_period()) {
                 $record->lastreset = time();
                 $record->currentusage = 0;
-                $DB->update_record('local_ai_manager_userinfo', $record);
+                $DB->update_record('local_ai_manager_userusage', $record);
             }
         }
     }
