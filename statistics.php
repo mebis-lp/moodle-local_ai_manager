@@ -28,8 +28,9 @@ require_once(dirname(__FILE__) . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 $tenant = optional_param('tenant', '', PARAM_ALPHANUM);
+$purpose = optional_param('purpose', '', PARAM_ALPHANUM);
 
-$url = new moodle_url('/local/ai_manager/instances_config.php');
+$url = new moodle_url('/local/ai_manager/statistics.php');
 $PAGE->set_url($url);
 
 $returnurl = new moodle_url('/course/index.php');
@@ -47,7 +48,7 @@ $accessmanager->require_tenant_manager();
 
 $PAGE->set_context($tenant->get_tenant_context());
 
-$strtitle = 'INSTANCES KONFIGURATION';
+$strtitle = 'STATISTIK';
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
@@ -56,37 +57,36 @@ $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strtitle);
 echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
-$instanceaddbuttons = [];
-foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $tool) {
-    $instanceaddbuttons[] = [
-            'label' => $tool,
-            'addurl' => (new moodle_url('/local/ai_manager/edit_instance.php',
-                    ['tenant' => $tenant->get_tenantidentifier(), 'returnurl' => $PAGE->url, 'connectorname' => $tool]))->out()
-    ];
-}
-$instances = [];
-foreach (\local_ai_manager\connector_instance::get_all_instances() as $instance) {
-    $instances[] = [
-            'id' => $instance->get_id(),
-            'name' => $instance->get_name(),
-            'tenant' => $instance->get_tenant(),
-            'connector' => $instance->get_connector(),
-            'endpoint' => $instance->get_endpoint(),
-            'apikey' => $instance->get_apikey(),
-            'model' => $instance->get_model(),
-            'customfield1' => $instance->get_customfield1(),
-            'customfield2' => $instance->get_customfield2(),
-            'customfield3' => $instance->get_customfield3(),
-            'customfield4' => $instance->get_customfield4(),
-    ];
-}
-echo $PAGE->get_renderer('core')->render_from_template('local_ai_manager/instancetable',
-        [
-                'instances' => $instances,
-                'instanceaddbuttons' => $instanceaddbuttons,
-        ]
-);
 
+
+$download = optional_param('download', '', PARAM_ALPHA);
+
+$table = new \local_ai_manager\local\userstats_table($purpose, $tenant);
+
+$rows = [];
+
+$pagesize = 5;
+$recordscount = 50;
+
+for ($i = 0; $i <= $recordscount; $i++) {
+    $testentry = [];
+    $testentry['id'] = $i;
+    $testentry['firstname'] = "Hans " . $i;
+    $testentry['lastname'] = "Mustermann " . $i;
+    $testentry['locked'] = 0;
+    $testentry['currentusage'] = rand();
+    $rows[] = $testentry;
+}
+$pagedrows = [];
+for ($i = 0; $i <= $recordscount; $i++) {
+    if ($i >= $table->get_page_start() && $i < $table->get_page_start() + $pagesize) {
+        $pagedrows[] = $rows[$i];
+    }
+}
+$table->format_and_add_array_of_rows($pagedrows, false);
+
+
+$table->finish_output();
 
 
 echo $OUTPUT->footer();
