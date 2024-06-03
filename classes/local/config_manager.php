@@ -71,6 +71,8 @@ class config_manager {
         foreach (base_purpose::get_all_purposes() as $purpose) {
             if (array_key_exists(base_purpose::get_purpose_tool_config_key($purpose), $this->config)) {
                 $purposeconfig[$purpose] = $this->config[base_purpose::get_purpose_tool_config_key($purpose)];
+            } else {
+                $purposeconfig[$purpose] = null;
             }
         }
         return $purposeconfig;
