@@ -45,7 +45,7 @@ class ai_manager_utils {
         return !empty($records) ? $records : [];
     }
 
-    public static function delete_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0): void {
+    public static function mark_log_entries_as_deleted(string $component, int $contextid, int $userid = 0, int $itemid = 0): void {
         global $DB;
         $params = [
                 'component' => $component,
