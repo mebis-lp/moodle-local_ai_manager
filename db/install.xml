@@ -46,6 +46,7 @@
         <FIELD NAME="value" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
         <FIELD NAME="customvalue1" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
         <FIELD NAME="customvalue2" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="purpose" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="model" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modelinfo" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="prompttext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The prompt which has been sent to the AI tool"/>

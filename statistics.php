@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\local\userinfo;
+
 require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
@@ -53,40 +55,74 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
+//$download = optional_param('download', '', PARAM_ALPHA);
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading($strtitle);
-echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
-
-
-$download = optional_param('download', '', PARAM_ALPHA);
-
-$table = new \local_ai_manager\local\userstats_table($purpose, $tenant);
-
-$rows = [];
-
-$pagesize = 5;
-$recordscount = 50;
-
-for ($i = 0; $i <= $recordscount; $i++) {
-    $testentry = [];
-    $testentry['id'] = $i;
-    $testentry['firstname'] = "Hans " . $i;
-    $testentry['lastname'] = "Mustermann " . $i;
-    $testentry['locked'] = 0;
-    $testentry['currentusage'] = rand();
-    $rows[] = $testentry;
+$purposes = [];
+foreach (\local_ai_manager\base_purpose::get_all_purposes() as $availablepurpose) {
+    $purposes[] = ['purpose' => $availablepurpose];
 }
-$pagedrows = [];
-for ($i = 0; $i <= $recordscount; $i++) {
-    if ($i >= $table->get_page_start() && $i < $table->get_page_start() + $pagesize) {
-        $pagedrows[] = $rows[$i];
+$statisticsnavbarcontext['purposes'] = $purposes;
+
+
+$statisticsform = new \local_ai_manager\form\statistics_form(null, ['tenant' => $tenant, 'purpose' => $purpose]);
+// Will return the config manager for the current user.
+//$configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+
+// Standard form processing if statement.
+if ($statisticsform->is_cancelled()) {
+    redirect($returnurl);
+} else if ($data = $statisticsform->get_data()) {
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($strtitle);
+    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
+    echo $OUTPUT->render_from_template('local_ai_manager/statisticssubnavbar', $statisticsnavbarcontext);
+
+    $userids = explode(';', $data->userids);
+    foreach ($userids as $userid) {
+        $user = \core_user::get_user($userid);
+        if (!$user) {
+            throw new moodle_exception('User with userid ' . $userid . ' does not exist!');
+        }
+        if ($user->institution !== $tenant->get_tenantidentifier()) {
+            throw new moodle_exception('You must not change the status of the user with the id ' . $userid);
+        }
+        $userinfo = new userinfo($userid);
+        if (isset($data->lockusers)) {
+            $userinfo->set_locked(true);
+        } else if (isset($data->unlockusers)) {
+            $userinfo->set_locked(false);
+        }
+        $userinfo->store();
     }
+
+    redirect($PAGE->url, 'USER STATUS UPDATED');
+} else {
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($strtitle);
+    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
+    echo $OUTPUT->render_from_template('local_ai_manager/statisticssubnavbar', $statisticsnavbarcontext);
+
+    $startpage = empty($purpose);
+    $emptytable = $startpage ? $DB->count_records('local_ai_manager_request_log') === 0 :
+            $DB->count_records('local_ai_manager_request_log', ['purpose' => $purpose]) === 0;
+
+    if (!$emptytable) {
+        $uniqid = $startpage ? 'statistics-table-all-purposes' : 'statistics-table-purpose-' . $purpose;
+        $urlparams = [];
+        if (!$startpage) {
+            $urlparams['purpose'] = $purpose;
+        }
+        $baseurl = new moodle_url('/local/ai_manager/statistics.php', $urlparams);
+        if (!$startpage) {
+            echo html_writer::div('Only user who already have used this purpose are being shown');
+        }
+        $table = new \local_ai_manager\local\userstats_table($uniqid, $purpose, $tenant, $baseurl);
+        $table->out(5, false);
+    }
+
+    $statisticsform->display();
+    $PAGE->requires->js_call_amd('local_ai_manager/statistics_table', 'init', ['id' => $uniqid]);
 }
-$table->format_and_add_array_of_rows($pagedrows, false);
-
-
-$table->finish_output();
-
 
 echo $OUTPUT->footer();

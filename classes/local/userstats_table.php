@@ -18,30 +18,54 @@ namespace local_ai_manager\local;
 
 use flexible_table;
 use html_writer;
+use moodle_url;
+use table_sql;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require $CFG->libdir . '/tablelib.php';
 
-class userstats_table extends flexible_table {
+class userstats_table extends table_sql {
 
     /**
      * Constructor.
      */
-    public function __construct(private readonly string $purpose, private readonly tenant $tenant) {
-        global $CFG;
-        parent::__construct('userusage-' . $purpose);
-        $this->define_baseurl($CFG->wwwroot . '/local/ai_manager/statistics.php');
+    public function __construct(string $uniqid, private readonly string $purpose, private readonly tenant $tenant,
+            moodle_url $baseurl) {
+        parent::__construct($uniqid);
+        $this->set_attribute('id', $uniqid);
+        $this->define_baseurl($baseurl);
         // Define the list of columns to show.
-        $columns = ['checkbox', 'lastname', 'firstname', 'locked', 'currentusage'];
-        $this->define_columns($columns);
-
-        // Define the titles of columns to show in header.
+        $columns = ['checkbox', 'lastname', 'firstname', 'locked', 'requestcount'];
         $headers = ['', 'NACHNAME', 'VORNAME', 'GESPERRT', 'ANZAHL REQUESTS'];
+        if (!empty($purpose)) {
+            $columns[] = 'currentusage';
+            $headers[] = 'USAGE';
+        }
+        $this->define_columns($columns);
+        // Define the titles of columns to show in header.
         $this->define_headers($headers);
-        $this->pageable(true);
-        $this->pagesize(5, 20);
+
+        if (!empty($purpose)) {
+            $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount, SUM(value) AS currentusage';
+            $from =
+                    '{local_ai_manager_request_log} rl LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid JOIN {user} u ON u.id = rl.userid';
+            $where = 'institution = :tenant AND purpose = :purpose GROUP BY u.id';
+            $params = ['tenant' => $this->tenant->get_tenantidentifier(), 'purpose' => $purpose];
+            $this->set_count_sql("SELECT COUNT(DISTINCT userid) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id "
+                    . "WHERE institution = :tenant AND purpose = :purpose",
+                    ['tenant' => $this->tenant->get_tenantidentifier(), 'purpose' => $purpose]);
+        } else {
+            $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount';
+            $from =
+                    '{user} u LEFT JOIN {local_ai_manager_request_log} rl ON u.id = rl.userid LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
+            $where = 'institution = :tenant GROUP BY u.id';
+            $params = ['tenant' => $this->tenant->get_tenantidentifier()];
+            $this->set_count_sql("SELECT COUNT(DISTINCT id) FROM {user} WHERE institution = :tenant",
+                    ['tenant' => $this->tenant->get_tenantidentifier()]);
+        }
+        $this->set_sql($fields, $from, $where, $params);
         parent::setup();
 
     }

@@ -56,7 +56,7 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
-$purposeconfigform = new purpose_config_form(null, ['tenant' => $tenantid, 'returnurl' => $PAGE->url]);
+$purposeconfigform = new purpose_config_form(null, ['returnurl' => $PAGE->url]);
 // Will return the config manager for the current user.
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 

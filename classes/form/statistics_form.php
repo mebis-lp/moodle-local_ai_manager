@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Purpose config form.
+ * Statistics config form.
  *
- * This form enables a tenant manager to select the AI tools for the existing purposes.
+ * This form handles the locking and unlocking of users on the statistics overview pages.
  *
  * @package    local_ai_manager
  * @copyright  2024, ISB Bayern
@@ -45,31 +45,25 @@ require_once($CFG->libdir . '/formslib.php');
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class purpose_config_form extends \moodleform {
+class statistics_form extends \moodleform {
 
     /**
      * Form definition.
      */
     public function definition() {
-        global $USER;
-        $returnurl = $this->_customdata['returnurl'];
-        $tenant = \core\di::get(tenant::class);
+        global $DB;
+        $purpose = $this->_customdata['purpose'];
+        $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $mform = &$this->_form;
 
         $mform->addElement('hidden', 'tenant', $tenant->get_tenantidentifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
-        $mform->addElement('header', 'purposeheader', 'PURPOSES');
-        foreach (base_purpose::get_all_purposes() as $purpose) {
-            $instances = [0 => 'KEINE AUSWAHL'];
-            // We do not use merge, because we must not re-index the array, keys are the ids of the instances.
-            $instances = $instances + manager::get_connector_instances_for_purpose($purpose);
-            $mform->addElement('select', 'purpose_' . $purpose . '_tool', 'TOOL FÜR PURPOSE ' . $purpose . ' AUSWÄHLEN:',
-                    $instances);
+        $mform->addElement('hidden', 'userids', '', ['id' => 'statistics-table-userids']);
+        $mform->setType('userids', PARAM_TEXT);
 
-            // TODO Select-Element
-        }
-        $this->add_action_buttons();
+        $mform->addElement('submit', 'lockusers', 'DISABLE USERS');
+        $mform->addElement('submit', 'unlockusers', 'ENABLE USERS');
         /*
 
 

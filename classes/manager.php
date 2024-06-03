@@ -124,12 +124,17 @@ class manager {
         }
 
         $userinfo = new userinfo($USER->id);
+        if ($userinfo->is_locked()) {
+            return prompt_response::create_from_error(403, 'Your ByCS admin has blocked access to the AI tools for you', '');
+        }
+
         $userusage = new userusage($this->purpose, $USER->id);
         if ($userusage->get_currentusage() >= $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) {
             $period = format_time($this->configmanager->get_max_requests_period());
             return prompt_response::create_from_error(429, 'You have reached the maximum amount of requests. '
-                . 'You are only allowed to send ' . $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())
-                . ' requests in a period of ' . $period . '.',
+                    . 'You are only allowed to send ' .
+                    $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())
+                    . ' requests in a period of ' . $period . '.',
                     '');
         }
 
@@ -141,11 +146,14 @@ class manager {
             return prompt_response::create_from_error(500, $exception->getMessage(), $exception->getTraceAsString());
         }
         if ($requestresult->get_code() !== 200) {
-            return prompt_response::create_from_error($requestresult->get_code(), $requestresult->get_errormessage(), $requestresult->get_debuginfo());
+            return prompt_response::create_from_error($requestresult->get_code(), $requestresult->get_errormessage(),
+                    $requestresult->get_debuginfo());
         }
         $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response(), $options);
-        if (!empty($options['forcenewitemid']) && !empty($options['component']) && !empty($options['contextid'] && !empty($options['itemid']))) {
-            if ($DB->record_exists('local_ai_manager_request_log', ['component' => $options['component'], 'contextid' => $options['contextid'], 'itemid' => $options['itemid']])) {
+        if (!empty($options['forcenewitemid']) && !empty($options['component']) &&
+                !empty($options['contextid'] && !empty($options['itemid']))) {
+            if ($DB->record_exists('local_ai_manager_request_log',
+                    ['component' => $options['component'], 'contextid' => $options['contextid'], 'itemid' => $options['itemid']])) {
                 $existingitemid = $options['itemid'];
                 unset($options['itemid']);
                 $this->log_request($prompttext, $promptcompletion, $requestoptions, $options);
@@ -157,7 +165,8 @@ class manager {
         return $promptcompletion;
     }
 
-    public function log_request(string $prompttext, prompt_response $promptcompletion, array $requestoptions = [], array $options = []): void {
+    public function log_request(string $prompttext, prompt_response $promptcompletion, array $requestoptions = [],
+            array $options = []): void {
         global $DB, $USER;
 
         if ($promptcompletion->get_code() !== 200) {
@@ -176,6 +185,7 @@ class manager {
         if ($this->toolconnector->has_customvalue2()) {
             $data->customvalue2 = $promptcompletion->get_usage()->customvalue2;
         }
+        $data->purpose = $this->purpose->get_plugin_name();
         $data->model = $this->toolconnector->get_instance()->get_model();
         $data->modelinfo = $promptcompletion->get_modelinfo();
         $data->prompttext = $prompttext;
@@ -203,9 +213,10 @@ class manager {
             $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
             $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
             $school = new school($USER->institution);
-            if (user_has_role_assignment($USER->id, $coordinatorrole->id, \context_coursecat::instance($school->get_school_categoryid())->id)) {
+            if (user_has_role_assignment($USER->id, $coordinatorrole->id,
+                    \context_coursecat::instance($school->get_school_categoryid())->id)) {
                 $userinfo->set_role(userinfo::ROLE_UNLIMITED);
-            } else if (user_has_role_assignment($USER->id. $idmteacherrole->id, \context_system::instance()->id)) {
+            } else if (user_has_role_assignment($USER->id . $idmteacherrole->id, \context_system::instance()->id)) {
                 $userinfo->set_role(userinfo::ROLE_EXTENDED);
             } else {
                 $userinfo->set_role(userinfo::ROLE_BASIC);
