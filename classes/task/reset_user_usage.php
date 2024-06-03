@@ -34,6 +34,17 @@ use local_ai_manager\local\userinfo;
 class reset_user_usage extends \core\task\scheduled_task {
 
     /**
+     * Clock object injected via \core\di.
+     *
+     * @var \core\clock the clock object
+     */
+    private \core\clock $clock;
+
+    public function __construct() {
+        $this->clock = \core\di::get(\core\clock::class);
+    }
+
+    /**
      * Returns the name of the task.
      *
      * @return string the name of the task
@@ -48,22 +59,33 @@ class reset_user_usage extends \core\task\scheduled_task {
     public function execute(): void {
         global $DB;
 
-        $rs = $DB->get_recordset('local_ai_manager_userusage');
-        foreach ($rs as $record) {
-            // Reset tenant and config manager. We cannot use dependency injection container because we would need to reset the
-            // objects for each run of the loop.
-            $tenant = userinfo::get_tenant_for_user($record->userid);
-            if (is_null($tenant)) {
-                continue;
-            }
-            $configmanager = new config_manager($tenant);
-            $lastreset = !empty($record->lastreset) ? $record->lastreset : 0;
-            if (time() - $lastreset > $configmanager->get_max_requests_period()) {
-                $record->lastreset = time();
-                $record->currentusage = 0;
-                $DB->update_record('local_ai_manager_userusage', $record);
-            }
+        // TODO Somehow figure out how to do this without forcing the field "institution" as tenant field
+        $tenants =
+                $DB->get_fieldset_sql("SELECT DISTINCT institution FROM {local_ai_manager_userusage} uu LEFT JOIN {user} u ON uu.userid = u.id");
+        if (empty($tenants)) {
+            // Just in the rare case of an empty table.
+            mtrace('No entries found. Exiting.');
+            return;
         }
-        $rs->close();
+
+        foreach ($tenants as $tenantidentifier) {
+            // We intentionally do not use \core\di here, because we need to reset the objects for each tenant.
+            $tenant = new tenant($tenantidentifier);
+            $configmanager = new config_manager($tenant);
+            // TODO Somehow figure out how to do this without forcing the field "institution" as tenant field
+            $sql = "SELECT uu.* FROM {local_ai_manager_userusage} uu "
+                    . "JOIN {user} u ON uu.userid = u.id WHERE institution = :tenantidentifier";
+            $rs = $DB->get_recordset_sql($sql, ['tenantidentifier' => $tenantidentifier]);
+            foreach ($rs as $record) {
+                $lastreset = !empty($record->lastreset) ? $record->lastreset : 0;
+                if ($this->clock->time() - $lastreset > $configmanager->get_max_requests_period()) {
+                    $record->lastreset = $this->clock->time();
+                    $record->currentusage = 0;
+                    $DB->update_record('local_ai_manager_userusage', $record);
+                }
+                mtrace('Successfully reset user usage of tenant ' . $tenantidentifier);
+            }
+            $rs->close();
+        }
     }
 }
