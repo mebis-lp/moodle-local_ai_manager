@@ -28,9 +28,13 @@ import * as Templates from 'core/templates';
  * Inserts the infobox into the beginning of element with the given selector.
  *
  * @param {string} selector the id of the element to insert the infobox
+ * @param {string[]} purposes the purposes which are being used
  */
-export const renderInfoBox = async(selector) => {
+export const renderInfoBox = async(selector, purposes) => {
     const targetElement = document.querySelector(selector);
-    const {html, js} = await Templates.renderForPromise('local_ai_manager/infobox', {});
+    const templateContext = {
+        'purposes': purposes
+    };
+    const {html, js} = await Templates.renderForPromise('local_ai_manager/infobox', templateContext);
     Templates.prependNodeContents(targetElement, html, js);
 };
