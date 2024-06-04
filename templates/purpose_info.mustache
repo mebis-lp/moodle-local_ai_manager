@@ -29,6 +29,54 @@
     }
 }}
 <div class="local_ai_manager-purposeinfo">
+    <div class="local_ai_manager-ai_tool_explanation">
+        <h4>Allgemeine Informationen</h4>
+        <p>
+            Stand jetzt stellt die BayernCloud Schule und damit auch die mebis Lernplattform kein KI-Tool zur Verfügung. Die mebis Lernplattform bietet jedoch Schnittstellen an,
+            über die man innerhalb der mebis Lernplattform KI-Tools nutzen kann. Damit dies den Schülerinnen und Schülern sowie Lehrkräften einer Schule möglich ist, muss die
+            Schule ein solches Tool erwerben oder bereitstellen. Der ByCS-Admin der jeweiligen Schule kann dann über eine Konfigurationsseite die Zugangsdaten hinterlegen und somit
+            die in der mebis Lernplattform angebotenen KI-Funktionen freischalten.
+        </p>
+
+        <h4>
+            Technische Funktionsweise
+        </h4>
+        <p>
+            Beim Einsatz der KI-Funktionen innerhalb der Lernplattform ist der technische Ablauf wie folgt:
+        </p>
+        <ul>
+            <li>
+                Der ByCS-Admin hinterlegt für einen bestimmten Zweck eine Konfiguration, zum Beispiel konfiguriert die Option für Bildgenerierung, da seine Schule einen Vertrag
+                mit OpenAI hat, sodass die Schule das Tool Dall-E nutzen kann.
+            </li>
+            <li>
+                Eine Schülerin, ein Schüler oder eine Lehrkraft dieser Schule findet in der mebis Lernplattform dann die entsprechende KI-Funktion, zum Beispiel die Möglichkeit,
+                direkt im Editor ein Bild über einen Prompt zu generieren und dies in den Editor direkt einzufügen.
+            </li>
+            <li>
+                Nutzt beispielsweise eine Lehrkraft nun diese Funktion, wird der Prompt an die Server der Lernplattform geschickt und von diesen ausgewertet.
+            </li>
+            <li>
+                Die Server der mebis Lernplattform nutzen die hinterlegten Zugangsdaten zum KI-Tool der jeweiligen Schule und senden die Anfrage für den Benutzer an die Server
+                des externen KI-Tools. <em>Hierbei tritt die Lernplattform als End-Benutzer des externen Tools auf, das heißt für das externe Tool ist nicht nachvollziehbar, welcher Einzelnutzer
+                die entsprechende Anfrage an das KI-Tool vorgenommen hat. Lediglich, welcher Schule der Benutzer zugehört, ist für das KI-Tool nachvollziehbar.</em>
+            </li>
+            <li>
+                Die Antwort des KI-Tools schickt die Lernplattform wieder an den User zurück bzw. integriert das Ergebnis wie beispielweise ein generiertes Bild direkt in die
+                jeweilige Aktivität.
+            </li>
+        </ul>
+
+        <h4>Datenschutz und Nutzungsbedingungen</h4>
+        <p>
+            Es gelten die allgemeinen Nutzungsbedingungen der mebis Lernplattform, insbesondere KI-Tools, siehe ... TODO ...
+        </p>
+        <p>
+            In der unten angeführten Tabelle sehen Sie eine Übersicht über die von Ihrer Schule konfigurierten KI-Tools. Ihr ByCS-Admin hat gegebenenfalls weitere Hinweise zu den
+            Nutzungsbedingungen und Datenschutzhinweisen des jeweiligen KI-Tools in der Spalte "Infolink" hinterlegt.
+        </p>
+    </div>
+
     <table class="table table-responsive table-bordered table-striped">
         <thead>
         <th>PURPOSE</th>
@@ -39,15 +87,16 @@
 
         </thead>
         <tbody>
-            {{#purposes}}
+        {{#purposes}}
             <tr>
                 <td>{{purpose}}</td>
                 <td>{{name}}</td>
                 <td>{{model}}</td>
                 <td>{{endpoint}}</td>
-                <td>{{infolink}}</td>
+                <td><a href="{{infolink}}">{{infolink}}</a></td>
             </tr>
-            {{/purposes}}
+        {{/purposes}}
         </tbody>
     </table>
+    </div>
 </div>
