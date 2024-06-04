@@ -16,6 +16,7 @@
 
 namespace local_ai_manager\local;
 
+use moodle_exception;
 use stdClass;
 
 /**
@@ -30,11 +31,17 @@ class tenant {
 
     private string $tenantidentifier;
 
+    /**
+     * Tenant class constructor.
+     *
+     * @param string $tenantidentifier
+     * @return void
+     */
     public function __construct(string $tenantidentifier = '') {
         global $USER;
         if (empty($tenantidentifier)) {
             if (empty($USER->institution)) {
-                throw new \moodle_exception('Cannot determine tenant identifier based on the current user');
+                throw new \moodle_exception('Cannot determine tenant identifier based on the current user. Institution empty');
             }
             $this->tenantidentifier = $USER->institution;
         } else {
@@ -42,10 +49,20 @@ class tenant {
         }
     }
 
+    /**
+     * Get the tenant identifier.
+     *
+     * @return string
+     */
     public function get_tenantidentifier(): string {
         return $this->tenantidentifier;
     }
 
+    /**
+     * Get the tenant context.
+     *
+     * @return context
+     */
     public function get_tenant_context(): \context {
         if (empty($this->get_tenantidentifier())) {
             return \context_system::instance();
@@ -53,7 +70,4 @@ class tenant {
         $school = new \local_bycsauth\school($this->get_tenantidentifier());
         return \context_coursecat::instance($school->get_school_categoryid());
     }
-
-
-
 }

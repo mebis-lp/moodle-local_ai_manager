@@ -52,3 +52,9 @@ $string['mp_estimated_costs'] = 'Geschätzte Kosten';
 $string['mp_heading_usagestatistics'] = 'Nutzungsstatistiken';
 $string['mp_heading_userstatistics'] = 'Benutzerstatistiken';
 $string['mp_heading_budget'] = 'Budget';
+
+// Schoolconfiguration
+$string['schoolconfig_heading'] = 'Schulkonfiguration';
+
+// User config.
+$string['heading_user_config'] = 'Nutzereinstellungen';

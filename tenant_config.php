@@ -49,7 +49,7 @@ $accessmanager->require_tenant_manager();
 
 $PAGE->set_context($tenant->get_tenant_context());
 
-$strtitle = 'SCHULKONFIGURATION';
+$strtitle = get_string('schoolconfig_heading', 'local_ai_manager');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);

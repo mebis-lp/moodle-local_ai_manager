@@ -59,3 +59,23 @@ $string['mp_estimated_costs'] = 'Estimated Costs';
 $string['mp_heading_usagestatistics'] = 'Usage statistics';
 $string['mp_heading_userstatistics'] = 'User statistics';
 $string['mp_heading_budget'] = 'Budget';
+
+// General strings.
+$string['student'] = 'Student';
+$string['teacher'] = 'Teacher';
+
+// Schoolconfiguration.
+$string['schoolconfig_heading'] = 'School Configuration';
+
+// User config.
+$string['heading_home'] = 'Home';
+$string['heading_user_config'] = 'User settings';
+$string['heading_ai_tools'] = 'AI Tools';
+$string['heading_purposes'] = 'Purposes';
+$string['heading_statistics'] = 'Statistics';
+$string['general_user_settings'] = 'General user settings';
+$string['max_request_time_window'] = 'Time window for maximum number';
+$string['max_requests_purpose_heading'] = 'Settings for purpose {$a}';
+$string['max_requests_purpose'] = 'Maximum number of requests per time window ({$a})';
+$string['select_tool_for_purpose'] = 'Select ai tool for purpose {$a}';
+$string['not_selected'] = 'Not selected';
