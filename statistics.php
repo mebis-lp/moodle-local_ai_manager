@@ -45,7 +45,7 @@ $accessmanager->require_tenant_manager();
 
 $url = new moodle_url('/local/ai_manager/statistics.php', ['tenant' => $tenant->get_tenantidentifier()]);
 $PAGE->set_url($url);
-$returnurl = new moodle_url('/local/ai_manager/tenantconfig.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 $PAGE->set_context($tenant->get_tenant_context());
 
 $strtitle = 'STATISTIK';

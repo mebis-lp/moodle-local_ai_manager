@@ -31,7 +31,7 @@ global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 $tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 
-$url = new moodle_url('/local/ai_manager/tenantconfig.php');
+$url = new moodle_url('/local/ai_manager/tenant_config.php');
 $PAGE->set_url($url);
 
 $returnurl = new moodle_url('/course/index.php');
