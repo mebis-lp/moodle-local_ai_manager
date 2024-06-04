@@ -25,6 +25,7 @@
 
 $string['ai_manager:manage'] = 'Manage configuration of ai_manager';
 $string['ai_manager:use'] = 'Use ai_manager';
+$string['aiadministrationlink'] = 'AI tools administration';
 $string['empty_api_key'] = 'Empty API Key';
 $string['pleaseselect'] = 'Please, select';
 $string['pluginname'] = 'AI Manager';

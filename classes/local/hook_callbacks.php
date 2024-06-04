@@ -14,18 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_ai_manager\local;
+
+use action_link;
+use core\hook\navigation\primary_extend;
+use moodle_url;
+use navigation_node;
+
 /**
- * Version file for local_ai_manager.
+ * Hook listener callbacks.
  *
  * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @copyright  2024 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version  = 2023121210;
-$plugin->requires = 2023042403;
-$plugin->release = '0.0.1';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_ALPHA;
+class hook_callbacks {
+    public static function extend_primary_navigation(primary_extend $hook): void {
+        $accessmanager = \core\di::get(access_manager::class);
+        if (!$accessmanager->is_tenant_manager()) {
+            return;
+        }
+        $node = navigation_node::create(get_string('aiadministrationlink', 'local_ai_manager'),
+                new moodle_url('/local/ai_manager/tenant_config.php'));
+        $hook->get_primaryview()->add_node($node);
+    }
+}

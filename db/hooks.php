@@ -15,17 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * Hook listener callbacks.
  *
  * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @copyright  2024 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2023121210;
-$plugin->requires = 2023042403;
-$plugin->release = '0.0.1';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_ALPHA;
+$callbacks = [
+        [
+                'hook' => \core\hook\navigation\primary_extend::class,
+                'callback' => \local_ai_manager\local\hook_callbacks::class . '::extend_primary_navigation',
+        ],
+];

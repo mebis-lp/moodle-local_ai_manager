@@ -32,6 +32,13 @@ class access_manager {
     }
 
     public function require_tenant_manager(): void {
+        if (!$this->is_tenant_manager()) {
+            // TODO Make a clean require_capability_exception out of this
+            throw new \moodle_exception('You do not have the rights to manage the AI tools');
+        }
+    }
+
+    public function is_tenant_manager(): bool {
         // TODO Convert this into a hook.
         if (empty($this->tenant->get_tenantidentifier())) {
             require_admin();
@@ -41,7 +48,7 @@ class access_manager {
             throw new \moodle_exception('Invalid tenant "' . $this->tenant->get_tenantidentifier() . '"!');
         }
         $tenantcontext = $this->tenant->get_tenant_context();
-        require_capability('local/ai_manager:manage', $tenantcontext);
+        return has_capability('local/ai_manager:manage', $tenantcontext);
     }
 
     public function require_tenant_member(): void {
