@@ -30,6 +30,8 @@
 }}
 <div class="local_ai_manager-tenantconfig-statistics-nav">
     {{#purposes}}
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/statistics.php?purpose={{purpose}}&tsort=requestcount&tdir=3">STATISTIK FUER {{purpose}} </a>
+    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/statistics.php?purpose={{purpose}}&tsort=requestcount&tdir=3">
+        {{#str}} statistics_for , local_ai_manager , {{purpose}} {{/str}}
+    </a>
     {{/purposes}}
 </div>

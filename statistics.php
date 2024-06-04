@@ -48,7 +48,7 @@ $PAGE->set_url($url);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 $PAGE->set_context($tenant->get_tenant_context());
 
-$strtitle = 'STATISTIK';
+$strtitle = get_string('statistics');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
@@ -94,7 +94,7 @@ if ($statisticsform->is_cancelled()) {
         $userinfo->store();
     }
 
-    redirect($PAGE->url, 'USER STATUS UPDATED');
+    redirect($PAGE->url, get_string('user_status_updated', 'local_ai_manager'));
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
@@ -103,7 +103,7 @@ if ($statisticsform->is_cancelled()) {
 
     $startpage = empty($purpose);
     $emptytable = $startpage ? $DB->count_records('local_ai_manager_request_log') === 0 :
-            $DB->count_records('local_ai_manager_request_log', ['purpose' => $purpose]) === 0;
+        $DB->count_records('local_ai_manager_request_log', ['purpose' => $purpose]) === 0;
 
     if (!$emptytable) {
         $uniqid = $startpage ? 'statistics-table-all-purposes' : 'statistics-table-purpose-' . $purpose;

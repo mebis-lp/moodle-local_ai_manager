@@ -63,8 +63,8 @@ class statistics_form extends \moodleform {
         $mform->setType('userids', PARAM_TEXT);
 
         $buttonarray = [];
-        $buttonarray[] = $mform->createElement('submit', 'lockusers', 'DISABLE USERS');
-        $buttonarray[] = $mform->createElement('submit', 'unlockusers', 'ENABLE USERS');
+        $buttonarray[] = $mform->createElement('submit', 'lockusers', get_string('disable_user', 'local_ai_manager'));
+        $buttonarray[] = $mform->createElement('submit', 'unlockusers', get_string('enable_user', 'local_ai_manager'));
         $buttonarray[] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
