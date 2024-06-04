@@ -16,11 +16,7 @@
 
 namespace local_ai_manager;
 
-use core\http_client;
-use local_ai_manager\local\prompt_response;
-use local_ai_manager\local\request_response;
-use local_ai_manager\local\unit;
-use Psr\Http\Message\StreamInterface;
+use local_ai_manager\local\connector_factory;
 use stdClass;
 
 /**
@@ -102,16 +98,6 @@ class connector_instance {
                 $record->customfield3,
                 $record->customfield4,
         ];
-    }
-
-    public static function create_from_tenant_and_connector(string $connector, string $tenant): ?connector_instance {
-        global $DB;
-        $record = $DB->get_record('local_ai_manager_instance', ['tenant' => $tenant, 'connector' => $connector]);
-        if (!$record) {
-            return null;
-        }
-        $instance = new connector_instance($record->id);
-        return $instance;
     }
 
     public final function store(): void {
@@ -342,6 +328,18 @@ class connector_instance {
         $DB->delete_records('local_ai_manager_instance', ['id' => $this->id]);
     }
 
-
+    public final function supported_purposes(): array {
+        if (empty($this->get_model())) {
+            return [];
+        }
+        $purposesofcurrentmodel = [];
+        $connector = \core\di::get(connector_factory::class)->get_connector_by_connectorname($this->connector);
+        foreach ($connector->get_models_by_purpose() as $purpose => $models) {
+            if (in_array($this->get_model(), $models)) {
+                $purposesofcurrentmodel[] = $purpose;
+            }
+        }
+        return $purposesofcurrentmodel;
+    }
 
 }

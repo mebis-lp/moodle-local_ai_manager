@@ -46,14 +46,11 @@ class connector extends base_connector {
         $this->instance = $instance;
     }
 
-    public function get_models(): array {
-        return ['dall-e-2', 'dall-e-3'];
+    public function get_models_by_purpose(): array {
+        return [
+                'imggen' => ['dall-e-2', 'dall-e-3'],
+        ];
     }
-
-    public function supported_purposes(): array {
-        return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['imggen']));
-    }
-
 
     /**
      * Retrieves the data for the prompt based on the prompt text.
@@ -73,6 +70,7 @@ class connector extends base_connector {
 
     /**
      * Getter method to get additional, language model specific options.
+     *
      * @return array
      */
     public function get_additional_options(): array {
@@ -91,10 +89,10 @@ class connector extends base_connector {
         $fileinfo = [
                 'contextid' => \context_user::instance($USER->id)->id,
                 'component' => 'user',
-                'filearea'  => 'draft',
-                'itemid'    => $options['itemid'],
-                'filepath'  => '/',
-                'filename'  => $options['filename'],
+                'filearea' => 'draft',
+                'itemid' => $options['itemid'],
+                'filepath' => '/',
+                'filename' => $options['filename'],
         ];
         $file = $fs->create_file_from_url($fileinfo, $content['data'][0]['url'], [], true);
 
@@ -106,6 +104,5 @@ class connector extends base_connector {
 
         return prompt_response::create_from_result($this->instance->get_model(), new usage(1.0), $filepath);
     }
-
 
 }

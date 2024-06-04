@@ -39,7 +39,15 @@ abstract class base_connector {
      *
      * @return array names of the available models
      */
-    public abstract function get_models(): array;
+    public abstract function get_models_by_purpose(): array;
+
+    public final function get_models(): array {
+        $models = [];
+        foreach ($this->get_models_by_purpose() as $modelarray) {
+            $models = array_merge($models, $modelarray);
+        }
+        return array_unique($models);
+    }
 
     public abstract function get_unit(): unit;
 
@@ -49,10 +57,6 @@ abstract class base_connector {
 
     private function get_api_key(): string {
         return $this->instance->get_apikey();
-    }
-
-    public function supported_purposes(): array {
-        return base_purpose::get_all_purposes();
     }
 
     /**

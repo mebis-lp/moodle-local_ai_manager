@@ -44,12 +44,10 @@ class connector extends \local_ai_manager\base_connector {
         $this->instance = $instance;
     }
 
-    public function get_models(): array {
-        return ['tts-1'];
-    }
-
-    public function supported_purposes(): array {
-        return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['tts']));
+    public function get_models_by_purpose(): array {
+        return [
+                'tts' => ['tts-1'],
+        ];
     }
 
     /**
@@ -90,9 +88,6 @@ class connector extends \local_ai_manager\base_connector {
         }
     }*/
 
-
-
-
     /**
      * Retrieves the data for the prompt based on the prompt text.
      *
@@ -104,13 +99,13 @@ class connector extends \local_ai_manager\base_connector {
         // If empty, use text language, else translate to the mentioned language.
         if (!empty($options->language)) {
             $data['language'] = $options->language;
-            $prompttext = 'Translate the following text into ' . $options->language .':' . $prompttext;
+            $prompttext = 'Translate the following text into ' . $options->language . ':' . $prompttext;
         }
 
         $data = [
-            'model' => $this->instance->get_model(),
-            'input' => $prompttext,
-            'voice' => 'alloy',
+                'model' => $this->instance->get_model(),
+                'input' => $prompttext,
+                'voice' => 'alloy',
         ];
 
         return $data;
@@ -118,6 +113,7 @@ class connector extends \local_ai_manager\base_connector {
 
     /**
      * Getter method to get additional, language model specific options.
+     *
      * @return array
      */
     public function get_additional_options(): array {
@@ -135,10 +131,10 @@ class connector extends \local_ai_manager\base_connector {
         $fileinfo = [
                 'contextid' => \context_user::instance($USER->id)->id,
                 'component' => 'user',
-                'filearea'  => 'draft',
-                'itemid'    => $options['itemid'],
-                'filepath'  => '/',
-                'filename'  => $options['filename'],
+                'filearea' => 'draft',
+                'itemid' => $options['itemid'],
+                'filepath' => '/',
+                'filename' => $options['filename'],
         ];
         // TODO: Entweder separat handeln für dalle etc. oder hier schön allgemein auseinanderdröseln
         /*if ($fileformat == 'png') {

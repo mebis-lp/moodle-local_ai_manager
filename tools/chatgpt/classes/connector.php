@@ -44,16 +44,17 @@ class connector extends \local_ai_manager\base_connector {
         $this->instance = $instance;
     }
 
-    public function get_models(): array {
-        return ['gpt-3.5-turbo', 'gpt-4-turbo'];
+    public function get_models_by_purpose(): array {
+        return [
+                'chat' => ['gpt-3.5-turbo', 'gpt-4-turbo'],
+                'feedback' => ['gpt-3.5-turbo', 'gpt-4-turbo'],
+                'singleprompt' => ['gpt-3.5-turbo', 'gpt-4-turbo'],
+                'translate' => ['gpt-3.5-turbo', 'gpt-4-turbo'],
+        ];
     }
 
     public function get_unit(): unit {
         return unit::TOKEN;
-    }
-
-    public function supported_purposes(): array {
-        return array_filter(parent::supported_purposes(), fn($purpose) => in_array($purpose, ['chat', 'feedback', 'singleprompt']));
     }
 
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {

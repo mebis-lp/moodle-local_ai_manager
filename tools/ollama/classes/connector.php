@@ -44,8 +44,17 @@ class connector extends \local_ai_manager\base_connector {
         $this->instance = $instance;
     }
 
-    public function get_models(): array {
-        return ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava', 'tinyllama'];
+    public function get_models_by_purpose(): array {
+        return [
+                'chat' => ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
+                        'tinyllama'],
+                'feedback' => ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
+                        'tinyllama'],
+                'singleprompt' => ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
+                        'tinyllama'],
+                'translate' => ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
+                        'tinyllama'],
+        ];
     }
 
     public function get_unit(): unit {

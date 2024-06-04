@@ -94,16 +94,10 @@ class manager {
     }
 
     public static function get_connector_instances_for_purpose(string $purpose): array {
-        global $DB;
         $instances = [];
-        foreach (core_plugin_manager::instance()->get_enabled_plugins('aitool') as $tool) {
-            $classname = '\\aitool_' . $tool . '\\connector';
-            $connector = \core\di::get($classname);
-            if (in_array($purpose, $connector->supported_purposes())) {
-                $instancerecords = $DB->get_records('local_ai_manager_instance', ['connector' => $tool]);
-                foreach ($instancerecords as $instancerecord) {
-                    $instances[$instancerecord->id] = $instancerecord->name;
-                }
+        foreach (connector_instance::get_all_instances() as $instance) {
+            if (in_array($purpose, $instance->supported_purposes())) {
+                $instances[$instance->get_id()] = $instance;
             }
         }
         return $instances;
