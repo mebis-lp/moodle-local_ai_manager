@@ -32,6 +32,9 @@ class instance extends connector_instance {
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
         $mform->addElement('text', 'temperature', 'TEMPERATURE');
         $mform->setType('temperature', PARAM_FLOAT);
+
+        $mform->setDefault('endpoint', 'https://api.openai.com/v1/audio/speech');
+        $mform->freeze('endpoint');
     }
 
     protected function get_extended_formdata(): stdClass {
