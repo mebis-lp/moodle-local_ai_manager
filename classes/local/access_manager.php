@@ -43,4 +43,17 @@ class access_manager {
         $tenantcontext = $this->tenant->get_tenant_context();
         require_capability('local/ai_manager:manage', $tenantcontext);
     }
+
+    public function require_tenant_member(): void {
+        global $USER;
+        $school = new school($this->tenant->get_tenantidentifier());
+        if (!$school->record_exists()) {
+            throw new \moodle_exception('Invalid tenant "' . $this->tenant->get_tenantidentifier() . '"!');
+        }
+        if (empty($USER->institution) || $USER->institution !== $this->tenant->get_tenantidentifier()) {
+            throw new \moodle_exception('You must not access information for the tenant '
+                    . $this->tenant->get_tenantidentifier() . '!');
+        }
+
+    }
 }

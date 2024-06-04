@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_ai_manager/instancetable
+    @template local_ai_manager/purpose_info
 
     Admin text setting template.
 
@@ -26,12 +26,28 @@
 
     Example context (json):
     {
-        "label": "button label",
-        "href": "http://google.com",
-        "forceltr": false
     }
 }}
-<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}">E</a>
-<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}&del=1">D</a>
-<a data-instanceid="{{id}}" href="#">I</a>
+<div class="local_ai_manager-purposeinfo">
+    <table class="table table-responsive table-bordered table-striped">
+        <thead>
+        <th>PURPOSE</th>
+        <th>INSTANCENAME</th>
+        <th>MODEL</th>
+        <th>ENDPOINT</th>
+        <th>INFOLINK</th>
 
+        </thead>
+        <tbody>
+            {{#purposes}}
+            <tr>
+                <td>{{purpose}}</td>
+                <td>{{name}}</td>
+                <td>{{model}}</td>
+                <td>{{endpoint}}</td>
+                <td>{{infolink}}</td>
+            </tr>
+            {{/purposes}}
+        </tbody>
+    </table>
+</div>

@@ -49,6 +49,8 @@ class connector_instance {
 
     protected ?string $model = null;
 
+    protected ?string $infolink = null;
+
     /** @var ?string First customfield attribute. */
     protected ?string $customfield1 = null;
 
@@ -81,6 +83,7 @@ class connector_instance {
                 $this->endpoint,
                 $this->apikey,
                 $this->model,
+                $this->infolink,
                 $this->customfield1,
                 $this->customfield2,
                 $this->customfield3,
@@ -93,6 +96,7 @@ class connector_instance {
                 $record->endpoint,
                 $record->apikey,
                 $record->model,
+                $record->infolink,
                 $record->customfield1,
                 $record->customfield2,
                 $record->customfield3,
@@ -119,6 +123,7 @@ class connector_instance {
         $record->endpoint = $this->endpoint;
         $record->apikey = $this->apikey;
         $record->model = $this->model;
+        $record->infolink = $this->infolink;
         $record->customfield1 = $this->customfield1;
         $record->customfield2 = $this->customfield2;
         $record->customfield3 = $this->customfield3;
@@ -198,6 +203,14 @@ class connector_instance {
         $this->model = $model;
     }
 
+    public function get_infolink(): ?string {
+        return $this->infolink;
+    }
+
+    public function set_infolink(?string $infolink): void {
+        $this->infolink = $infolink;
+    }
+
     public function get_customfield1(): ?string {
         return $this->customfield1;
     }
@@ -247,9 +260,10 @@ class connector_instance {
         }
         $data->name = $this->get_name();
         $data->connector = $this->get_connector();
-        $data->model = $this->get_model();
         $data->endpoint = $this->get_endpoint();
         $data->apikey = $this->get_apikey();
+        $data->model = $this->get_model();
+        $data->infolink = $this->get_infolink();
         foreach ($this->get_extended_formdata() as $key => $value) {
             $data->{$key} = $value;
         }
@@ -296,6 +310,9 @@ class connector_instance {
         }
         $mform->addElement('select', 'model', 'MODEL', $availablemodels);
 
+        $mform->addElement('text', 'infolink', 'INFOLINK');
+        $mform->setType('infolink', PARAM_URL);
+
         $this->extend_form_definition($mform);
     }
 
@@ -306,6 +323,7 @@ class connector_instance {
         $this->set_connector($data->connector);
         $this->set_tenant($data->tenant);
         $this->set_model($data->model);
+        $this->set_infolink($data->infolink);
         $this->extend_store_formdata($data);
         $this->store();
     }

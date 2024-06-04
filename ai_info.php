@@ -23,6 +23,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\base_purpose;
+use local_ai_manager\form\purpose_config_form;
+
 require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
@@ -38,14 +41,14 @@ if (!empty($tenantid)) {
 }
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
-$accessmanager->require_tenant_manager();
+$accessmanager->require_tenant_member();
 
-$url = new moodle_url('/local/ai_manager/instances_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$url = new moodle_url('/local/ai_manager/ai_info.php', ['tenant' => $tenant->get_tenantidentifier()]);
 $PAGE->set_url($url);
-$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 $PAGE->set_context($tenant->get_tenant_context());
+$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 
-$strtitle = 'INSTANCES KONFIGURATION';
+$strtitle = 'AI INFO';
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
@@ -53,35 +56,22 @@ $PAGE->navbar->add($strtitle);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strtitle);
-echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
-$instanceaddbuttons = [];
-foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $tool) {
-    $instanceaddbuttons[] = [
-            'label' => $tool,
-            'addurl' => (new moodle_url('/local/ai_manager/edit_instance.php',
-                    ['tenant' => $tenant->get_tenantidentifier(), 'returnurl' => $PAGE->url, 'connectorname' => $tool]))->out()
-    ];
+
+$configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+$templatecontext = [];
+$templateinstances = [];
+foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
+    if ($instanceid === null) {
+        continue;
+    }
+    $templatepurpose['purpose'] = $purpose;
+    $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+    $instance = $factory->get_connector_instance_by_id($instanceid);
+    $templatepurpose['name'] = $instance->get_name();
+    $templatepurpose['endpoint'] = $instance->get_endpoint();
+    $templatepurpose['model'] = $instance->get_model();
+    $templatepurpose['infolink'] = $instance->get_infolink();
+    $templatecontext['purposes'][] = $templatepurpose;
 }
-$instances = [];
-foreach (\local_ai_manager\connector_instance::get_all_instances() as $instance) {
-    $instances[] = [
-            'id' => $instance->get_id(),
-            'name' => $instance->get_name(),
-            'tenant' => $instance->get_tenant(),
-            'connector' => $instance->get_connector(),
-            'endpoint' => $instance->get_endpoint(),
-            'apikey' => $instance->get_apikey(),
-            'model' => $instance->get_model(),
-            'infolink' => $instance->get_infolink(),
-    ];
-}
-echo $PAGE->get_renderer('core')->render_from_template('local_ai_manager/instancetable',
-        [
-                'instances' => $instances,
-                'instanceaddbuttons' => $instanceaddbuttons,
-        ]
-);
-
-
-
+echo $OUTPUT->render_from_template('local_ai_manager/purpose_info', $templatecontext);
 echo $OUTPUT->footer();

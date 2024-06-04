@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_ai_manager/instancetable
+    @template local_ai_manager/infobox
 
     Admin text setting template.
 
@@ -26,12 +26,9 @@
 
     Example context (json):
     {
-        "label": "button label",
-        "href": "http://google.com",
-        "forceltr": false
     }
 }}
-<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}">E</a>
-<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}&del=1">D</a>
-<a data-instanceid="{{id}}" href="#">I</a>
-
+<div class="local_ai_manager-infobox alert alert-info">
+    Sie verwenden ein KI-Tool. Die eingegebenen Daten werden an ein externes KI-Tool gesendet. Details finden Sie hier:
+    <a href="{{config.wwwroot}}/local/ai_manager/ai_info.php">Informationen zum eingesetzten KI-Tool</a>
+</div>

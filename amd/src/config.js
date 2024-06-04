@@ -2,7 +2,7 @@ import {call as fetchMany} from 'core/ajax';
 
 /**
  * Make request for retrieving the purpose configuration for current tenant.
- * @param tenant the tenant identifier or nothing if it should be determined from the current user
+ * @param {string} tenant the tenant identifier or nothing if it should be determined from the current user
  */
 const execGetPurposeConfig = (
     tenant
