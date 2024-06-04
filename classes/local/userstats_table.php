@@ -31,17 +31,27 @@ class userstats_table extends table_sql {
     /**
      * Constructor.
      */
-    public function __construct(string $uniqid, private readonly string $purpose, private readonly tenant $tenant,
-            moodle_url $baseurl) {
+    public function __construct(
+        string $uniqid,
+        private readonly string $purpose,
+        private readonly tenant $tenant,
+        moodle_url $baseurl
+    ) {
         parent::__construct($uniqid);
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
         $columns = ['checkbox', 'lastname', 'firstname', 'locked', 'requestcount'];
-        $headers = ['', 'NACHNAME', 'VORNAME', 'GESPERRT', 'ANZAHL REQUESTS'];
+        $headers = [
+            '',
+            get_string('lastname'),
+            get_string('firstname'),
+            get_string('locked', 'local_ai_manager'),
+            get_string('request_count', 'local_ai_manager')
+        ];
         if (!empty($purpose)) {
             $columns[] = 'currentusage';
-            $headers[] = 'USAGE';
+            $headers[] = get_string('token_used', 'local_ai_manager');
         }
         $this->define_columns($columns);
         // Define the titles of columns to show in header.
@@ -50,29 +60,41 @@ class userstats_table extends table_sql {
         if (!empty($purpose)) {
             $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount, SUM(value) AS currentusage';
             $from =
-                    '{local_ai_manager_request_log} rl LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid JOIN {user} u ON u.id = rl.userid';
+                '{local_ai_manager_request_log} rl LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid JOIN {user} u ON u.id = rl.userid';
             $where = 'institution = :tenant AND purpose = :purpose GROUP BY u.id';
             $params = ['tenant' => $this->tenant->get_tenantidentifier(), 'purpose' => $purpose];
-            $this->set_count_sql("SELECT COUNT(DISTINCT userid) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id "
+            $this->set_count_sql(
+                "SELECT COUNT(DISTINCT userid) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id "
                     . "WHERE institution = :tenant AND purpose = :purpose",
-                    ['tenant' => $this->tenant->get_tenantidentifier(), 'purpose' => $purpose]);
+                ['tenant' => $this->tenant->get_tenantidentifier(), 'purpose' => $purpose]
+            );
         } else {
             $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount';
             $from =
-                    '{user} u LEFT JOIN {local_ai_manager_request_log} rl ON u.id = rl.userid LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
+                '{user} u LEFT JOIN {local_ai_manager_request_log} rl ON u.id = rl.userid LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
             $where = 'institution = :tenant GROUP BY u.id';
             $params = ['tenant' => $this->tenant->get_tenantidentifier()];
-            $this->set_count_sql("SELECT COUNT(DISTINCT id) FROM {user} WHERE institution = :tenant",
-                    ['tenant' => $this->tenant->get_tenantidentifier()]);
+            $this->set_count_sql(
+                "SELECT COUNT(DISTINCT id) FROM {user} WHERE institution = :tenant",
+                ['tenant' => $this->tenant->get_tenantidentifier()]
+            );
         }
         $this->set_sql($fields, $from, $where, $params);
         parent::setup();
-
     }
 
+    /**
+     * Get the icon representing the lockes state.
+     *
+     * @param mixed $value
+     * @return string
+     */
     function col_locked($value) {
-        return empty($value->locked) ? 'GRUENER HAKEN' : 'ROTES KREUZ';
-
+        if (empty($value->locked)) {
+            return '<i class="fa fa-unlock ai_manager_green"></i>';
+        } else {
+            return '<i class="fa fa-lock ai_manager_red"></i>';
+        }
     }
 
     function other_cols($column, $row) {

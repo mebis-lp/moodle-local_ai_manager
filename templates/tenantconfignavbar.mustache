@@ -29,9 +29,19 @@
     }
 }}
 <div class="local_ai_manager-tenantconfig-nav">
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/tenant_config.php">HOME</a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/user_config.php">USER-CONFIG</a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/instances_config.php">INSTANCES</a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/purpose_config.php">PURPOSES</a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/statistics.php?tsort=requestcount&tdir=3">STATISTIK</a>
+    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/tenant_config.php">
+        {{#str}} heading_home, local_ai_manager {{/str}}
+    </a>
+    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/user_config.php">
+        {{#str}} heading_user_config, local_ai_manager {{/str}}
+    </a>
+    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/instances_config.php">
+        {{#str}} heading_ai_tools, local_ai_manager {{/str}}
+    </a>
+    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/purpose_config.php">
+        {{#str}} heading_purposes, local_ai_manager {{/str}}
+    </a>
+    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/statistics.php?tsort=requestcount&tdir=3">
+        {{#str}} heading_statistics, local_ai_manager {{/str}}
+    </a>
 </div>

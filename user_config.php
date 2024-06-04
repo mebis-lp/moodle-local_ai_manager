@@ -52,7 +52,7 @@ $PAGE->set_url($url);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 $PAGE->set_context($tenant->get_tenant_context());
 
-$strtitle = 'USER CONFIG';
+$strtitle = get_string('heading_user_config', 'local_ai_manager');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
