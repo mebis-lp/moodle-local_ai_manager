@@ -27,12 +27,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
-$tenant = optional_param('tenant', '', PARAM_ALPHANUM);
-
-$url = new moodle_url('/local/ai_manager/instances_config.php');
-$PAGE->set_url($url);
-
-$returnurl = new moodle_url('/course/index.php');
+$tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 
 // Check permissions.
 require_login();
@@ -45,6 +40,9 @@ $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 $accessmanager->require_tenant_manager();
 
+$url = new moodle_url('/local/ai_manager/instances_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$PAGE->set_url($url);
+$returnurl = new moodle_url('/local/ai_manager/tenantconfig.php', ['tenant' => $tenant->get_tenantidentifier()]);
 $PAGE->set_context($tenant->get_tenant_context());
 
 $strtitle = 'INSTANCES KONFIGURATION';
