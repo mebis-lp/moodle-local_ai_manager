@@ -70,9 +70,18 @@ class userstats_table extends table_sql {
 
     }
 
+    /**
+     * Get the icon representing the lockes state.
+     *
+     * @param mixed $value
+     * @return string
+     */
     function col_locked($value) {
-        return empty($value->locked) ? 'GRUENER HAKEN' : 'ROTES KREUZ';
-
+        if(empty($value->locked)) {
+            return '<i class="fa fa-unlock ai_manager_green"></i>';
+        } else {
+            return '<i class="fa fa-lock ai_manager_red"></i>';
+        }
     }
 
     function other_cols($column, $row) {
