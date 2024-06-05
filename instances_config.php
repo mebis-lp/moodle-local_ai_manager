@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\output\tenantnavbar;
+
 require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
@@ -53,7 +55,8 @@ $PAGE->navbar->add($strtitle);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strtitle);
-echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
+$tenantnavbar = new tenantnavbar();
+echo $OUTPUT->render($tenantnavbar);
 $instanceaddbuttons = [];
 foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $tool) {
     $instanceaddbuttons[] = [

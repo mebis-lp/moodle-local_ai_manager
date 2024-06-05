@@ -34,7 +34,7 @@ use Psr\Http\Message\StreamInterface;
 class base_purpose {
 
     public function get_request_options(array $options): array {
-        return [];
+        return $options;
     }
 
     public static function get_all_purposes(): array {
