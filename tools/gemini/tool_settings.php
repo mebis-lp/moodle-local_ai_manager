@@ -31,24 +31,23 @@ require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->libdir . '/tablelib.php');
 
 $PAGE->set_context(\context_system::instance());
-$PAGE->set_url('/local/ai_manager/tools/dalle/tool_settings.php');
+$PAGE->set_url('/local/ai_manager/tools/chatgpt/tool_settings.php');
 require_login(null, false);
 
-admin_externalpage_setup('aitool_dalle');
+admin_externalpage_setup('aitool_gemini');
 
 if (optional_param('action', '', PARAM_TEXT) == 'storesettings') {
-    set_config('openaiapikey', required_param('openaiapikey', PARAM_TEXT), 'aitool_dalle');
-    set_config('sourceoftruth', optional_param('sourceoftruth', '', PARAM_TEXT), 'aitool_dalle');
-    set_config('temperature', optional_param('temperature',0.5, PARAM_TEXT), 'aitool_dalle');
-    set_config('top_p', optional_param('top_p',0.5, PARAM_TEXT), 'aitool_dalle');
-    set_config('frequency_penalty', optional_param('frequency_penalty',0.5, PARAM_TEXT), 'aitool_dalle');
-    set_config('presence_penalty', optional_param('presence_penalty',0.5, PARAM_TEXT), 'aitool_dalle');
+    set_config('openaiapikey', required_param('openaiapikey', PARAM_TEXT), 'aitool_gemini');
+    set_config('sourceoftruth', optional_param('sourceoftruth', '', PARAM_TEXT), 'aitool_gemini');
+    set_config('temperature', optional_param('temperature',0.5, PARAM_TEXT), 'aitool_gemini');
+    set_config('top_p', optional_param('top_p',0.5, PARAM_TEXT), 'aitool_gemini');
+    set_config('frequency_penalty', optional_param('frequency_penalty',0.5, PARAM_TEXT), 'aitool_gemini');
+    set_config('presence_penalty', optional_param('presence_penalty',0.5, PARAM_TEXT), 'aitool_gemini');
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('openaisettings', 'aitool_dalle'), 1);
+echo $OUTPUT->heading(get_string('openaisettings', 'aitool_gemini'), 1);
 
-echo $OUTPUT->render_from_template('aitool_dalle/settings', get_config('aitool_dalle'));;
-// echo html_writer::tag('div', get_string('ldapcomparsioninit_desc', 'local_mbscleanup'));
+echo $OUTPUT->render_from_template('aitool_gemini/settings', get_config('aitool_gemini'));;
 
 echo $OUTPUT->footer();

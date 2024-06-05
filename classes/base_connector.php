@@ -51,11 +51,11 @@ abstract class base_connector {
 
     public abstract function get_unit(): unit;
 
-    private function get_endpoint_url(): string {
+    protected function get_endpoint_url(): string {
         return $this->instance->get_endpoint();
     }
 
-    private function get_api_key(): string {
+    protected function get_api_key(): string {
         return $this->instance->get_apikey();
     }
 

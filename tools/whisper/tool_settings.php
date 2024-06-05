@@ -17,7 +17,7 @@
 /**
  * Admin page for local_mbscleanup LDAP comparison.
  *
- * @package    local_mbscleanup
+ * @package    local_ai_manager
  * @copyright  ISB Bayern
  * @author     Peter Mayer, peter.mayer@isb.bayern.de
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

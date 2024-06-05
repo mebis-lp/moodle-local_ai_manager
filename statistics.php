@@ -70,12 +70,6 @@ $statisticsform = new \local_ai_manager\form\statistics_form(null, ['tenant' => 
 if ($statisticsform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $statisticsform->get_data()) {
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
-    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
-    echo $OUTPUT->render_from_template('local_ai_manager/statisticssubnavbar', $statisticsnavbarcontext);
-
     $userids = explode(';', $data->userids);
     foreach ($userids as $userid) {
         $user = \core_user::get_user($userid);

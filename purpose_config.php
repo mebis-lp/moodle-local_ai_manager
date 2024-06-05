@@ -62,11 +62,6 @@ $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 if ($purposeconfigform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $purposeconfigform->get_data()) {
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
-    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
-
     foreach (base_purpose::get_all_purposes() as $purpose) {
         if (property_exists($data, base_purpose::get_purpose_tool_config_key($purpose)) && intval($data->{base_purpose::get_purpose_tool_config_key($purpose)}) === 0) {
             $configmanager->unset_config(base_purpose::get_purpose_tool_config_key($purpose));

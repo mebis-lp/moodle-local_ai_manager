@@ -66,11 +66,6 @@ $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 if ($userconfigform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $userconfigform->get_data()) {
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
-    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
-
     foreach (base_purpose::get_all_purposes() as $purpose) {
 
         foreach ([$purpose . '_max_requests_basic', $purpose . '_max_requests_extended'] as $configkey) {

@@ -89,12 +89,6 @@ $editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url
 if ($editinstanceform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $editinstanceform->get_data()) {
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
-    // As the restore process is being done asynchronously, the user should get notified, that the process has successfully been
-    // started or that trying to trigger it caused an error.
-
     $connectorinstance->store_formdata($data);
     redirect(new moodle_url('/local/ai_manager/instances_config.php'), 'DATA SAVED', '');
 } else {
