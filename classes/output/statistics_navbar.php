@@ -14,21 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_ai_manager\local;
+namespace local_ai_manager\output;
+
+use local_ai_manager\local\tenant;
+use renderable;
+use renderer_base;
+use stdClass;
 
 /**
- * Enum for defining different units in which the AI tool costs are being calculated.
+ * Navbar for statistics pages in tenant config.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-enum unit {
-    case TOKEN;
-    case COUNT;
+class statistics_navbar implements renderable, \templatable {
+    public function export_for_template(renderer_base $output): stdClass {
+        $data = new stdClass();
+        $purposes = [];
+        foreach (\local_ai_manager\base_purpose::get_all_purposes() as $availablepurpose) {
+            $purposes[] = ['purpose' => $availablepurpose];
+        }
+        $data->purposes = $purposes;
+        $tenant = \core\di::get(tenant::class);
+        $data->showuserstatistics = has_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context());
 
-    public function to_string(): string {
-        return get_string('unit_' . strtolower($this->name), 'local_ai_manager');
+        return $data;
     }
 }

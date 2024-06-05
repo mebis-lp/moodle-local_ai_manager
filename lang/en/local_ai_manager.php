@@ -47,6 +47,8 @@ $string['tools'] = 'Languagemodels';
 $string['settings_cat_tools'] = 'Languagemodels';
 $string['settings_cat_purposes'] = 'Purposes';
 $string['generalsettings'] = 'General settings';
+$string['unit_token'] = 'token';
+$string['unit_count'] = 'request(s)';
 
 // Strings for category managementpage.
 $string['mp_pagetitle'] = 'Category AI Settings';

@@ -19,6 +19,7 @@ namespace local_ai_manager\local;
 use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
 use local_ai_manager\connector_instance;
+use mod_unilabel\factory;
 
 /**
  * Class for managing the configuration of tenants.
@@ -84,6 +85,16 @@ class connector_factory {
         $connectorclassname = '\\aitool_' . $instance->get_connector() . '\\connector';
         $this->connector = new $connectorclassname($instance);
         return $this->connector;
+    }
+
+    public function get_connector_by_model(string $model): ?base_connector {
+        foreach (base_connector::get_all_connectors() as $connectorname) {
+            $connector = $this->get_connector_by_connectorname($connectorname);
+            if (in_array($model, $connector->get_models())) {
+                return $connector;
+            }
+        }
+        return null;
     }
 
     public function instance_exists(int $id): bool {

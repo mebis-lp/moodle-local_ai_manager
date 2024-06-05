@@ -24,6 +24,7 @@
  */
 
 use local_ai_manager\local\userinfo;
+use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
@@ -55,13 +56,6 @@ $PAGE->navbar->add($strtitle);
 
 //$download = optional_param('download', '', PARAM_ALPHA);
 
-$purposes = [];
-foreach (\local_ai_manager\base_purpose::get_all_purposes() as $availablepurpose) {
-    $purposes[] = ['purpose' => $availablepurpose];
-}
-$statisticsnavbarcontext['purposes'] = $purposes;
-
-
 $statisticsform = new \local_ai_manager\form\statistics_form(null, ['tenant' => $tenant, 'purpose' => $purpose]);
 // Will return the config manager for the current user.
 //$configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
@@ -92,29 +86,41 @@ if ($statisticsform->is_cancelled()) {
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
-    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
-    echo $OUTPUT->render_from_template('local_ai_manager/statisticssubnavbar', $statisticsnavbarcontext);
+    $tenantnavbar = new tenantnavbar();
+    echo $OUTPUT->render($tenantnavbar);
+    $statisticsnavbar = new \local_ai_manager\output\statistics_navbar();
+    echo $OUTPUT->render($statisticsnavbar);
 
     $startpage = empty($purpose);
-    $emptytable = $startpage ? $DB->count_records('local_ai_manager_request_log') === 0 :
-        $DB->count_records('local_ai_manager_request_log', ['purpose' => $purpose]) === 0;
+    $urlparams = [];
+    if (!$startpage) {
+        $urlparams['purpose'] = $purpose;
+    }
+    $baseurl = new moodle_url('/local/ai_manager/statistics.php', $urlparams);
 
-    if (!$emptytable) {
-        $uniqid = $startpage ? 'statistics-table-all-purposes' : 'statistics-table-purpose-' . $purpose;
-        $urlparams = [];
-        if (!$startpage) {
-            $urlparams['purpose'] = $purpose;
-        }
-        $baseurl = new moodle_url('/local/ai_manager/statistics.php', $urlparams);
-        if (!$startpage) {
-            echo html_writer::div('Only user who already have used this purpose are being shown');
-        }
-        $table = new \local_ai_manager\local\userstats_table($uniqid, $purpose, $tenant, $baseurl);
-        $table->out(5, false);
+    if ($startpage) {
+        $baseurl = new moodle_url('/local/ai_manager/statistics.php');
+        $overviewtable = new \local_ai_manager\local\statistics_overview_table('statistics-overview-table', $tenant, $baseurl);
+        $overviewtable->out(100, false);
     }
 
-    $statisticsform->display();
-    $PAGE->requires->js_call_amd('local_ai_manager/statistics_table', 'init', ['id' => $uniqid]);
+    if (has_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context())) {
+        $emptytable = $startpage ? $DB->count_records('local_ai_manager_request_log') === 0 :
+                $DB->count_records('local_ai_manager_request_log', ['purpose' => $purpose]) === 0;
+
+        if (!$emptytable) {
+            $uniqid = $startpage ? 'statistics-table-all-purposes' : 'statistics-table-purpose-' . $purpose;
+            if (!$startpage) {
+                echo html_writer::div('Only user who already have used this purpose are being shown');
+            }
+
+            $table = new \local_ai_manager\local\userstats_table($uniqid, $purpose, $tenant, $baseurl);
+            $table->out(5, false);
+            $statisticsform->display();
+            $PAGE->requires->js_call_amd('local_ai_manager/statistics_table', 'init', ['id' => $uniqid]);
+        }
+    }
+
 }
 
 echo $OUTPUT->footer();

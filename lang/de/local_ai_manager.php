@@ -40,6 +40,8 @@ $string['zweck_tts'] = 'Text in Sprache';
 $string['settingsgeneral'] = 'Allgemein';
 $string['temperatur'] = 'Temperatur';
 $string['temperature_desc'] = 'Dies beschreibt "Zufälligkeit" oder "Kreativität". Eine niedrige Temperatur erzeugt einen kohärenteren, aber vorhersehbaren Text. Hohe Zahlen bedeuten kreativer, aber ungenauer. Der Bereich reicht von 0 bis 1.';
+$string['unit_token'] = 'Token';
+$string['unit_count'] = 'Anfrage(n)';
 
 // Strings for category managementpage.
 $string['mp_pagetitle'] = 'KI-Einstellungen: Ludwigsgymnasium München';

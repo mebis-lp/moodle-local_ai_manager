@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_ai_manager/tenantconfignavbar
+    @template local_ai_manager/tenantnavbar
 
     Admin text setting template.
 
@@ -41,7 +41,9 @@
     <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/purpose_config.php">
         {{#str}} heading_purposes, local_ai_manager {{/str}}
     </a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/statistics.php?tsort=requestcount&tdir=3">
-        {{#str}} heading_statistics, local_ai_manager {{/str}}
-    </a>
+    {{#showstatistics}}
+        <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/statistics.php?tsort=requestcount&tdir=3">
+            {{#str}} heading_statistics, local_ai_manager {{/str}}
+        </a>
+    {{/showstatistics}}
 </div>

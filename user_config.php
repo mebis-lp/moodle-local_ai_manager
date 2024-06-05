@@ -29,6 +29,7 @@ use local_ai_manager\form\purpose_config_form;
 use local_ai_manager\form\user_config_form;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
+use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
@@ -87,7 +88,8 @@ if ($userconfigform->is_cancelled()) {
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strtitle);
-    echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
+    $tenantnavbar = new tenantnavbar();
+    echo $OUTPUT->render($tenantnavbar);
 
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {

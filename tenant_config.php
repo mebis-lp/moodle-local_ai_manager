@@ -24,6 +24,7 @@
  */
 
 use core\output\notification;
+use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
@@ -56,6 +57,6 @@ $PAGE->navbar->add($strtitle);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strtitle);
-echo $OUTPUT->render_from_template('local_ai_manager/tenantconfignavbar', []);
-$PAGE->requires->js_call_amd('local_ai_manager/config', 'init');
+$tenantnavbar = new tenantnavbar();
+echo $OUTPUT->render($tenantnavbar);
 echo $OUTPUT->footer();

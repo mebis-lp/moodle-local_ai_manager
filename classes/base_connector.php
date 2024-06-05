@@ -17,6 +17,7 @@
 namespace local_ai_manager;
 
 use core\http_client;
+use core_plugin_manager;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
@@ -121,5 +122,9 @@ abstract class base_connector {
             );
         }
         return $return;
+    }
+
+    public static final function get_all_connectors(): array {
+        return core_plugin_manager::instance()->get_enabled_plugins('aitool');
     }
 }

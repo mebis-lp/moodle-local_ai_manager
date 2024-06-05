@@ -24,9 +24,10 @@ use table_sql;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require $CFG->libdir . '/tablelib.php';
+require_once($CFG->libdir . '/tablelib.php');
 
 class userstats_table extends table_sql {
+    private bool $shownames;
 
     /**
      * Constructor.
@@ -81,6 +82,16 @@ class userstats_table extends table_sql {
         }
         $this->set_sql($fields, $from, $where, $params);
         parent::setup();
+
+        $this->shownames = has_capability('local/ai_manager:viewusernames', $tenant->get_tenant_context());
+    }
+
+    function col_lastname($value) {
+        return $this->shownames ? $value->lastname : 'MUSTERMANN';
+    }
+
+    function col_firstname($value) {
+        return $this->shownames ? $value->firstname : 'MUSTERMANN';
     }
 
     /**

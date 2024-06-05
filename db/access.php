@@ -48,4 +48,40 @@ $capabilities = [
                         'manager' => CAP_ALLOW,
                 ]
         ],
+        'local/ai_manager:viewstatistics' => [
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_PREVENT,
+                        'guest' => CAP_PREVENT,
+                        'student' => CAP_PREVENT,
+                        'teacher' => CAP_PREVENT,
+                        'editingteacher' => CAP_PREVENT,
+                        'manager' => CAP_ALLOW,
+                ]
+        ],
+        'local/ai_manager:viewuserstatistics' => [
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_PREVENT,
+                        'guest' => CAP_PREVENT,
+                        'student' => CAP_PREVENT,
+                        'teacher' => CAP_PREVENT,
+                        'editingteacher' => CAP_PREVENT,
+                        'manager' => CAP_ALLOW,
+                ]
+        ],
+        'local/ai_manager:viewusernames' => [
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_PREVENT,
+                        'guest' => CAP_PREVENT,
+                        'student' => CAP_PREVENT,
+                        'teacher' => CAP_PREVENT,
+                        'editingteacher' => CAP_PREVENT,
+                        'manager' => CAP_ALLOW,
+                ]
+        ],
 ];

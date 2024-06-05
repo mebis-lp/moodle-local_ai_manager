@@ -60,7 +60,7 @@ foreach ($enabledtools as $tool) {
     $options[] = ['tool' => $tool, 'toolname' => get_string('pluginname', 'aitool_' . $tool), 'apikey' => "testkey"];
 }
 
-$purposes = \local_ai_manager\base_connector::get_all_purposes();
+$purposes = \local_ai_manager\base_purpose::get_all_purposes();
 foreach ($purposes as $purpose) {
 
     $templatecontext['matching']['purposes'][] = [
