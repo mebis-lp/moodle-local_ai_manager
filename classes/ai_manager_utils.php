@@ -16,6 +16,8 @@
 
 namespace local_ai_manager;
 
+use local_ai_manager\local\tenant;
+
 /**
  * Base class for connector subplugins.
  *
@@ -84,5 +86,19 @@ class ai_manager_utils {
         $max =
                 intval($DB->get_field_sql($sql, ['component' => $component, 'contextid' => $contextid]));
         return empty($max) ? 1 : $max + 1;
+    }
+
+    public static function get_connector_instance_by_purpose(string $purpose, int $userid = null): connector_instance {
+        if (is_null($userid)) {
+            $tenant = \core\di::get(tenant::class);
+        } else {
+            $user = \core_user::get_user($userid);
+            $tenant = new tenant($user->institution);
+            \core\di::set($tenant);
+        }
+        $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+        return $factory->get_connector_instance_by_purpose($purpose);
+
+
     }
 }

@@ -95,7 +95,7 @@ abstract class base_connector {
     public function make_request(array $data, bool $multipart = false): request_response {
         $client = new http_client([
                 // TODO Make timeout higher, LLM requests can take quite a bit of time
-                'timeout' => 60,
+                'timeout' => 180,
         ]);
 
         $contenttype = $multipart ? 'multipart/form-data' : 'application/json;charset=utf-8';
