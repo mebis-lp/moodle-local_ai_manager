@@ -23,18 +23,51 @@
  */
 
 import * as Templates from 'core/templates';
+import LocalStorage from 'core/localstorage';
+import ModalConfirm from 'local_ai_manager/confirm_modal';
+import Log from 'core/log';
 
 /**
  * Inserts the infobox into the beginning of element with the given selector.
  *
+ * Also triggers a confirmation modal the first time it is being rendered by a component.
+ *
+ * @param {string} component The component name from which this is being called
+ * @param {int} userId id of the user
  * @param {string} selector the id of the element to insert the infobox
  * @param {string[]} purposes the purposes which are being used
  */
-export const renderInfoBox = async(selector, purposes) => {
+export const renderInfoBox = async(component, userId, selector, purposes) => {
     const targetElement = document.querySelector(selector);
     const templateContext = {
         'purposes': purposes
     };
     const {html, js} = await Templates.renderForPromise('local_ai_manager/infobox', templateContext);
     Templates.prependNodeContents(targetElement, html, js);
+    // We do not want to store the userId in plain text in the local storage, so we hash it.
+    const hashKey = await hash(userId + component);
+    const localStorageContent = LocalStorage.get(hashKey);
+    const currentTime = new Date().getTime();
+    // If the box has not been shown for more than 2 hours, we show it again.
+    if (!localStorageContent || (currentTime - localStorageContent > 120 * 60 * 1000)) {
+        await ModalConfirm.create({});
+        const date = new Date();
+        LocalStorage.set(hashKey, date.getTime());
+    }
+};
+
+/**
+ * Hash function to get a hash of a string.
+ *
+ * @param {string} stringToHash the string to hash
+ * @returns {Promise<string>} the promise containing a hex representation of the string encoded by SHA-256
+ */
+const hash = async(stringToHash) => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(stringToHash);
+    const hashAsArrayBuffer = await window.crypto.subtle.digest("SHA-256", data);
+    const uint8ViewOfHash = new Uint8Array(hashAsArrayBuffer);
+    return Array.from(uint8ViewOfHash)
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
 };

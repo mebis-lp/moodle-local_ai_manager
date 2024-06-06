@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_ai_manager/infobox
+    @template local_ai_manager/confirm_modal
 
     Admin text setting template.
 
@@ -28,7 +28,15 @@
     {
     }
 }}
-<div class="local_ai_manager-infobox alert alert-success">
-    Sie verwenden ein KI-Tool. Die eingegebenen Daten werden an ein externes KI-Tool gesendet. Details finden Sie hier:
-    <a href="{{config.wwwroot}}/local/ai_manager/ai_info.php" target="_blank">Informationen zum eingesetzten KI-Tool</a>
-</div>
+{{< core/modal }}
+    {{$title}}{{#str}}confirmaitoolsusage_header, local_ai_manager{{/str}}{{/title}}
+    {{$body}}
+        <div class="container">
+            <p>{{#str}}confirmaitoolsusage_description, local_ai_manager{{/str}}</p>
+            <p><a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/ai_info.php" target="_blank">{{#str}}confirmaitoolsusage_details, local_ai_manager{{/str}}</a></p>
+        </div>
+    {{/body}}
+    {{$footer}}
+        <button type="button" class="btn btn-primary" data-action="cancel">{{#str}} ok {{/str}}</button>
+    {{/footer}}
+{{/ core/modal }}

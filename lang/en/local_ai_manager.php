@@ -26,6 +26,10 @@
 $string['ai_manager:manage'] = 'Manage configuration of ai_manager';
 $string['ai_manager:use'] = 'Use ai_manager';
 $string['aiadministrationlink'] = 'AI tools administration';
+$string['confirmaitoolsusage_header'] = 'Confirm AI usage';
+$string['confirmaitoolsusage_description'] = 'You are about to use an AI tool. Whenever you are about to use such an tool from inside
+the mebis Lernplattform you will be informed by an info box which contains specific information about the usage of your data.';
+$string['confirmaitoolsusage_details'] = 'Detailed information';
 $string['empty_api_key'] = 'Empty API Key';
 $string['pleaseselect'] = 'Please, select';
 $string['pluginname'] = 'AI Manager';

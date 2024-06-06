@@ -26,6 +26,10 @@
 $string['ai_manager:manage'] = 'Manage configuration of ai_manager';
 $string['ai_manager:use'] = 'Use ai_manager';
 $string['aiadministrationlink'] = 'KI-Tools-Administration';
+$string['confirmaitoolsusage_header'] = 'KI-Nutzung bestätigen';
+$string['confirmaitoolsusage_description'] = 'Sie sind dabei, ein KI-Tool zu nutzen. Immer, wenn dies innerhalb der mebis Lernplattform
+ geschieht, werden Sie über eine Info-Box darüber informiert, die konkrete Informationen zur Verwendung Ihrer Daten enthält.';
+$string['confirmaitoolsusage_details'] = 'Weitere Informationen';
 $string['empty_api_key'] = 'Leerer API-Schlüssel';
 $string['pleaseselect'] = 'Bitte, wählen Sie';
 $string['pluginname'] = 'AI Manager';
