@@ -154,4 +154,13 @@ class connector extends \local_ai_manager\base_connector {
 
         return prompt_response::create_from_result($this->instance->get_model(), new usage(1.0), $filepath);
     }
+
+    public function get_available_options(): array {
+        return [
+                'voices' => [
+                        'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer',
+                ]
+        ];
+    }
+
 }

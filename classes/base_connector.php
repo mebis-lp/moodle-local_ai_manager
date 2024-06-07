@@ -83,6 +83,10 @@ abstract class base_connector {
         return $this->instance;
     }
 
+    public function get_available_options(): array {
+        return [];
+    }
+
     /**
      * Makes a request to the specified URL with the given data and API key.
      *

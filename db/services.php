@@ -40,4 +40,18 @@ $functions = [
                 'ajax' => true,
                 'capabilities' => 'local/ai_manager:use',
         ],
+        'local_ai_manager_get_purpose_options' => [
+                'classname' => 'local_ai_manager\external\get_purpose_options',
+                'description' => 'Retrieve available options for a given purpose',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
+        'local_ai_manager_get_user_quota' => [
+                'classname' => 'local_ai_manager\external\get_user_quota',
+                'description' => 'Retrieve quota information for the current user',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
 ];

@@ -103,4 +103,17 @@ class userinfo {
         return new tenant($user->institution);
     }
 
+    public static function get_role_as_string(int $role): string {
+        switch ($role) {
+            case 1:
+                return 'role_basic';
+            case 2:
+                return 'role_extended';
+            case 3:
+                return 'role_unlimited';
+            default:
+                throw new \coding_exception('Role integers must be 1, 2 or 3');
+        }
+    }
+
 }

@@ -33,6 +33,8 @@ use Psr\Http\Message\StreamInterface;
  */
 class base_purpose {
 
+    public const PLACEHOLDER = 'placeholder';
+
     public function get_request_options(array $options): array {
         return $options;
     }
@@ -47,6 +49,26 @@ class base_purpose {
 
     public final function get_plugin_name(): string {
         return preg_replace('/^aipurpose_(.*)\\\\.*/', '$1', get_class($this));
+    }
+
+    public final function get_available_purpose_options(): array {
+        $options = [];
+        $options['component'] = self::PLACEHOLDER;
+        $options['contexid'] = self::PLACEHOLDER;
+        $options['itemid'] = self::PLACEHOLDER;
+        $options['forcenewitemid'] = self::PLACEHOLDER;
+        foreach (array_keys($this->define_purpose_options()) as $purposeoption) {
+            if (in_array($purposeoption, $options)) {
+                throw new \coding_exception('You must not define options in the purpose subclass which are being used in the '
+                . 'base class.');
+            }
+        }
+        return array_merge($options, $this->define_purpose_options());
+    }
+
+    public function define_purpose_options(): array {
+
+        return [];
     }
 
 }

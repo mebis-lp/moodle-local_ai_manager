@@ -26,6 +26,7 @@
 namespace aipurpose_tts;
 
 use local_ai_manager\base_purpose;
+use local_ai_manager\local\connector_factory;
 
 /**
  * Purpose tts methods
@@ -36,5 +37,17 @@ use local_ai_manager\base_purpose;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class purpose extends base_purpose {
+    public function define_purpose_options(): array {
+        $factory = \core\di::get(connector_factory::class);
+        $connector = $factory->get_connector_by_purpose($this->get_plugin_name());
+        $instance = $connector->get_instance();
+        if (!in_array($this->get_plugin_name(), $instance->supported_purposes())) {
+            // Currently selected purpose does not support tts, so we do not add any options.
+            return [];
+        }
+
+        // TODO return something else than [] ;-)
+        return [];
+    }
 
 }
