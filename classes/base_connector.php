@@ -21,6 +21,7 @@ use core_plugin_manager;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -95,7 +96,7 @@ abstract class base_connector {
     public function make_request(array $data, bool $multipart = false): request_response {
         $client = new http_client([
                 // TODO Make timeout higher, LLM requests can take quite a bit of time
-                'timeout' => 180,
+                'timeout' => 120,
         ]);
 
         $contenttype = $multipart ? 'multipart/form-data' : 'application/json;charset=utf-8';
@@ -108,7 +109,11 @@ abstract class base_connector {
 
         $start = microtime(true);
 
-        $response = $client->post($this->get_endpoint_url(), $options);
+        try {
+            $response = $client->post($this->get_endpoint_url(), $options);
+        } catch (ClientExceptionInterface $exception) {
+            return $this->create_error_response_from_exception($exception);
+        }
         $end = microtime(true);
         $executiontime = round($end - $start, 2);
         if ($response->getStatusCode() === 200) {
@@ -116,9 +121,9 @@ abstract class base_connector {
         } else {
             // TODO localize
             $return = request_response::create_from_error(
-                    'Sending request to tool api endpoint failed with code ' . $response->getStatusCode(),
+                    $response->getStatusCode(),
+                    'Sending request to tool api endpoint failed',
                     $response->getBody(),
-                    ''
             );
         }
         return $return;
@@ -126,5 +131,33 @@ abstract class base_connector {
 
     public static final function get_all_connectors(): array {
         return core_plugin_manager::instance()->get_enabled_plugins('aitool');
+    }
+
+    protected function create_error_response_from_exception(ClientExceptionInterface $exception): request_response {
+        // TODO Improve messages and localize
+        $message = '';
+        // This is actually pretty bad, but it does not seem possible to get to these kind of errors through some kind of
+        // Guzzle API functions, so we have to hope the cURL error messages are kinda stable.
+        if (str_contains($exception->getMessage(), 'cURL error')) {
+            if (str_contains($exception->getMessage(), 'cURL error 28')) {
+                $message = 'The API took too long to process your request or could not be reached in a reasonable time';
+            }
+        } else {
+            switch ($exception->getCode()) {
+                case 401:
+                    $message = 'Access to the API has been denied because of invalid credentials';
+                    break;
+                case 429:
+                    $message = 'There have been sent too many or too big requests to the AI tool in a certain amount of time. Please try again later.';
+                    break;
+                case 500:
+                    $message = 'An internal server error of the AI tool occurred';
+                    break;
+                default:
+                    $message = 'A general error occurred while trying to send the request to the AI tool';
+            }
+        }
+        return request_response::create_from_error($exception->getCode(), $message,
+                $exception->getMessage() . '\n' . $exception->getTraceAsString());
     }
 }

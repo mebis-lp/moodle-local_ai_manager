@@ -25,7 +25,6 @@
 import * as Templates from 'core/templates';
 import LocalStorage from 'core/localstorage';
 import ModalConfirm from 'local_ai_manager/confirm_modal';
-import Log from 'core/log';
 
 /**
  * Inserts the infobox into the beginning of element with the given selector.

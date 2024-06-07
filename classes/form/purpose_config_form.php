@@ -30,6 +30,7 @@ namespace local_ai_manager\form;
 use core_plugin_manager;
 use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
+use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\tenant;
 use local_ai_manager\manager;
 
@@ -65,7 +66,8 @@ class purpose_config_form extends \moodleform {
             get_string('heading_purposes', 'local_ai_manager')
         );
         foreach (base_purpose::get_all_purposes() as $purpose) {
-            $instances = manager::get_connector_instances_for_purpose($purpose);
+            $factory = \core\di::get(connector_factory::class);
+            $instances = $factory::get_connector_instances_for_purpose($purpose);
             $instances = array_map(fn ($instance) => $instance->get_name(), $instances);
             $instances[0] = get_string('not_selected', 'local_ai_manager');
             $mform->addElement(
@@ -74,8 +76,6 @@ class purpose_config_form extends \moodleform {
                 get_string('select_tool_for_purpose', 'local_ai_manager', $purpose),
                 $instances
             );
-
-            // TODO Select-Element
         }
         $this->add_action_buttons();
         /*

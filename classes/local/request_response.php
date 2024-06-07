@@ -52,7 +52,7 @@ readonly class request_response {
     }
 
     public function set_debuginfo(string $debuginfo): void {
-        $this->errormessage = $debuginfo;
+        $this->debuginfo = $debuginfo;
     }
 
 

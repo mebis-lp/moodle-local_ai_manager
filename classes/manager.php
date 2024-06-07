@@ -68,15 +68,11 @@ class manager {
      * @return string|void
      * @throws dml_exception
      */
-    public function __construct(string $purpose, private readonly array $options = []) {
+    public function __construct(string $purpose) {
         $this->factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
         $this->purpose = $this->factory->get_purpose_by_purpose_string($purpose);
         $this->toolconnector = $this->factory->get_connector_by_purpose($purpose);
         $this->configmanager = \core\di::get(config_manager::class);
-    }
-
-    public static function get_default_tool(string $purpose): string {
-        return get_config('local_ai_manager', 'default_' . $purpose);
     }
 
     public static function get_tools_for_purpose(string $purpose): array {
@@ -93,16 +89,6 @@ class manager {
         return $tools;
     }
 
-    public static function get_connector_instances_for_purpose(string $purpose): array {
-        $instances = [];
-        foreach (connector_instance::get_all_instances() as $instance) {
-            if (in_array($purpose, $instance->supported_purposes())) {
-                $instances[$instance->get_id()] = $instance;
-            }
-        }
-        return $instances;
-    }
-
     /**
      * Get the prompt completion from the LLM.
      *
@@ -114,7 +100,7 @@ class manager {
         global $DB, $USER;
 
         if ($options === null) {
-            $options = new \stdClass();
+            $options = [];
         }
 
         $userinfo = new userinfo($USER->id);
@@ -137,6 +123,8 @@ class manager {
         try {
             $requestresult = $this->toolconnector->make_request($promptdata, !empty($options['multipart']));
         } catch (\Exception $exception) {
+            // This hopefully very rarely happens, because we catch exceptions already inside the make_request method.
+            // So we do not do any more beautifying of exceptions here.
             return prompt_response::create_from_error(500, $exception->getMessage(), $exception->getTraceAsString());
         }
         if ($requestresult->get_code() !== 200) {

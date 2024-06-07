@@ -94,11 +94,9 @@ class ai_manager_utils {
         } else {
             $user = \core_user::get_user($userid);
             $tenant = new tenant($user->institution);
-            \core\di::set($tenant);
+            \core\di::set(tenant::class, $tenant);
         }
         $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
         return $factory->get_connector_instance_by_purpose($purpose);
-
-
     }
 }

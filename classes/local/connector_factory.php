@@ -111,4 +111,14 @@ class connector_factory {
         return $this->purpose;
     }
 
+    public static function get_connector_instances_for_purpose(string $purpose): array {
+        $instances = [];
+        foreach (connector_instance::get_all_instances() as $instance) {
+            if (in_array($purpose, $instance->supported_purposes())) {
+                $instances[$instance->get_id()] = $instance;
+            }
+        }
+        return $instances;
+    }
+
 }
