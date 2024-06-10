@@ -63,7 +63,7 @@ class base_purpose {
                 . 'base class.');
             }
         }
-        return array_merge($options, $this->define_purpose_options());
+        return $options + $this->define_purpose_options();
     }
 
     public function define_purpose_options(): array {

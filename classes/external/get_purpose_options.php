@@ -65,7 +65,7 @@ class get_purpose_options extends external_api {
         $factory = \core\di::get(connector_factory::class);
         $purposeobject = $factory->get_purpose_by_purpose_string($purpose);
         return [
-                'options' => $purposeobject->get_available_purpose_options(),
+                'options' => json_encode($purposeobject->get_available_purpose_options()),
         ];
     }
 
@@ -76,9 +76,7 @@ class get_purpose_options extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-                        'options' => new external_multiple_structure(
-                                new external_value(PARAM_TEXT, 'JSON encoded string of available options', VALUE_OPTIONAL),
-                        )
+                        'options' => new external_value(PARAM_TEXT, 'JSON encoded string of available options', VALUE_OPTIONAL),
                 ]
         );
     }

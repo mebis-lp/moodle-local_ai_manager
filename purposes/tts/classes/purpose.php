@@ -42,12 +42,12 @@ class purpose extends base_purpose {
         $connector = $factory->get_connector_by_purpose($this->get_plugin_name());
         $instance = $connector->get_instance();
         if (!in_array($this->get_plugin_name(), $instance->supported_purposes())) {
-            // Currently selected purpose does not support tts, so we do not add any options.
+            // Currently selected instance does not support tts, so we do not add any options.
             return [];
         }
 
         // TODO return something else than [] ;-)
-        return [];
+        return ['voices' => ['male', 'female']];
     }
 
 }

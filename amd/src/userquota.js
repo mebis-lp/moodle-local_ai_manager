@@ -23,7 +23,6 @@
  */
 
 import {call as fetchMany} from 'core/ajax';
-import Log from 'core/log';
 import Templates from 'core/templates';
 
 const constants = {
