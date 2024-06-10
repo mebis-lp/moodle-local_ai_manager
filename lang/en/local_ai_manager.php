@@ -70,6 +70,8 @@ $string['mp_heading_budget'] = 'Budget';
 // General strings.
 $string['student'] = 'Student';
 $string['teacher'] = 'Teacher';
+$string['enable_ai_integration'] = 'Enable AI integration';
+$string['configure_instance'] = 'Configure AI Tool Instances';
 
 // Schoolconfiguration.
 $string['schoolconfig_heading'] = 'School Configuration';

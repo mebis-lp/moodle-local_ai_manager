@@ -62,6 +62,8 @@ $string['mp_heading_budget'] = 'Budget';
 
 // Schoolconfiguration
 $string['schoolconfig_heading'] = 'Schulkonfiguration';
+$string['enable_ai_integration'] = 'KI Funktionalitäten aktivieren';
+$string['configure_instance'] = 'KI Tool Instanzen konfigurieren';
 
 // User config.
 $string['heading_user_config'] = 'Nutzereinstellungen';
