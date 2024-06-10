@@ -103,6 +103,10 @@ class manager {
             $options = [];
         }
 
+        if (!$this->configmanager->is_tenant_enabled()) {
+            return prompt_response::create_from_error(403, 'Your ByCS admin has not enabled the AI tools feature', '');
+        }
+
         $userinfo = new userinfo($USER->id);
         if ($userinfo->is_locked()) {
             return prompt_response::create_from_error(403, 'Your ByCS admin has blocked access to the AI tools for you', '');

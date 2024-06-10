@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core\output\notification;
+use local_ai_manager\form\tenant_config_form;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
@@ -55,8 +55,30 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading($strtitle);
-$tenantnavbar = new tenantnavbar();
-echo $OUTPUT->render($tenantnavbar);
+$tenantconfigform = new tenant_config_form(null, ['tenant' => $tenantid, 'returnurl' => $PAGE->url]);
+// Will return the config manager for the current user.
+/** @var \local_ai_manager\local\config_manager $configmanager */
+$configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+
+// Standard form processing if statement.
+if ($tenantconfigform->is_cancelled()) {
+    redirect($returnurl);
+} else if ($data = $tenantconfigform->get_data()) {
+    if (property_exists($data, 'tenantenabled')) {
+        $configmanager->set_config('tenantenabled', $data->tenantenabled);
+    }
+
+    redirect($PAGE->url, 'CONFIG SAVED');
+} else {
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($strtitle);
+    $tenantnavbar = new tenantnavbar();
+    echo $OUTPUT->render($tenantnavbar);
+
+    $data = new stdClass();
+    $data->tenantenabled = $configmanager->is_tenant_enabled();
+    $tenantconfigform->set_data($data);
+    $tenantconfigform->display();
+}
+
 echo $OUTPUT->footer();

@@ -94,16 +94,16 @@ if ($userconfigform->is_cancelled()) {
 
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {
-
-        if ($configmanager->get_config($purpose . '_max_requests_basic') !== false) {
-            $data->{$purpose . '_max_requests_basic'} = $configmanager->get_config($purpose . '_max_requests_basic');
-        }
-        if ($configmanager->get_config($purpose . '_max_requests_extended') !== false) {
-            $data->{$purpose . '_max_requests_extended'} = $configmanager->get_config($purpose . '_max_requests_extended');
-        }
+        $purposeobject = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_purpose_by_purpose_string($purpose);
+        //if ($configmanager->get_max_requests_raw($purposeobject, userinfo::ROLE_BASIC) !== false) {
+            $data->{$purpose . '_max_requests_basic'} = $configmanager->get_max_requests($purposeobject, userinfo::ROLE_BASIC);
+        //}
+        //if ($configmanager->get_max_requests_raw($purposeobject, userinfo::ROLE_EXTENDED) !== false) {
+            $data->{$purpose . '_max_requests_extended'} = $configmanager->get_max_requests($purposeobject, userinfo::ROLE_EXTENDED);
+        //}
     }
-    if ($configmanager->get_config('max_requests_period')) {
-        $data->max_requests_period = $configmanager->get_config('max_requests_period');
+    if ($configmanager->get_max_requests_period()) {
+        $data->max_requests_period = $configmanager->get_max_requests_period();
     }
 
     $userconfigform->set_data($data);

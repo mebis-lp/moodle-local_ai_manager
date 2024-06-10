@@ -59,13 +59,13 @@ class get_purpose_config extends external_api {
             $tenant = new tenant($tenantid);
             \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
         }
-        $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $context = \context_system::instance();
         self::validate_context($context);
         require_capability('local/ai_manager:use', $context);
 
         $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
-        return $configmanager->get_purpose_config();
+
+        return array_merge(['tenantenabled' => $configmanager->is_tenant_enabled()], $configmanager->get_purpose_config());
     }
 
     /**
@@ -78,8 +78,11 @@ class get_purpose_config extends external_api {
         $singlestructuredefinition = [];
         foreach ($purposes as $purpose) {
             $singlestructuredefinition[$purpose] =
-                    new external_value(PARAM_ALPHANUM, 'Name of the tool configured for purpose "' . $purpose . '"', VALUE_OPTIONAL);
+                    new external_value(PARAM_ALPHANUM, 'Name of the tool configured for purpose "' . $purpose . '"',
+                            VALUE_OPTIONAL);
         }
+        $singlestructuredefinition['tenantenabled'] =
+                new external_value(PARAM_BOOL, 'If AI manager is being enabled for this tenant', VALUE_REQUIRED);
         return new external_single_structure(
                 $singlestructuredefinition,
                 'Object containing the tools configured for each purpose'

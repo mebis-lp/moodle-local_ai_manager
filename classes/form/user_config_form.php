@@ -14,17 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * User config form.
- *
- * This form gathers information for configuring user specific configurations for local_ai_manager.
- *
- * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_ai_manager\form;
 
 use core_plugin_manager;
@@ -40,9 +29,12 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * A form for a user to restore a course instantly into a new one.
+ * User config form.
  *
- * @copyright  2021, ISB Bayern
+ * This form gathers information for configuring user specific configurations for local_ai_manager.
+ *
+ * @package    local_ai_manager
+ * @copyright  2024, ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

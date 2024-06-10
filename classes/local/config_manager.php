@@ -30,6 +30,18 @@ class config_manager {
 
     private array $config = [];
 
+    // TODO Add all keys with a separate getter
+    private function get_separate_getter_config_keys(): array {
+        $keys = [];
+        foreach (base_purpose::get_all_purposes() as $purpose) {
+            $keys[] = $purpose . '_max_requests_basic';
+            $keys[] = $purpose . '_max_requests_extended';
+        }
+        $keys[] = 'max_requests_period';
+        $keys[] = 'tenantenabled';
+        return $keys;
+    }
+
     public function __construct(private readonly tenant $tenant) {
         $this->load_config();
     }
@@ -47,6 +59,9 @@ class config_manager {
     }
 
     public function get_config(string $configkey): false|string {
+        if (in_array($configkey, $this->get_separate_getter_config_keys())) {
+            throw new \coding_exception('You must not access this config key directly. Please use the separate getter function.');
+        }
         if (!array_key_exists($configkey, $this->config)) {
             return false;
         }
@@ -107,13 +122,13 @@ class config_manager {
         $maxrequests = false;
         switch ($role) {
             case userinfo::ROLE_BASIC:
-                $maxrequests = $this->get_config($purpose->get_plugin_name() . '_max_requests_basic');
+                $maxrequests = $this->get_max_requests_raw($purpose, userinfo::ROLE_BASIC);
                 if ($maxrequests === false) {
                     $maxrequests = userusage::MAX_REQUESTS_DEFAULT_ROLE_BASE;
                 }
                 break;
             case userinfo::ROLE_EXTENDED:
-                $maxrequests = $this->get_config($purpose->get_plugin_name() . 'max_requests_extended');
+                $maxrequests = $this->get_max_requests_raw($purpose, userinfo::ROLE_EXTENDED);
                 if ($maxrequests === false) {
                     $maxrequests = userusage::MAX_REQUESTS_DEFAULT_ROLE_EXTENDED;
                 }
@@ -123,15 +138,36 @@ class config_manager {
                 break;
         }
         return $maxrequests;
+    }
 
+    public function get_max_requests_raw(base_purpose $purpose, int $role): int|false {
+        $rolesuffix = '';
+        switch ($role) {
+            case userinfo::ROLE_BASIC:
+                $rolesuffix = 'basic';
+                break;
+            case userinfo::ROLE_EXTENDED:
+                $rolesuffix = 'extended';
+        }
+        $configkey = $purpose->get_plugin_name() . '_max_requests_' . $rolesuffix;
+        if (!array_key_exists($configkey, $this->config)) {
+            return false;
+        }
+        return intval($this->config[$configkey]);
     }
 
     public function get_max_requests_period(): int {
-        $period = $this->get_config('max_requests_period');
-        if (!$period) {
+        if (!array_key_exists('max_requests_period', $this->config)) {
             return userusage::MAX_REQUESTS_DEFAULT_PERIOD;
         }
-        return $period;
+        return $this->config['max_requests_period'];
+    }
+
+    public function is_tenant_enabled(): bool {
+        if (!array_key_exists('tenantenabled', $this->config)) {
+            return false;
+        }
+        return $this->config['tenantenabled'];
     }
 
 }
