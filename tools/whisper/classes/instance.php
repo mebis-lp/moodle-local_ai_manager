@@ -30,7 +30,7 @@ use stdClass;
 class instance extends connector_instance {
 
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('text', 'temperature', 'TEMPERATURE');
+        $mform->addElement('text', 'temperature', get_string('temperature', 'local_ai_manager'));
         $mform->setType('temperature', PARAM_FLOAT);
 
         $mform->setDefault('endpoint', 'https://api.openai.com/v1/audio/speech');

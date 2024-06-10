@@ -76,6 +76,14 @@ $string['configure_instance'] = 'Configure AI Tool Instances';
 // Schoolconfiguration.
 $string['schoolconfig_heading'] = 'School Configuration';
 
+// Instance configuration.
+$string['connector'] = 'Connector';
+$string['title'] = 'Instance Title';
+$string['api_key'] = 'API Key';
+$string['endpoint'] = 'Endpoint URL';
+$string['infolink'] = 'Infolink';
+$string['model'] = 'Model';
+
 // User config.
 $string['heading_home'] = 'Home';
 $string['heading_user_config'] = 'User settings';
