@@ -26,7 +26,7 @@ use Psr\Http\Message\StreamInterface;
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-readonly class request_response {
+class request_response {
 
     private StreamInterface $response;
     private float $executiontime;
