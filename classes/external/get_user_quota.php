@@ -19,7 +19,6 @@ namespace local_ai_manager\external;
 
 use core_external\external_api;
 use core_external\external_function_parameters;
-use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use local_ai_manager\base_purpose;
@@ -62,13 +61,14 @@ class get_user_quota extends external_api {
         $userinfo = new userinfo($USER->id);
 
         $response = [];
-        $response['period'] = $configmanager->get_max_requests_period();
+        $response['period'] = format_time($configmanager->get_max_requests_period());
         $response['role'] = userinfo::get_role_as_string($userinfo->get_role());
         foreach ($purposes as $purpose) {
-            $userusage = new userusage($purpose, $USER->id);
-             $response[$purpose] = [
+            $purposeobject = \core\di::get(connector_factory::class)->get_purpose_by_purpose_string($purpose);
+            $userusage = new userusage($purposeobject, $USER->id);
+            $response['usage'][$purpose] = [
                     'currentusage' => $userusage->get_currentusage(),
-                    'maxusage' => $configmanager->get_max_requests($purpose, $userinfo->get_role()),
+                    'maxusage' => $configmanager->get_max_requests($purposeobject, $userinfo->get_role()),
             ];
         }
         return $response;
@@ -81,17 +81,18 @@ class get_user_quota extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         $purposes = base_purpose::get_all_purposes();
-        $singlestructuredefinition = [];
+        $purposesstructure = [];
         foreach ($purposes as $purpose) {
-            $singlestructuredefinition[$purpose] =
+            $purposesstructure[$purpose] =
                     new external_single_structure([
                             'currentusage' => new external_value(PARAM_INT, 'Currently used request count', VALUE_REQUIRED),
                             'maxusage' => new external_value(PARAM_INT, 'Currently used request count', VALUE_REQUIRED),
                     ]);
         }
+        $singlestructuredefinition['usage'] = new external_single_structure($purposesstructure);
         $singlestructuredefinition['role'] =
-                new external_value(PARAM_ALPHANUM, 'String of the current role the user has', VALUE_REQUIRED);
-        $singlestructuredefinition['period'] = new external_value(PARAM_INT, 'Quota period in seconds', VALUE_REQUIRED);
+                new external_value(PARAM_TEXT, 'String of the current role the user has', VALUE_REQUIRED);
+        $singlestructuredefinition['period'] = new external_value(PARAM_TEXT, 'User formatted quota period', VALUE_REQUIRED);
         return new external_single_structure(
                 $singlestructuredefinition,
                 'Object containing information about the currently used quota of the user',

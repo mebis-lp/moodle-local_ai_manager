@@ -71,7 +71,7 @@ class user_config_form extends \moodleform {
             'duration',
             'max_requests_period',
             get_string('max_request_time_window', 'local_ai_manager'),
-            ['units' => [DAYSECS, WEEKSECS]]
+            ['units' => [HOURSECS, DAYSECS, WEEKSECS]]
         );
         $mform->setType('max_requests_period', PARAM_INT);
         $mform->setDefault('max_requests_period', userusage::MAX_REQUESTS_DEFAULT_PERIOD);
