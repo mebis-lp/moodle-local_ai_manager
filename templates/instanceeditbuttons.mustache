@@ -31,7 +31,6 @@
         "forceltr": false
     }
 }}
-<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}">E</a>
-<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}&del=1">D</a>
-<a data-instanceid="{{id}}" href="#">I</a>
-
+<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}">{{#pix}} i/edit, core {{/pix}}</a>
+<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}&del=1">{{#pix}} i/delete, core {{/pix}}</a>
+<a data-instanceid="{{id}}" href="#">{{#pix}} i/info, core {{/pix}}</a>
