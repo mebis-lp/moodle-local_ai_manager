@@ -71,8 +71,9 @@ if ($userconfigform->is_cancelled()) {
 
         foreach ([$purpose . '_max_requests_basic', $purpose . '_max_requests_extended'] as $configkey) {
             if (property_exists($data, $configkey)) {
+                // Negative values are interpreted as unlimited requests.
                 $configmanager->set_config($configkey,
-                        intval($data->{$configkey}) > 0 ? intval($data->{$configkey}) : userusage::UNLIMITED_REQUESTS_PER_USER);
+                        intval($data->{$configkey}) >= 0 ? intval($data->{$configkey}) : userusage::UNLIMITED_REQUESTS_PER_USER);
             } else {
                 $configmanager->unset_config($configkey);
             }
@@ -94,10 +95,10 @@ if ($userconfigform->is_cancelled()) {
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {
 
-        if ($configmanager->get_config($purpose . '_max_requests_basic')) {
+        if ($configmanager->get_config($purpose . '_max_requests_basic') !== false) {
             $data->{$purpose . '_max_requests_basic'} = $configmanager->get_config($purpose . '_max_requests_basic');
         }
-        if ($configmanager->get_config($purpose . '_max_requests_extended')) {
+        if ($configmanager->get_config($purpose . '_max_requests_extended') !== false) {
             $data->{$purpose . '_max_requests_extended'} = $configmanager->get_config($purpose . '_max_requests_extended');
         }
     }

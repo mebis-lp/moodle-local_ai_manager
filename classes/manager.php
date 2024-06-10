@@ -108,6 +108,10 @@ class manager {
             return prompt_response::create_from_error(403, 'Your ByCS admin has blocked access to the AI tools for you', '');
         }
 
+        if (intval($this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) === 0) {
+            return prompt_response::create_from_error(403, 'Your ByCS admin has disabled this purpose for your user type', '');
+        }
+
         $userusage = new userusage($this->purpose, $USER->id);
         if ($userusage->get_currentusage() >= $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) {
             $period = format_time($this->configmanager->get_max_requests_period());
