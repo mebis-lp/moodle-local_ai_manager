@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *Lang strings for aitool_gemini - EN.
+ *Lang strings for aitool_googlesynthesize - EN.
  *
- * @package    aitool_gemini
+ * @package    aitool_googlesynthesize
  * @copyright  ISB Bayern, 2024
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Gemini';
-$string['openaisettings'] = 'Gemini settings';
+$string['pluginname'] = 'Google Synthesize';
+$string['openaisettings'] = 'ChatGPT settings';
 $string['openaiapikey'] = 'OpenAI API Key';
 $string['openaiapikey_desc'] = 'The API Key for your OpenAI account, from https://platform.openai.com/account/api-keys . Sample key looks like this: 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';
 $string['sourceoftruth'] = 'Source of truth';
