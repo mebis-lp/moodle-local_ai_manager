@@ -51,6 +51,7 @@ $strtitle = get_string('configure_instance', 'local_ai_manager');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
+$PAGE->set_secondary_navigation(false);
 
 
 echo $OUTPUT->header();

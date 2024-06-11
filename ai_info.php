@@ -49,6 +49,7 @@ $strtitle = 'KI-TOOLS IN DER MEBIS LERNPLATTFORM';
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
+$PAGE->set_secondary_navigation(false);
 
 
 echo $OUTPUT->header();

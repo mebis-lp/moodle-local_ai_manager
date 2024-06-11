@@ -117,10 +117,10 @@ class connector extends \local_ai_manager\base_connector {
         return [
                 'input' => [
                         'text' => $prompttext,
-                    ],
+                ],
                 'voice' => [
-                        // TODO Add option
-                        'languageCode' => 'de-DE'
+                        'voice' => $requestoptions['voices'][0],
+                        'languageCode' => $requestoptions['languages'][0],
                 ],
                 'audioConfig' => [
                         'audioEncoding' => 'MP3',
@@ -134,6 +134,20 @@ class connector extends \local_ai_manager\base_connector {
 
     public function has_customvalue2(): bool {
         return true;
+    }
+
+    public function get_available_options(): array {
+        // TODO!!!!
+        return [
+                'voices' => [
+                        // TODO Retrieve Voices from google api
+                        ['key' => 'DUMMYGOOGLEVOICE', 'displayname' => 'DUMMYGOOGLEVOICE'],
+                        ['key' => 'DUMMYGOOGLEVOICE2', 'displayname' => 'DUMMYGOOGLEVOICE2'],
+                ],
+                'languages' => [
+                        ['key' => 'de-DE', 'displayname' => 'Deutsch'],
+                ],
+        ];
     }
 
 }

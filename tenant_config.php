@@ -54,6 +54,7 @@ $strtitle = get_string('schoolconfig_heading', 'local_ai_manager');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
+$PAGE->set_secondary_navigation(false);
 
 $tenantconfigform = new tenant_config_form(null, ['tenant' => $tenantid, 'returnurl' => $PAGE->url]);
 // Will return the config manager for the current user.

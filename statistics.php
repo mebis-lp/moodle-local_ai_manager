@@ -53,6 +53,7 @@ $strtitle = get_string('statistics');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
+$PAGE->set_secondary_navigation(false);
 
 //$download = optional_param('download', '', PARAM_ALPHA);
 

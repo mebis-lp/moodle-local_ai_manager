@@ -102,6 +102,11 @@ class manager {
         if ($options === null) {
             $options = [];
         }
+        try {
+            $options = $this->sanitize_options($options);
+        } catch (\Exception $exception) {
+            return prompt_response::create_from_error(400, 'Error sanitizing passed options', $exception->getMessage());
+        }
 
         if (!$this->configmanager->is_tenant_enabled()) {
             return prompt_response::create_from_error(403, 'Your ByCS admin has not enabled the AI tools feature', '');
@@ -217,5 +222,21 @@ class manager {
         $userusage = new userusage($this->purpose, $USER->id);
         $userusage->set_currentusage($userusage->get_currentusage() + 1);
         $userusage->store();
+    }
+
+    private function sanitize_options(array $options): array {
+        foreach ($options as $key => $value) {
+            if (!array_key_exists($key, $this->purpose->get_available_purpose_options())) {
+                throw new \coding_exception('Option ' . $key . ' is not allowed for the purpose ' . $this->purpose->get_plugin_name());
+            }
+            if (is_array($this->purpose->get_available_purpose_options()[$key])) {
+                if (!in_array($value[0], array_map(fn($valueobject) => $valueobject['key'], $this->purpose->get_available_purpose_options()[$key]))) {
+                    throw new \coding_exception('Value ' . $value . ' for option ' . $key . ' is not allowed for the purpose ' . $this->purpose->get_plugin_name());
+                }
+            } else {
+                $options[$key] = clean_param($value, $this->purpose->get_available_purpose_options()[$key]);
+            }
+        }
+        return $options;
     }
 }

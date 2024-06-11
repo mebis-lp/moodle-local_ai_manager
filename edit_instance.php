@@ -59,6 +59,7 @@ $strtitle = 'INSTANZ BEARBEITEN';
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
+$PAGE->set_secondary_navigation(false);
 
 $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
 

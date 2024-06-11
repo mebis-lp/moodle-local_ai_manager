@@ -53,20 +53,20 @@ class base_purpose {
 
     public final function get_available_purpose_options(): array {
         $options = [];
-        $options['component'] = self::PLACEHOLDER;
-        $options['contexid'] = self::PLACEHOLDER;
-        $options['itemid'] = self::PLACEHOLDER;
-        $options['forcenewitemid'] = self::PLACEHOLDER;
-        foreach (array_keys($this->define_purpose_options()) as $purposeoption) {
+        $options['component'] = PARAM_TEXT;
+        $options['contextid'] = PARAM_INT;
+        $options['itemid'] = PARAM_INT;
+        $options['forcenewitemid'] = PARAM_BOOL;
+        foreach (array_keys($this->get_additional_purpose_options()) as $purposeoption) {
             if (in_array($purposeoption, $options)) {
                 throw new \coding_exception('You must not define options in the purpose subclass which are being used in the '
                 . 'base class.');
             }
         }
-        return $options + $this->define_purpose_options();
+        return $options + $this->get_additional_purpose_options();
     }
 
-    public function define_purpose_options(): array {
+    public function get_additional_purpose_options(): array {
 
         return [];
     }

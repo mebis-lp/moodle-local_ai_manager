@@ -95,29 +95,13 @@ class connector extends \local_ai_manager\base_connector {
      * @return array The prompt data.
      */
     public function get_prompt_data(string $prompttext, array $requestoptions): array {
-
-        // If empty, use text language, else translate to the mentioned language.
-        if (!empty($options->language)) {
-            $data['language'] = $options->language;
-            $prompttext = 'Translate the following text into ' . $options->language . ':' . $prompttext;
-        }
-
         $data = [
                 'model' => $this->instance->get_model(),
                 'input' => $prompttext,
-                'voice' => 'alloy',
+                'voice' => empty($requestoptions['voices'][0]) ? 'alloy' : $requestoptions['voices'][0],
         ];
 
         return $data;
-    }
-
-    /**
-     * Getter method to get additional, language model specific options.
-     *
-     * @return array
-     */
-    public function get_additional_options(): array {
-        return ['languagecodes' => language_codes::LANGUAGECODES];
     }
 
     public function get_unit(): unit {
@@ -136,14 +120,6 @@ class connector extends \local_ai_manager\base_connector {
                 'filepath' => '/',
                 'filename' => $options['filename'],
         ];
-        // TODO: Entweder separat handeln für dalle etc. oder hier schön allgemein auseinanderdröseln
-        /*if ($fileformat == 'png') {
-            $file = $fs->create_file_from_url($fileinfo, json_decode($response,true)['data'][0]['url'], [], true);
-            $filecreated = true;
-        } else {
-            $filecreated = file_put_contents($filepath, $response);
-            $file = $fs->create_file_from_pathname($fileinfo, $filepath);
-        }*/
         $file = $fs->create_file_from_string($fileinfo, $result);
 
         $filepath = \moodle_url::make_draftfile_url(
@@ -156,10 +132,22 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_available_options(): array {
+        /*$languages = [];
+        foreach (language_codes::LANGUAGECODES as $key => $displayname) {
+            $languages[] = ['key' => $key, 'displayname' => $displayname];
+        }*/
+
         return [
                 'voices' => [
-                        'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer',
-                ]
+                         ['key' => 'alloy', 'displayname' => 'Alloy'],
+                         ['key' => 'echo', 'displayname' => 'Echo'],
+                         ['key' => 'fable', 'displayname' => 'Fable'],
+                         ['key' => 'onyx', 'displayname' => 'Onyx'],
+                         ['key' => 'nova', 'displayname' => 'Nova'],
+                         ['key' => 'shimmer', 'displayname' => 'Shimmer'],
+                ],
+                //'languages' => $languages,
+                'languages' => [],
         ];
     }
 
