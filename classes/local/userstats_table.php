@@ -42,18 +42,22 @@ class userstats_table extends table_sql {
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
-        $columns = ['checkbox', 'lastname', 'firstname', 'locked', 'requestcount'];
+        $columns = ['checkbox', 'lastname', 'firstname', 'locked'];
         $headers = [
             '',
             get_string('lastname'),
             get_string('firstname'),
             get_string('locked', 'local_ai_manager'),
-            get_string('request_count', 'local_ai_manager')
         ];
-        if (!empty($purpose)) {
-            $columns[] = 'currentusage';
-            $headers[] = get_string('token_used', 'local_ai_manager');
+        if (has_capability('local/ai_manager:viewusage', $tenant->get_tenant_context())) {
+            $columns[] = 'requestcount';
+            $headers[] = get_string('request_count', 'local_ai_manager');
+            if (!empty($purpose)) {
+                $columns[] = 'currentusage';
+                $headers[] = get_string('token_used', 'local_ai_manager');
+            }
         }
+
         $this->define_columns($columns);
         // Define the titles of columns to show in header.
         $this->define_headers($headers);
