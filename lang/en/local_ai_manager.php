@@ -78,11 +78,12 @@ $string['schoolconfig_heading'] = 'School Configuration';
 
 // Instance configuration.
 $string['connector'] = 'Connector';
-$string['title'] = 'Instance Title';
+$string['instance_title'] = 'Instance Title';
 $string['api_key'] = 'API Key';
 $string['endpoint'] = 'Endpoint URL';
 $string['infolink'] = 'Infolink';
 $string['model'] = 'Model';
+$string['editbuttons'] = 'Editbuttons';
 
 // User config.
 $string['heading_home'] = 'Home';

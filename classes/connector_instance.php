@@ -261,7 +261,7 @@ class connector_instance {
     }
 
     public final function edit_form_definition(\MoodleQuickForm $mform, array $customdata): void {
-        $mform->addElement('text', 'name', get_string('title', 'local_ai_manager'));
+        $mform->addElement('text', 'name', get_string('instance_title', 'local_ai_manager'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addElement('text', 'tenant', get_string('institution'));
         $mform->setType('tenant', PARAM_ALPHANUM);

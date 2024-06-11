@@ -35,14 +35,14 @@
     <h3>Aktuelle Instanzen:</h3>
     <table class="table table-responsive table-hover">
         <thead scope="row">
-            <th scope="col">INSTANCENAME</th>
+            <th scope="col">{{#str}} instance_title, local_ai_manager{{/str}}</th>
             <th scope="col">{{#str}} institution {{/str}}</th>
-            <th scope="col">TOOL</th>
-            <th scope="col">ENDPOINT</th>
-            <th scope="col">APIKEY</th>
-            <th scope="col">MODEL</th>
-            <th scope="col">INFOLINK</th>
-            <th scope="col">EDITBUTTONS</th>
+            <th scope="col">{{#str}} tools, local_ai_manager{{/str}}</th>
+            <th scope="col">{{#str}} endpoint, local_ai_manager{{/str}}</th>
+            <th scope="col">{{#str}} api_key, local_ai_manager{{/str}}</th>
+            <th scope="col">{{#str}} model, local_ai_manager{{/str}}</th>
+            <th scope="col">{{#str}} infolink, local_ai_manager{{/str}}</th>
+            <th scope="col">{{#str}} editbuttons, local_ai_manager{{/str}}</th>
         </thead>
         <tbody>
             {{#instances}}
