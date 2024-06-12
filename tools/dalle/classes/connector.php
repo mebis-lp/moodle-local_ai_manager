@@ -59,22 +59,13 @@ class connector extends base_connector {
      * @return array The prompt data.
      */
     public function get_prompt_data(string $prompttext, array $requestoptions): array {
-        // TODO we do not have options here yet, but apparently will need them both here and in the execute_promptcompletion method,
-        //  so we probably need this in the connector object inserted
+        $defaultimagesize = $this->instance->get_model() === 'dall-e-2' ? '256x256' : '1024x1024';
         return [
+                'model' => $this->instance->get_model(),
                 'prompt' => $prompttext,
-                'size' => (empty($options->imagesize)) ? "256x256" : $options->imagesize,
-                'n' => (empty($options->numberofresponses)) ? 1 : $options->numberofresponses,
+                'size' => empty($requestoptions['sizes'][0]) ? $defaultimagesize : $requestoptions['sizes'][0],
+                'response_format' => 'b64_json',
         ];
-    }
-
-    /**
-     * Getter method to get additional, language model specific options.
-     *
-     * @return array
-     */
-    public function get_additional_options(): array {
-        return ['languagecodes' => language_codes::LANGUAGECODES];
     }
 
     public function get_unit(): unit {
@@ -94,7 +85,7 @@ class connector extends base_connector {
                 'filepath' => '/',
                 'filename' => $options['filename'],
         ];
-        $file = $fs->create_file_from_url($fileinfo, $content['data'][0]['url'], [], true);
+        $file = $fs->create_file_from_string($fileinfo, base64_decode($content['data'][0]['b64_json']));
 
         $filepath = \moodle_url::make_draftfile_url(
                 $file->get_itemid(),
@@ -103,6 +94,31 @@ class connector extends base_connector {
         )->out();
 
         return prompt_response::create_from_result($this->instance->get_model(), new usage(1.0), $filepath);
+    }
+
+    public function get_available_options(): array {
+        $options = [];
+        switch ($this->instance->get_model()) {
+            case 'dall-e-2':
+                $options['sizes'] = [
+                        // TODO localize
+                        ['key' => '256x256', 'displayname' => 'klein (256x256)'],
+                        ['key' => '512x512', 'displayname' => 'mittel (512x512)'],
+                        ['key' => '1024x1024', 'displayname' => 'groß (1024x1024)'],
+                ];
+                break;
+            case 'dall-e-3':
+                $options['sizes'] = [
+                        // TODO localize
+                        ['key' => '1024x1024', 'displayname' => 'quadratisch (1024x1024)'],
+                        ['key' => '1792x1024', 'displayname' => 'Querformat (1792x1024)'],
+                        ['key' => '1024x1792', 'displayname' => 'Hochformat (1024x1792)'],
+                ];
+                break;
+            default:
+                $options['sizes'] = [];
+        }
+        return $options;
     }
 
 }

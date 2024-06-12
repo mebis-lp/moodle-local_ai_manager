@@ -17,10 +17,9 @@
 namespace aitool_dalle;
 
 use local_ai_manager\connector_instance;
-use stdClass;
 
 /**
- * Instance class for the connector instance of aitool_chatgpt.
+ * Instance class for the connector instance of aitool_dalle.
  *
  * @package    local_ai_manager
  * @copyright  2024 ISB Bayern
@@ -30,21 +29,7 @@ use stdClass;
 class instance extends connector_instance {
 
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('text', 'temperature', get_string('temperature', 'local_ai_manager'));
-        $mform->setType('temperature', PARAM_FLOAT);
-
         $mform->setDefault('endpoint', 'https://api.openai.com/v1/images/generations');
         $mform->freeze('endpoint');
-    }
-
-    protected function get_extended_formdata(): stdClass {
-        $data = new stdClass();
-        $data->temperature = floatval($this->get_customfield1());
-        $data->model = $this->get_model();
-        return $data;
-    }
-
-    protected function extend_store_formdata(stdClass $data): void {
-        $this->set_customfield1(strval($data->temperature));
     }
 }

@@ -25,7 +25,9 @@
 
 namespace aipurpose_imggen;
 
+use coding_exception;
 use local_ai_manager\base_purpose;
+use local_ai_manager\local\connector_factory;
 
 /**
  * Purpose imggen methods
@@ -36,5 +38,25 @@ use local_ai_manager\base_purpose;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class purpose extends base_purpose {
+    public function get_additional_purpose_options(): array {
+        $factory = \core\di::get(connector_factory::class);
+        $connector = $factory->get_connector_by_purpose($this->get_plugin_name());
+        $instance = $connector->get_instance();
+        if (!in_array($this->get_plugin_name(), $instance->supported_purposes())) {
+            // Currently selected instance does not support tts, so we do not add any options.
+            return [];
+        }
+
+        // In this case we do not only provide additional purpose options, but also get them from the currently used connector.
+        $allowedoptionkeys = ['sizes' => []];
+        $connectoroptions = $connector->get_available_options();
+        foreach ($connectoroptions as $key => $value) {
+            if (!in_array($key, array_keys($allowedoptionkeys))) {
+                throw new coding_exception('You must not define the option ' . $key . ' in the connector class');
+            }
+        }
+        $returnoptions = ['filename' => PARAM_TEXT] + $connectoroptions;
+        return $returnoptions;
+    }
 
 }

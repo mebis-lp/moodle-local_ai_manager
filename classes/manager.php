@@ -231,7 +231,7 @@ class manager {
             }
             if (is_array($this->purpose->get_available_purpose_options()[$key])) {
                 if (!in_array($value[0], array_map(fn($valueobject) => $valueobject['key'], $this->purpose->get_available_purpose_options()[$key]))) {
-                    throw new \coding_exception('Value ' . $value . ' for option ' . $key . ' is not allowed for the purpose ' . $this->purpose->get_plugin_name());
+                    throw new \coding_exception('Value ' . $value[0] . ' for option ' . $key . ' is not allowed for the purpose ' . $this->purpose->get_plugin_name());
                 }
             } else {
                 $options[$key] = clean_param($value, $this->purpose->get_available_purpose_options()[$key]);
