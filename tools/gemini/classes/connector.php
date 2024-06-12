@@ -132,7 +132,7 @@ class connector extends \local_ai_manager\base_connector {
                 $messages[] = [
                         'role' => $role,
                         'parts' => [
-                                [ 'text' => $message['message']],
+                                ['text' => $message['message']],
                         ]
                 ];
             }
@@ -144,7 +144,11 @@ class connector extends \local_ai_manager\base_connector {
                 ]
         ];
         return [
-                'contents' => $messages
+                'contents' => $messages,
+                'generationConfig' => [
+                        'temperature' => $this->instance->get_temperature(),
+                        'topP' => $this->instance->get_top_p(),
+                ]
         ];
     }
 

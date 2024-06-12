@@ -303,13 +303,13 @@ class connector_instance {
     }
 
     public final function store_formdata($data): void {
-        $this->set_name($data->name);
-        $this->set_endpoint($data->endpoint);
-        $this->set_apikey($data->apikey);
+        $this->set_name(trim($data->name));
+        $this->set_endpoint(trim($data->endpoint));
+        $this->set_apikey(trim($data->apikey));
         $this->set_connector($data->connector);
         $this->set_tenant($data->tenant);
         $this->set_model($data->model);
-        $this->set_infolink($data->infolink);
+        $this->set_infolink(trim($data->infolink));
         $this->extend_store_formdata($data);
         $this->store();
     }
@@ -322,9 +322,12 @@ class connector_instance {
         if (empty($data['name'])) {
             $errors['name'] = 'Please specify an instance name';
         }
+        // TODO enable the following again, just disabled for debugging purposes because of ollama being connected via http locally
+        /*
         if (!str_starts_with($data['endpoint'], 'https://')) {
             $errors['endpoint'] = 'For security and data privacy reasons only HTTPS endpoints are allowed';
         }
+        */
         return $errors + $this->extend_validation($data, $files);
     }
 

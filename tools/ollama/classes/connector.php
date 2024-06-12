@@ -45,15 +45,13 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_models_by_purpose(): array {
+        $textmodels = ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
+                'tinyllama'];
         return [
-                'chat' => ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
-                        'tinyllama'],
-                'feedback' => ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
-                        'tinyllama'],
-                'singleprompt' => ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
-                        'tinyllama'],
-                'translate' => ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
-                        'tinyllama'],
+                'chat' => $textmodels,
+                'feedback' => $textmodels,
+                'singleprompt' => $textmodels,
+                'translate' => $textmodels,
         ];
     }
 
@@ -112,6 +110,7 @@ class connector extends \local_ai_manager\base_connector {
                 'keep_alive' => '60m',
                 'options' => [
                         'temperature' => $this->instance->get_temperature(),
+                        'top_p' => $this->instance->get_top_p(),
                 ],
         ];
         return $data;

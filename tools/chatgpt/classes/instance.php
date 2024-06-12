@@ -70,7 +70,7 @@ class instance extends connector_instance {
     public function get_temperature(): float {
         return floatval($this->get_customfield1());
     }
-    public function get_top_p() {
+    public function get_top_p(): float {
         return floatval($this->get_customfield2());
     }
 }
