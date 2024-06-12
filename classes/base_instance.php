@@ -261,9 +261,10 @@ class base_instance {
     }
 
     public final function edit_form_definition(\MoodleQuickForm $mform, array $customdata): void {
-        $mform->addElement('text', 'name', get_string('instance_title', 'local_ai_manager'));
+        $textelementparams = ['style' => 'width: 35rem'];
+        $mform->addElement('text', 'name', get_string('instance_title', 'local_ai_manager'), $textelementparams);
         $mform->setType('name', PARAM_TEXT);
-        $mform->addElement('text', 'tenant', get_string('institution'));
+        $mform->addElement('text', 'tenant', get_string('institution'), $textelementparams);
         $mform->setType('tenant', PARAM_ALPHANUM);
         if (empty($this->_customdata['id'])) {
             $mform->setDefault('tenant', $customdata['tenant']);
@@ -273,17 +274,17 @@ class base_instance {
         }
 
         $connector = $customdata['connector'];
-        $mform->addElement('text', 'connector', get_string('connector', 'local_ai_manager'));
+        $mform->addElement('text', 'connector', get_string('connector', 'local_ai_manager'), $textelementparams);
         $mform->setType('connector', PARAM_TEXT);
         // That we have a valid connector here is being ensured by edit_instance.php.
         $mform->setDefault('connector', $connector);
         $mform->freeze('connector');
 
 
-        $mform->addElement('text', 'endpoint', get_string('endpoint', 'local_ai_manager'));
+        $mform->addElement('text', 'endpoint', get_string('endpoint', 'local_ai_manager'), $textelementparams);
         $mform->setType('endpoint', PARAM_URL);
 
-        $mform->addElement('text', 'apikey', get_string('api_key', 'local_ai_manager'));
+        $mform->addElement('passwordunmask', 'apikey', get_string('api_key', 'local_ai_manager'), $textelementparams);
         $mform->setType('apikey', PARAM_TEXT);
 
         $classname = '\\aitool_' . $connector . '\\connector';
@@ -294,9 +295,9 @@ class base_instance {
             //  $availablemodels[$modelname] = get_string($modelname); or sth similar
             $availablemodels[$modelname] = $modelname;
         }
-        $mform->addElement('select', 'model', get_string('model', 'local_ai_manager'), $availablemodels);
+        $mform->addElement('select', 'model', get_string('model', 'local_ai_manager'), $availablemodels, $textelementparams);
 
-        $mform->addElement('text', 'infolink', get_string('infolink',  'local_ai_manager'));
+        $mform->addElement('text', 'infolink', get_string('infolink',  'local_ai_manager'), $textelementparams);
         $mform->setType('infolink', PARAM_URL);
 
         $this->extend_form_definition($mform);

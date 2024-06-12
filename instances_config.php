@@ -68,13 +68,19 @@ foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $tool) {
 }
 $instances = [];
 foreach (\local_ai_manager\base_instance::get_all_instances() as $instance) {
+    if (empty($instance->get_apikey())) {
+        $apikey = '';
+    } else {
+        $apikey = substr($instance->get_apikey(), 0, 5) . str_repeat('*', strlen($instance->get_apikey()) - 5);
+    }
+
     $instances[] = [
             'id' => $instance->get_id(),
             'name' => $instance->get_name(),
             'tenant' => $instance->get_tenant(),
             'connector' => $instance->get_connector(),
             'endpoint' => $instance->get_endpoint(),
-            'apikey' => $instance->get_apikey(),
+            'apikey' => $apikey,
             'model' => $instance->get_model(),
             'infolink' => $instance->get_infolink(),
     ];
