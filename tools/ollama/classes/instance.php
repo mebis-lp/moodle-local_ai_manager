@@ -16,7 +16,7 @@
 
 namespace aitool_ollama;
 
-use local_ai_manager\connector_instance;
+use local_ai_manager\base_instance;
 use stdClass;
 
 /**
@@ -27,7 +27,7 @@ use stdClass;
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class instance extends connector_instance {
+class instance extends base_instance {
 
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
         $mform->addElement('text', 'temperature', get_string('temperature', 'aitool_chatgpt'));

@@ -67,7 +67,7 @@ foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $tool) {
     ];
 }
 $instances = [];
-foreach (\local_ai_manager\connector_instance::get_all_instances() as $instance) {
+foreach (\local_ai_manager\base_instance::get_all_instances() as $instance) {
     $instances[] = [
             'id' => $instance->get_id(),
             'name' => $instance->get_name(),

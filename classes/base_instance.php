@@ -27,7 +27,7 @@ use stdClass;
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class connector_instance {
+class base_instance {
 
     protected ?stdClass $record = null;
 

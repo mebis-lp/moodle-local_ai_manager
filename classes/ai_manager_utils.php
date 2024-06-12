@@ -88,7 +88,7 @@ class ai_manager_utils {
         return empty($max) ? 1 : $max + 1;
     }
 
-    public static function get_connector_instance_by_purpose(string $purpose, int $userid = null): connector_instance {
+    public static function get_connector_instance_by_purpose(string $purpose, int $userid = null): base_instance {
         if (is_null($userid)) {
             $tenant = \core\di::get(tenant::class);
         } else {

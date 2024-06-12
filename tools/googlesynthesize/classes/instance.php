@@ -16,8 +16,7 @@
 
 namespace aitool_googlesynthesize;
 
-use local_ai_manager\connector_instance;
-use stdClass;
+use local_ai_manager\base_instance;
 
 /**
  * Instance class for the connector instance of aitool_googlesynthesize.
@@ -27,10 +26,9 @@ use stdClass;
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class instance extends connector_instance {
+class instance extends base_instance {
 
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-
         $mform->setDefault('endpoint', 'https://texttospeech.googleapis.com/v1/text:synthesize');
         $mform->freeze('endpoint');
     }

@@ -18,7 +18,7 @@ namespace local_ai_manager\local;
 
 use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
-use local_ai_manager\connector_instance;
+use local_ai_manager\base_instance;
 use mod_unilabel\factory;
 
 /**
@@ -33,14 +33,14 @@ class connector_factory {
 
     private base_purpose $purpose;
 
-    private connector_instance $connectorinstance;
+    private base_instance $connectorinstance;
 
     private base_connector $connector;
 
     public function __construct(private readonly config_manager $configmanager) {
     }
 
-    public function get_connector_instance_by_id(int $id): connector_instance {
+    public function get_connector_instance_by_id(int $id): base_instance {
         global $DB;
         if (!empty($this->connectorinstance) && $this->connectorinstance->get_id() === $id) {
             return $this->connectorinstance;
@@ -51,7 +51,7 @@ class connector_factory {
         return $this->connectorinstance;
     }
 
-    public function get_connector_instance_by_purpose(string $purpose): ?connector_instance {
+    public function get_connector_instance_by_purpose(string $purpose): ?base_instance {
         $instanceid = $this->configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose));
         if (empty($instanceid)) {
             return null;
@@ -66,7 +66,7 @@ class connector_factory {
         return $this->connector;
     }
 
-    public function get_new_instance(string $connectorname): connector_instance {
+    public function get_new_instance(string $connectorname): base_instance {
         $instanceclassname = '\\aitool_' . $connectorname . '\\instance';
         $this->connectorinstance = new $instanceclassname();
         $this->connectorinstance->set_connector($connectorname);
@@ -113,7 +113,7 @@ class connector_factory {
 
     public static function get_connector_instances_for_purpose(string $purpose): array {
         $instances = [];
-        foreach (connector_instance::get_all_instances() as $instance) {
+        foreach (base_instance::get_all_instances() as $instance) {
             if (in_array($purpose, $instance->supported_purposes())) {
                 $instances[$instance->get_id()] = $instance;
             }

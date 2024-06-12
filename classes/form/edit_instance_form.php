@@ -28,7 +28,7 @@
 namespace local_ai_manager\form;
 
 
-use local_ai_manager\connector_instance;
+use local_ai_manager\base_instance;
 use local_ai_manager\local\connector_factory;
 
 defined('MOODLE_INTERNAL') || die;
@@ -45,7 +45,7 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class edit_instance_form extends \moodleform {
 
-    private connector_instance $connectorinstance;
+    private base_instance $connectorinstance;
 
    /**
      * Form definition.

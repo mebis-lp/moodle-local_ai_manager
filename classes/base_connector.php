@@ -34,7 +34,7 @@ use Psr\Http\Message\StreamInterface;
  */
 abstract class base_connector {
 
-    protected connector_instance $instance;
+    protected base_instance $instance;
 
     /**
      * Define available models.
@@ -79,7 +79,7 @@ abstract class base_connector {
         return false;
     }
 
-    public function get_instance(): connector_instance {
+    public function get_instance(): base_instance {
         return $this->instance;
     }
 
@@ -97,17 +97,15 @@ abstract class base_connector {
      * @return array The response from the request.
      * @throws \moodle_exception If the API key is empty.
      */
-    public function make_request(array $data, bool $multipart = false): request_response {
+    public function make_request(array $data): request_response {
         $client = new http_client([
                 // TODO Make timeout higher, LLM requests can take quite a bit of time
                 'timeout' => 120,
         ]);
 
-        $contenttype = $multipart ? 'multipart/form-data' : 'application/json;charset=utf-8';
-
         $options['headers'] = [
                 'Authorization' => 'Bearer ' . $this->get_api_key(),
-                'Content-Type' => $contenttype,
+                'Content-Type' => 'application/json;charset=utf-8',
         ];
         $options['body'] = json_encode($data);
 

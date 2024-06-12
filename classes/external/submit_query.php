@@ -78,8 +78,11 @@ class submit_query extends external_api {
             $result = $aimanager->perform_request($prompt, $options);
 
             if ($result->get_code() !== 200) {
-                // TODO Eventually also use debuginfo or remove debuginfo completely also from prompt_response class
-                $return = ['code' => $result->get_code(), 'string' => 'error', 'result' => $result->get_errormessage()];
+                $error = ['message' => $result->get_errormessage()];
+                if (debugging()) {
+                    $error['debuginfo'] = $result->get_debuginfo();
+                }
+                $return = ['code' => $result->get_code(), 'string' => 'error', 'result' => json_encode($error)];
             } else {
                 $return = ['code' => 200, 'string' => 'ok', 'result' => $result->get_content()];
             }

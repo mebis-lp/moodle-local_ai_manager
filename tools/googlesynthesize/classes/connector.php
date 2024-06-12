@@ -56,17 +56,15 @@ class connector extends \local_ai_manager\base_connector {
         return unit::COUNT;
     }
 
-    public function make_request(array $data, bool $multipart = false): request_response {
+    public function make_request(array $data): request_response {
         $client = new http_client([
             // TODO Make timeout higher, LLM requests can take quite a bit of time
                 'timeout' => 60,
         ]);
 
-        $contenttype = $multipart ? 'multipart/form-data' : 'application/json;charset=utf-8';
-
         $options['headers'] = [
-                'Content-Type' => $contenttype,
                 'x-goog-api-key' => $this->get_api_key(),
+                'Content-Type' => 'application/json;charset=utf-8',
         ];
         $options['body'] = json_encode($data);
 
@@ -137,7 +135,6 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_available_options(): array {
-        // TODO!!!!
         return [
                 'voices' => [
                         // TODO Retrieve Voices from google api

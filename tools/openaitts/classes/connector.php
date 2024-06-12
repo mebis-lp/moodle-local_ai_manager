@@ -51,44 +51,6 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     /**
-     * Makes a request to the specified URL with the given data and API key.
-     *
-     * @param mixed $url
-     * @param mixed $data
-     * @param mixed $apikey
-     * @param mixed $multipart
-     * @param object|null $options
-     * @param string $fileformat
-     * @return array
-     */
-    /*public function make_request(array $data, bool $multipart = false): request_response {
-        $client = new http_client();
-
-        $contenttype = $multipart ? 'multipart/form-data' : 'application/json;charset=utf-8';
-        $options['headers'] = [
-                'Authorization' => 'Bearer ' . $this->get_api_key(),
-                'Content-Type' => $contenttype,
-        ];
-        $options['body'] = json_encode($data);
-
-        $start = microtime(true);
-
-        $response = $client->post($this->get_endpoint_url(), $options);
-        $end = microtime(true);
-        $executiontime = round($end - $start, 2);
-        if ($response->getStatusCode() !== 200) {
-            // TODO localize
-            return request_response::create_from_error(
-                    'Sending request to tool api endpoint failed with code ' . $response->getStatusCode(),
-                    $response->getBody()
-            );
-        } else {
-            return request_response::create_from_result(['response' => $response->getBody(),
-                    'execution_time' => $executiontime]);
-        }
-    }*/
-
-    /**
      * Retrieves the data for the prompt based on the prompt text.
      *
      * @param string $prompttext The prompt text.

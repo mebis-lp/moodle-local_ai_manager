@@ -134,7 +134,7 @@ class manager {
         $requestoptions = $this->purpose->get_request_options($options);
         $promptdata = $this->toolconnector->get_prompt_data($prompttext, $requestoptions);
         try {
-            $requestresult = $this->toolconnector->make_request($promptdata, !empty($options['multipart']));
+            $requestresult = $this->toolconnector->make_request($promptdata);
         } catch (\Exception $exception) {
             // This hopefully very rarely happens, because we catch exceptions already inside the make_request method.
             // So we do not do any more beautifying of exceptions here.

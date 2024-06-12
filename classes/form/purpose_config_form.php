@@ -76,6 +76,7 @@ class purpose_config_form extends \moodleform {
                 get_string('select_tool_for_purpose', 'local_ai_manager', $purpose),
                 $instances
             );
+            $mform->setDefault('purpose_' . $purpose . '_tool', 0);
         }
         $this->add_action_buttons();
         /*
