@@ -17,13 +17,13 @@
 /**
  * Connector - whisper
  *
- * @package    aitool_whisper
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aitool_whisper;
+namespace aitool_openaitts;
 
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
@@ -33,7 +33,7 @@ use Psr\Http\Message\StreamInterface;
 /**
  * Connector - whisper
  *
- * @package    aitool_whisper
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

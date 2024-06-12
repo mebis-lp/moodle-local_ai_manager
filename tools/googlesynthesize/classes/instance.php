@@ -34,19 +34,4 @@ class instance extends connector_instance {
         $mform->setDefault('endpoint', 'https://texttospeech.googleapis.com/v1/text:synthesize');
         $mform->freeze('endpoint');
     }
-
-    protected function get_extended_formdata(): stdClass {
-        $data = new stdClass();
-        $data->temperature = floatval($this->get_customfield1());
-        $data->model = $this->get_model();
-        return $data;
-    }
-
-    protected function extend_store_formdata(stdClass $data): void {
-        $this->set_customfield1(strval($data->temperature));
-    }
-
-    public function get_temperature(): float {
-        return floatval($this->get_customfield1());
-    }
 }

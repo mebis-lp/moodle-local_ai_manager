@@ -51,7 +51,7 @@ class instance extends connector_instance {
     }
 
     protected function extend_store_formdata(stdClass $data): void {
-        // TODO eventually detect , or . as float separator
+        // TODO eventually detect , or . as float separator and handle accordingly
         $this->set_customfield1(strval($data->temperature));
         $this->set_customfield2(strval($data->top_p));
     }

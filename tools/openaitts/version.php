@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for aitool_whisper.
+ * Version file for aitool_openaitts.
  *
- * @package    aitool_whisper
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,5 +27,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version  = 2023121203;
 $plugin->requires = 2023042403;
 $plugin->release = '0.0.1';
-$plugin->component = 'aitool_whisper';
+$plugin->component = 'aitool_openaitts';
 $plugin->maturity = MATURITY_ALPHA;

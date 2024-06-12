@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * aitool_whisper privacy provider class.
+ * aitool_openaitts privacy provider class.
  *
- * @package    aitool_whisper
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aitool_whisper\privacy;
+namespace aitool_openaitts\privacy;
 
 /**
- * aitool_whisper privacy provider class.
+ * aitool_openaitts privacy provider class.
  *
- * @package    aitool_whisper
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

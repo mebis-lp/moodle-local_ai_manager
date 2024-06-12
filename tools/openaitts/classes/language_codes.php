@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace aitool_whisper;
+namespace aitool_openaitts;
 
 /**
  * This is a library file to define the supported language codes.
  *
- * @package    aitool_whisper
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

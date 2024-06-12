@@ -17,13 +17,13 @@
 /**
  * Connector - whisper
  *
- * @package    aitool_whisper
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aitool_whisper;
+namespace aitool_openaitts;
 
 use coding_exception;
 use dml_exception;
@@ -36,7 +36,7 @@ use stored_file_creation_exception;
 /**
  * Connector - whisper
  *
- * @package    aitool_whisper
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -45,45 +45,45 @@ class settings {
 
     public function get_settings($settings) {
         $settings->add(new \admin_setting_configtext(
-            'aitool_whisper/openaiapikey',
-            get_string('openaiapikey', 'aitool_whisper'),
-            get_string('openaiapikey_desc', 'aitool_whisper'),
+            'aitool_openaitts/openaiapikey',
+            get_string('openaiapikey', 'aitool_openaitts'),
+            get_string('openaiapikey_desc', 'aitool_openaitts'),
             ''
         ));
 
         $settings->add(new \admin_setting_configtextarea(
-            'aitool_whisper/source_of_truth',
-            get_string('sourceoftruth', 'aitool_whisper'),
-            get_string('sourceoftruth_desc', 'aitool_whisper'),
+            'aitool_openaitts/source_of_truth',
+            get_string('sourceoftruth', 'aitool_openaitts'),
+            get_string('sourceoftruth_desc', 'aitool_openaitts'),
             ''
         ));
 
         $settings->add(new \admin_setting_configtext(
-            'aitool_whisper/temperature',
-            get_string('temperature', 'aitool_whisper'),
-            get_string('temperature_desc', 'aitool_whisper'),
+            'aitool_openaitts/temperature',
+            get_string('temperature', 'aitool_openaitts'),
+            get_string('temperature_desc', 'aitool_openaitts'),
             '0.5',
             PARAM_FLOAT
         ));
 
         $settings->add(new \admin_setting_configtext(
-            'aitool_whisper/top_p',
-            get_string('top_p', 'aitool_whisper'),
-            get_string('top_p_desc', 'aitool_whisper'),
+            'aitool_openaitts/top_p',
+            get_string('top_p', 'aitool_openaitts'),
+            get_string('top_p_desc', 'aitool_openaitts'),
             ''
         ));
 
         $settings->add(new \admin_setting_configtext(
-            'aitool_whisper/frequency_penalty',
-            get_string('frequency_penalty', 'aitool_whisper'),
-            get_string('frequency_penalty_desc', 'aitool_whisper'),
+            'aitool_openaitts/frequency_penalty',
+            get_string('frequency_penalty', 'aitool_openaitts'),
+            get_string('frequency_penalty_desc', 'aitool_openaitts'),
             ''
         ));
 
         $settings->add(new \admin_setting_configtext(
-            'aitool_whisper/presence_penalty',
-            get_string('presence_penalty', 'aitool_whisper'),
-            get_string('presence_penalty_desc', 'aitool_whisper'),
+            'aitool_openaitts/presence_penalty',
+            get_string('presence_penalty', 'aitool_openaitts'),
+            get_string('presence_penalty_desc', 'aitool_openaitts'),
             ''
         ));
         return $settings;
