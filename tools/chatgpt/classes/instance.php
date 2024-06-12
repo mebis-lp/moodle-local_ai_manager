@@ -29,9 +29,15 @@ use stdClass;
  */
 class instance extends connector_instance {
 
+
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('text', 'temperature', get_string('temperature', 'local_ai_manager'));
+        $mform->addElement('text', 'temperature', get_string('temperature', 'aitool_chatgpt'));
         $mform->setType('temperature', PARAM_FLOAT);
+        $mform->setDefault('temperature', '1.0');
+
+        $mform->addElement('text', 'top_p', get_string('top_p', 'aitool_chatgpt'));
+        $mform->setType('top_p', PARAM_FLOAT);
+        $mform->setDefault('top_p', '1.0');
 
         $mform->setDefault('endpoint', 'https://api.openai.com/v1/chat/completions');
         $mform->freeze('endpoint');
@@ -40,15 +46,31 @@ class instance extends connector_instance {
     protected function get_extended_formdata(): stdClass {
         $data = new stdClass();
         $data->temperature = floatval($this->get_customfield1());
-        $data->model = $this->get_model();
+        $data->top_p = floatval($this->get_customfield2());
         return $data;
     }
 
     protected function extend_store_formdata(stdClass $data): void {
+        // TODO eventually detect , or . as float separator
         $this->set_customfield1(strval($data->temperature));
+        $this->set_customfield2(strval($data->top_p));
+    }
+
+    protected function extend_validation(array $data, array $files): array {
+        $errors = [];
+        if (floatval($data['temperature']) < 0 || floatval($data['temperature']) > 2.0) {
+            $errors['temperature'] = 'Temperature must be between 0 und 2';
+        }
+        if (floatval($data['top_p']) < 0 || floatval($data['top_p']) > 1.0) {
+            $errors['top_p'] = 'Top_p must be between 0 und 1';
+        }
+        return $errors;
     }
 
     public function get_temperature(): float {
         return floatval($this->get_customfield1());
+    }
+    public function get_top_p() {
+        return floatval($this->get_customfield2());
     }
 }

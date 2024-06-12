@@ -28,6 +28,7 @@
 namespace local_ai_manager\form;
 
 
+use local_ai_manager\connector_instance;
 use local_ai_manager\local\connector_factory;
 
 defined('MOODLE_INTERNAL') || die;
@@ -44,6 +45,8 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class edit_instance_form extends \moodleform {
 
+    private connector_instance $connectorinstance;
+
    /**
      * Form definition.
      */
@@ -53,52 +56,14 @@ class edit_instance_form extends \moodleform {
         $mform = &$this->_form;
         $factory = \core\di::get(connector_factory::class);
         if (!empty($this->_customdata['id'])) {
-            $connectorinstance = $factory->get_connector_instance_by_id($this->_customdata['id']);
+            $this->connectorinstance = $factory->get_connector_instance_by_id($this->_customdata['id']);
         } else {
-            $connectorinstance = $factory->get_new_instance($connectorname);
+            $this->connectorinstance = $factory->get_new_instance($connectorname);
         }
-        $connectorinstance->edit_form_definition($mform, $this->_customdata);
+        $this->connectorinstance->edit_form_definition($mform, $this->_customdata);
 
         $this->add_action_buttons();
 
-        /*
-
-
-        $mform->addElement('header', 'choosecategoryheader', get_string('choosecategory', 'block_mbsnewcourse'));
-
-        // ...print out a select box with appropriate course cats (i. e. below school cat).
-        $categories = \local_mbs\local\schoolcategory::make_schoolcategories_list($schoolcategory);
-        $mform->addElement('select', 'category', '', $categories);
-        $mform->setDefault('category', $schoolcategory->id);
-        $mform->addHelpButton('choosecategoryheader', 'choosecategory', 'block_mbsnewcourse');
-
-        $mform->addElement('header', 'choosecoursefileheader', get_string('choosecoursefile', 'block_mbsnewcourse'));
-        $mform->addElement('static', 'errornocoursefile');
-        $this->backupfilesinformation = $this->generate_backupfiles_list();
-        $mform->addElement('html', '<div class="block_mbsnewcourse-restorefilelist">');
-        foreach ($this->backupfilesinformation as $pathnamehash => $filename) {
-            $mform->addElement('radio', 'course', '', $filename, $pathnamehash, '');
-        }
-        $mform->setDefault('course', self::UPLOAD_FILE_OPTION);
-        $mform->addHelpButton('choosecoursefileheader', 'choosecoursefile', 'block_mbsnewcourse');
-        $mform->addElement('html', '</div>');
-
-        $categorycontext = \context_coursecat::instance($categoryid);
-        $usercontext = \context_user::instance($USER->id);
-        $managefilesurl = new \moodle_url('/backup/backupfilesedit.php',
-                ['contextid' => $usercontext->id, 'currentcontext' => $categorycontext->id, 'filearea' => 'backup',
-                        'component' => 'user', 'returnurl' => $returnurl, ]);
-        $buttonhtml = \html_writer::link($managefilesurl, get_string('managefiles', 'backup'),
-                ['class' => 'btn btn-secondary']);
-        $mform->addElement('static', 'managefilesbutton', '', $buttonhtml);
-
-        $mform->addElement('filemanager', 'backupfile', get_string('uploadbackupfile', 'block_mbsnewcourse'), null,
-                ['subdirs' => 0, 'maxfiles' => 1,
-                        'accepted_types' => ['.mbz'], 'return_types' => FILE_INTERNAL, ]);
-        $mform->addHelpButton('backupfile', 'uploadbackupfile', 'block_mbsnewcourse');
-        $mform->hideIf('backupfile', 'course', 'notchecked', self::UPLOAD_FILE_OPTION);
-
-        $this->add_action_buttons(true, get_string('restorecourse', 'block_mbsnewcourse'));*/
     }
 
     /**
@@ -110,10 +75,6 @@ class edit_instance_form extends \moodleform {
      *         or an empty array if everything is OK (true allowed for backwards compatibility too).
      */
     public function validation($data, $files): array {
-        $errors = [];
-        // TODO Implement
-
-        // TODO Validieren, dass die URL https ist
-        return $errors;
+        return $this->connectorinstance->validation($data, $files);
     }
 }

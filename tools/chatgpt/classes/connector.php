@@ -45,11 +45,12 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_models_by_purpose(): array {
+        $chatgptmodels = ['gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o'];
         return [
-                'chat' => ['gpt-3.5-turbo', 'gpt-4-turbo'],
-                'feedback' => ['gpt-3.5-turbo', 'gpt-4-turbo'],
-                'singleprompt' => ['gpt-3.5-turbo', 'gpt-4-turbo'],
-                'translate' => ['gpt-3.5-turbo', 'gpt-4-turbo'],
+                'chat' => $chatgptmodels,
+                'feedback' => $chatgptmodels,
+                'singleprompt' => $chatgptmodels,
+                'translate' => $chatgptmodels,
         ];
     }
 
@@ -99,6 +100,7 @@ class connector extends \local_ai_manager\base_connector {
         return [
                 'model' => $this->instance->get_model(),
                 'temperature' => $this->instance->get_temperature(),
+                'top_p' => $this->instance->get_top_p(),
                 'messages' => $messages,
         ];
     }

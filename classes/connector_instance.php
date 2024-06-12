@@ -317,6 +317,21 @@ class connector_instance {
     protected function extend_store_formdata(stdClass $data): void {
     }
 
+    public final function validation(array $data, array $files): array {
+        $errors = [];
+        if (empty($data['name'])) {
+            $errors['name'] = 'Please specify an instance name';
+        }
+        if (!str_starts_with($data['endpoint'], 'https://')) {
+            $errors['endpoint'] = 'For security and data privacy reasons only HTTPS endpoints are allowed';
+        }
+        return $errors + $this->extend_validation($data, $files);
+    }
+
+    protected function extend_validation(array $data, array $files): array {
+        return [];
+    }
+
     public function delete(): void {
         global $DB;
         if (empty($this->id)) {
