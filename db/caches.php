@@ -15,17 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * Cache definitions.
  *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   local_bycsauth
+ * @copyright 2023 ISB Bayern
+ * @author    Philipp Memmel
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2023121216;
-$plugin->requires = 2023042403;
-$plugin->release = '0.0.1';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_ALPHA;
+$definitions = [
+        'googlesynthesizevoices' => [
+                'mode' => cache_store::MODE_APPLICATION,
+                'simplekeys' => true,
+                'simpledata' => false,
+                'canuselocalstore' => false,
+        ],
+];

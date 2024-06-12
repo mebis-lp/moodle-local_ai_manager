@@ -135,16 +135,54 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_available_options(): array {
+        // TODO We need to filter this huge list of voices. No idea yet how.
+        $voices =
+                array_map(fn($voicename) => ['key' => $voicename, 'displayname' => $voicename], $this->retrieve_available_voices());
+        $languagekeys = array_unique(array_map(fn($voice) => substr($voice['key'], 0, 2), $voices));
+        // The call array_values(...) is needed to re-index the array for later merging.
+        $languages = array_values(array_map(fn($voicekey) => ['key' => $voicekey, 'displayname' => strtoupper($voicekey)], $languagekeys));
         return [
-                'voices' => [
-                        // TODO Retrieve Voices from google api
-                        ['key' => 'DUMMYGOOGLEVOICE', 'displayname' => 'DUMMYGOOGLEVOICE'],
-                        ['key' => 'DUMMYGOOGLEVOICE2', 'displayname' => 'DUMMYGOOGLEVOICE2'],
-                ],
-                'languages' => [
-                        ['key' => 'de-DE', 'displayname' => 'Deutsch'],
-                ],
+                'voices' => $voices,
+                'languages' => $languages,
         ];
+    }
+
+    public function retrieve_available_voices(): array {
+        $clock = \core\di::get(\core\clock::class);
+        $cache = \cache::make('local_ai_manager', 'googlesynthesizevoices');
+        $voices = $cache->get('voices');
+        if ($voices) {
+            $lastfetched = $cache->get('lastfetched');
+            if ($clock->time() - $lastfetched <= DAYSECS) {
+                return $voices;
+            }
+        }
+
+        $client = new http_client([
+                'timeout' => 10,
+        ]);
+
+        $options['headers'] = [
+                'x-goog-api-key' => $this->get_api_key(),
+                'Content-Type' => 'application/json;charset=utf-8',
+        ];
+
+        $response = $client->get('https://texttospeech.googleapis.com/v1/voices', $options);
+        if ($response->getStatusCode() !== 200) {
+            debugging('Could not retrieve voices from google api endpoint');
+            if ($voices) {
+                debugging('Still have a cache entry for google voices which is being returned');
+                return $voices;
+            } else {
+                debugging('No cache entry available for google voices, so we cannot return any voices');
+                return [];
+            }
+        }
+        $voicesarray = json_decode($response->getBody()->getContents(), true)['voices'];
+        $voices = array_map(fn($voice) => $voice['name'], $voicesarray);
+        $cache->set('voices', $voices);
+        $cache->set('lastfetched', $clock->time());
+        return $voices;
     }
 
 }
