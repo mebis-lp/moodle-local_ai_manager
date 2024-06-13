@@ -40,8 +40,9 @@ class access_manager {
 
     public function is_tenant_manager(): bool {
         // TODO Convert this into a hook.
-        if (empty($this->tenant->get_tenantidentifier())) {
+        if (!$this->tenant->is_valid_tenant()) {
             require_admin();
+            return true;
         }
         $school = new school($this->tenant->get_tenantidentifier());
         if (!$school->record_exists()) {

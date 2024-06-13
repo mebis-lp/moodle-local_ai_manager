@@ -40,13 +40,9 @@ class tenant {
     public function __construct(string $tenantidentifier = '') {
         global $USER;
         if (empty($tenantidentifier)) {
-            if (empty($USER->institution)) {
-                throw new \moodle_exception('Cannot determine tenant identifier based on the current user. Institution empty');
-            }
-            $this->tenantidentifier = $USER->institution;
-        } else {
-            $this->tenantidentifier = $tenantidentifier;
+            $tenantidentifier = $USER->institution;
         }
+        $this->tenantidentifier = $tenantidentifier;
     }
 
     /**
@@ -56,6 +52,10 @@ class tenant {
      */
     public function get_tenantidentifier(): string {
         return $this->tenantidentifier;
+    }
+
+    public function is_valid_tenant(): bool {
+        return !empty($this->tenantidentifier);
     }
 
     /**

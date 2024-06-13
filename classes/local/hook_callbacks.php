@@ -32,7 +32,8 @@ use navigation_node;
 class hook_callbacks {
     public static function extend_primary_navigation(primary_extend $hook): void {
         $accessmanager = \core\di::get(access_manager::class);
-        if (!$accessmanager->is_tenant_manager()) {
+        $tenant = \core\di::get(tenant::class);
+        if (!$tenant->is_valid_tenant() || !$accessmanager->is_tenant_manager()) {
             return;
         }
         $node = navigation_node::create(get_string('aiadministrationlink', 'local_ai_manager'),
