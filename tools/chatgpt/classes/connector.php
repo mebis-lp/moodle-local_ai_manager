@@ -100,7 +100,6 @@ class connector extends \local_ai_manager\base_connector {
         return [
                 'model' => $this->instance->get_model(),
                 'temperature' => $this->instance->get_temperature(),
-                'top_p' => $this->instance->get_top_p(),
                 'messages' => $messages,
         ];
     }
