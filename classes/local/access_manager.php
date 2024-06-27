@@ -40,14 +40,13 @@ class access_manager {
 
     public function is_tenant_manager(): bool {
         // TODO Convert this into a hook.
-        if (!$this->tenant->is_valid_tenant()) {
-            require_admin();
-            return true;
+        if (!$this->tenant->is_default_tenant()) {
+            $school = new school($this->tenant->get_tenantidentifier());
+            if (!$school->record_exists()) {
+                throw new \moodle_exception('Invalid tenant "' . $this->tenant->get_tenantidentifier() . '"!');
+            }
         }
-        $school = new school($this->tenant->get_tenantidentifier());
-        if (!$school->record_exists()) {
-            throw new \moodle_exception('Invalid tenant "' . $this->tenant->get_tenantidentifier() . '"!');
-        }
+        // In case of default tenant we get system context here, admin should have all capabilities, so we need no admin check.
         $tenantcontext = $this->tenant->get_tenant_context();
         return has_capability('local/ai_manager:manage', $tenantcontext);
     }

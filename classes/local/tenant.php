@@ -29,6 +29,8 @@ use stdClass;
  */
 class tenant {
 
+    public const DEFAULT_TENANTIDENTIFIER = 'default';
+
     private string $tenantidentifier;
 
     /**
@@ -41,6 +43,9 @@ class tenant {
         global $USER;
         if (empty($tenantidentifier)) {
             $tenantidentifier = $USER->institution;
+            if (empty($tenantidentifier)) {
+                $tenantidentifier = self::DEFAULT_TENANTIDENTIFIER;
+            }
         }
         $this->tenantidentifier = $tenantidentifier;
     }
@@ -54,8 +59,8 @@ class tenant {
         return $this->tenantidentifier;
     }
 
-    public function is_valid_tenant(): bool {
-        return !empty($this->tenantidentifier);
+    public function is_default_tenant(): bool {
+        return $this->tenantidentifier === self::DEFAULT_TENANTIDENTIFIER;
     }
 
     /**
@@ -64,7 +69,7 @@ class tenant {
      * @return context
      */
     public function get_tenant_context(): \context {
-        if (empty($this->get_tenantidentifier())) {
+        if ($this->get_tenantidentifier() === self::DEFAULT_TENANTIDENTIFIER) {
             return \context_system::instance();
         }
         $school = new \local_bycsauth\school($this->get_tenantidentifier());
