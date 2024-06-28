@@ -23,9 +23,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['ai_manager:manage'] = 'Manage configuration of ai_manager';
-$string['ai_manager:use'] = 'Use ai_manager';
+$string['addnavigationentry'] = 'In Navigation anzeigen';
+$string['addnavigationentrydesc'] = 'Aktivieren Sie diese Option, wenn die Konfiguration des AI-Managers in der Hauptnavigation angezeigt werden soll.';
+$string['ai_manager:manage'] = 'AI-Manager verwalten';
+$string['ai_manager:use'] = 'AI-Manager benutzen';
 $string['aiadministrationlink'] = 'KI-Tools-Administration';
+$string['basicsettings'] = 'Grundeinstellungen';
+$string['basicsettingsdesc'] = 'Grundeinstellungn des AI-Managers konfigurieren';
 $string['confirmaitoolsusage_header'] = 'KI-Nutzung bestätigen';
 $string['confirmaitoolsusage_description'] = 'Sie sind dabei, ein KI-Tool zu nutzen. Immer, wenn dies innerhalb der mebis Lernplattform
  geschieht, werden Sie über eine Info-Box darüber informiert, die konkrete Informationen zur Verwendung Ihrer Daten enthält.';

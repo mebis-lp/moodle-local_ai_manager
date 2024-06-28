@@ -23,9 +23,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addnavigationentry'] = 'Add navigation entry';
+$string['addnavigationentrydesc'] = 'Enable if the AI manager configuration should be accessible by the primary navigation';
 $string['ai_manager:manage'] = 'Manage configuration of ai_manager';
 $string['ai_manager:use'] = 'Use ai_manager';
 $string['aiadministrationlink'] = 'AI tools administration';
+$string['basicsettings'] = 'Basic settings';
+$string['basicsettingsdesc'] = 'Configure basic settings for the AI manager plugin';
 $string['confirmaitoolsusage_header'] = 'Confirm AI usage';
 $string['confirmaitoolsusage_description'] = 'You are about to use an AI tool. Whenever you are about to use such an tool from inside
 the mebis Lernplattform you will be informed by an info box which contains specific information about the usage of your data.';
