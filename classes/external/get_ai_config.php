@@ -21,10 +21,7 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
-use local_ai_manager\base_purpose;
-use local_ai_manager\local\userinfo;
-use local_ai_manager\local\userusage;
-use function DI\factory;
+use local_ai_manager\ai_manager_utils;
 
 /**
  * Web service to submit a query to an AI tool.
@@ -55,29 +52,7 @@ class get_ai_config extends external_api {
         self::validate_context($context);
         require_capability('local/ai_manager:use', $context);
 
-        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
-        $userinfo = new userinfo($USER->id);
-        $purposes = [];
-        $purposeconfig = $configmanager->get_purpose_config();
-        $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
-        foreach (base_purpose::get_all_purposes() as $purpose) {
-            $purposeinstance = $factory->get_purpose_by_purpose_string($purpose);
-            $userusage = new userusage($purposeinstance, $USER->id);
-            $purposes[] = [
-                    'purpose' => $purpose,
-                    'isconfigured' => !empty($purposeconfig[$purpose]),
-                    'limitreached' => $userusage->get_currentusage() >=
-                            $configmanager->get_max_requests($purposeinstance, $userinfo->get_role()),
-            ];
-        }
-
-        return [
-                'tenantenabled' => $configmanager->is_tenant_enabled(),
-                'userlocked' => $userinfo->is_locked(),
-                'role' => userinfo::get_role_as_string($userinfo->get_role()),
-                'purposes' => $purposes,
-        ];
-
+        return ai_manager_utils::get_ai_config($USER);
     }
 
     /**

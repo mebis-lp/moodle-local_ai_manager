@@ -17,6 +17,9 @@
 namespace local_ai_manager;
 
 use local_ai_manager\local\tenant;
+use local_ai_manager\local\userinfo;
+use local_ai_manager\local\userusage;
+use stdClass;
 
 /**
  * Base class for connector subplugins.
@@ -98,5 +101,30 @@ class ai_manager_utils {
         }
         $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
         return $factory->get_connector_instance_by_purpose($purpose);
+    }
+
+    public static function get_ai_config(stdClass $user): array {
+        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+        $userinfo = new userinfo($user->id);
+        $purposes = [];
+        $purposeconfig = $configmanager->get_purpose_config();
+        $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+        foreach (base_purpose::get_all_purposes() as $purpose) {
+            $purposeinstance = $factory->get_purpose_by_purpose_string($purpose);
+            $userusage = new userusage($purposeinstance, $user->id);
+            $purposes[] = [
+                    'purpose' => $purpose,
+                    'isconfigured' => !empty($purposeconfig[$purpose]),
+                    'limitreached' => $userusage->get_currentusage() >=
+                            $configmanager->get_max_requests($purposeinstance, $userinfo->get_role()),
+            ];
+        }
+
+        return [
+                'tenantenabled' => $configmanager->is_tenant_enabled(),
+                'userlocked' => $userinfo->is_locked(),
+                'role' => userinfo::get_role_as_string($userinfo->get_role()),
+                'purposes' => $purposes,
+        ];
     }
 }
