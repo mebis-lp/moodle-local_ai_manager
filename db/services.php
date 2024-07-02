@@ -33,9 +33,9 @@ $functions = [
                 'ajax' => true,
                 'capabilities' => 'local/ai_manager:use',
         ],
-        'local_ai_manager_get_purpose_config' => [
-                'classname' => 'local_ai_manager\external\get_purpose_config',
-                'description' => 'Send a query to a LLM.',
+        'local_ai_manager_get_ai_config' => [
+                'classname' => 'local_ai_manager\external\get_ai_config',
+                'description' => 'Get all information about the current ai configuration for the current user',
                 'type' => 'read',
                 'ajax' => true,
                 'capabilities' => 'local/ai_manager:use',

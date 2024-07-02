@@ -203,19 +203,6 @@ class manager {
         // Check if we already have a userinfo object for this. If not we need to create one to initially set the correct role.
         $userinfo = new userinfo($data->userid);
         if (!$userinfo->record_exists()) {
-            // TODO Extract this into a hook.
-            // TODO Make this more performant
-            $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
-            $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
-            $school = new school($USER->institution);
-            if (user_has_role_assignment($USER->id, $coordinatorrole->id,
-                    \context_coursecat::instance($school->get_school_categoryid())->id)) {
-                $userinfo->set_role(userinfo::ROLE_UNLIMITED);
-            } else if (user_has_role_assignment($USER->id . $idmteacherrole->id, \context_system::instance()->id)) {
-                $userinfo->set_role(userinfo::ROLE_EXTENDED);
-            } else {
-                $userinfo->set_role(userinfo::ROLE_BASIC);
-            }
             $userinfo->store();
         }
 

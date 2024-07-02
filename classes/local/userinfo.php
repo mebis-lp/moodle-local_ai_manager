@@ -16,6 +16,7 @@
 
 namespace local_ai_manager\local;
 
+use local_bycsauth\school;
 use stdClass;
 
 /**
@@ -47,8 +48,26 @@ class userinfo {
     public function load(): void {
         global $DB;
         $this->record = $DB->get_record('local_ai_manager_userinfo', ['userid' => $this->userid]);
-        $this->role = !empty($this->record->role) ? $this->record->role : self::ROLE_BASIC;
+        $this->role = !empty($this->record->role) ? $this->record->role : $this->get_default_role();
         $this->locked = !empty($this->record->locked);
+    }
+
+    public function get_default_role() {
+        global $DB;
+        // TODO Extract this into a hook.
+        // TODO Make this more performant
+        $user = \core_user::get_user($this->userid);
+        $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
+        $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
+        $school = new school($user->institution);
+        if (user_has_role_assignment($this->userid, $coordinatorrole->id,
+                \context_coursecat::instance($school->get_school_categoryid())->id)) {
+            return self::ROLE_UNLIMITED;
+        } else if (user_has_role_assignment($this->userid . $idmteacherrole->id, \context_system::instance()->id)) {
+            return self::ROLE_EXTENDED;
+        } else {
+            return self::ROLE_BASIC;
+        }
     }
 
     public function record_exists(): bool {

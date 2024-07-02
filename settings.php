@@ -29,7 +29,7 @@ if ($hassiteconfig) {
 
     $ADMIN->add('localplugins', new admin_category('local_ai_manager_settings',
             new lang_string('pluginname', 'local_ai_manager')));
-    $settings = new admin_settingpage('local_bycsauth', get_string('pluginname', 'local_ai_manager'));
+    $settings = new admin_settingpage('local_ai_manager', get_string('pluginname', 'local_ai_manager'));
     $ADMIN->add('localplugins', $settings);
 
     if ($ADMIN->fulltree) {
