@@ -28,7 +28,5 @@ $string['apikey_desc'] = 'The API key is added as Authorization: Bearer <<apikey
 $string['ollamasettings'] = 'Ollama settings';
 $string['pluginname'] = 'Ollama';
 $string['privacy:metadata'] = 'The local ai_managers tool subplugin aitool_ollama does not store any personal data.';
-$string['temperature'] = 'Temperature';
-$string['temperature_desc'] = 'In other words this is "randomness" or "creativity". Low temperature will generate more coherent but predictable text. The range is from 0 to 1.';
 $string['url'] = 'URL to Ollama host';
 $string['url_desc'] = 'The URL where you reach your Ollama host';

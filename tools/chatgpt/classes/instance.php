@@ -17,6 +17,7 @@
 namespace aitool_chatgpt;
 
 use local_ai_manager\base_instance;
+use local_ai_manager\local\aitool_option_temperature;
 use stdClass;
 
 /**
@@ -41,9 +42,7 @@ class instance extends base_instance {
         $mform->setType('azure_deploymentid', PARAM_TEXT);
         $mform->hideIf('azure_deploymentid', 'azure_enabled', 0);
 
-        $mform->addElement('text', 'temperature', get_string('temperature', 'aitool_chatgpt'));
-        $mform->setType('temperature', PARAM_FLOAT);
-        $mform->setDefault('temperature', '1.0');
+        aitool_option_temperature::extend_form_definition($mform);
 
         // We leave the endpoint empty on creation, because it depends if azure is being used or not.
         $mform->setDefault('endpoint', '');
@@ -52,7 +51,11 @@ class instance extends base_instance {
 
     protected function get_extended_formdata(): stdClass {
         $data = new stdClass();
-        $data->temperature = floatval($this->get_customfield1());
+        $temperature = floatval($this->get_customfield1());
+        $temperaturedata = aitool_option_temperature::add_temperature_to_form_data($temperature);
+        foreach ($temperaturedata as $key => $value) {
+            $data->{$key} = $value;
+        }
         $data->azure_enabled = !empty($this->get_customfield2());
         $data->azure_resourcename = $this->get_customfield3();
         $data->azure_deploymentid = $this->get_customfield4();
@@ -70,7 +73,8 @@ class instance extends base_instance {
         }
         $this->set_endpoint($endpoint);
         // TODO eventually detect , or . as float separator and handle accordingly
-        $this->set_customfield1(strval($data->temperature));
+        $temperature = aitool_option_temperature::extract_temperature_to_store($data);
+        $this->set_customfield1($temperature);
         $this->set_customfield2(!empty($data->azure_enabled));
         $this->set_customfield3(trim($data->azure_resourcename));
         $this->set_customfield4(trim($data->azure_deploymentid));
@@ -78,12 +82,7 @@ class instance extends base_instance {
 
     protected function extend_validation(array $data, array $files): array {
         $errors = [];
-        if (floatval($data['temperature']) < 0 || floatval($data['temperature']) > 2.0) {
-            $errors['temperature'] = 'Temperature must be between 0 und 2';
-        }
-        if (floatval($data['top_p']) < 0 || floatval($data['top_p']) > 1.0) {
-            $errors['top_p'] = 'Top_p must be between 0 und 1';
-        }
+        $errors = array_merge($errors, aitool_option_temperature::validate_temperature($data));
         if (!empty($data['azure_enabled'])) {
             if (empty($data['azure_resourcename'])) {
                 $errors['azure_resourcename'] = 'Azure Resource Name is required';

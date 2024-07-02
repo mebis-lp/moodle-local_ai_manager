@@ -17,6 +17,7 @@
 namespace aitool_gemini;
 
 use local_ai_manager\base_instance;
+use local_ai_manager\local\aitool_option_temperature;
 use stdClass;
 
 /**
@@ -30,40 +31,30 @@ use stdClass;
 class instance extends base_instance {
 
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('text', 'temperature', get_string('temperature', 'aitool_gemini'));
-        $mform->setType('temperature', PARAM_FLOAT);
-        $mform->setDefault('temperature', '1.0');
-
-        $mform->addElement('text', 'top_p', get_string('top_p', 'aitool_gemini'));
-        $mform->setType('top_p', PARAM_FLOAT);
-        $mform->setDefault('top_p', '1.0');
-
         $mform->setDefault('endpoint', 'https://generativelanguage.googleapis.com/v1beta/models');
         $mform->freeze('endpoint');
+
+        aitool_option_temperature::extend_form_definition($mform);
     }
 
     protected function get_extended_formdata(): stdClass {
+        $temperature = $this->get_customfield1();
         $data = new stdClass();
-        $data->temperature = floatval($this->get_customfield1());
-        $data->top_p = floatval($this->get_customfield2());
+        $temperaturedata = aitool_option_temperature::add_temperature_to_form_data($temperature);
+        foreach ($temperaturedata as $key => $value) {
+            $data->{$key} = $value;
+        }
         return $data;
     }
 
     protected function extend_store_formdata(stdClass $data): void {
         // TODO eventually detect , or . as float separator and handle accordingly
-        $this->set_customfield1(strval($data->temperature));
-        $this->set_customfield2(strval($data->top_p));
+        $temperature = aitool_option_temperature::extract_temperature_to_store($data);
+        $this->set_customfield1($temperature);
     }
 
     protected function extend_validation(array $data, array $files): array {
-        $errors = [];
-        if (floatval($data['temperature']) < 0 || floatval($data['temperature']) > 2.0) {
-            $errors['temperature'] = 'Temperature must be between 0 und 2';
-        }
-        if (floatval($data['top_p']) < 0 || floatval($data['top_p']) > 1.0) {
-            $errors['top_p'] = 'Top_p must be between 0 und 1';
-        }
-        return $errors;
+        return aitool_option_temperature::validate_temperature($data);
     }
 
     public function get_temperature(): float {
