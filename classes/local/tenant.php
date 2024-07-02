@@ -75,4 +75,19 @@ class tenant {
         $school = new \local_bycsauth\school($this->get_tenantidentifier());
         return \context_coursecat::instance($school->get_school_categoryid());
     }
+
+    public function is_tenant_allowed(): bool {
+        $restricttenants = !empty(get_config('local_ai_manager', 'restricttenants'));
+        if (!$restricttenants) {
+            return true;
+        }
+        $allowedtenantsconfig = get_config('local_ai_manager', 'allowedtenants');
+        $allowedtenantsconfig = explode(PHP_EOL, $allowedtenantsconfig);
+        foreach ($allowedtenantsconfig as $tenant) {
+            if ($this->get_tenantidentifier() === trim($tenant)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

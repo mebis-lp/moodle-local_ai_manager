@@ -34,7 +34,7 @@ class access_manager {
     public function require_tenant_manager(): void {
         if (!$this->is_tenant_manager()) {
             // TODO Make a clean require_capability_exception out of this
-            throw new \moodle_exception('You do not have the rights to manage the AI tools');
+            throw new \moodle_exception('You do not have the rights to manage the AI tools or the tenant is not allowed to use them');
         }
     }
 
@@ -48,11 +48,14 @@ class access_manager {
         }
         // In case of default tenant we get system context here, admin should have all capabilities, so we need no admin check.
         $tenantcontext = $this->tenant->get_tenant_context();
-        return has_capability('local/ai_manager:manage', $tenantcontext);
+        return has_capability('local/ai_manager:manage', $tenantcontext) && $this->tenant->is_tenant_allowed();
     }
 
     public function require_tenant_member(): void {
         global $USER;
+        if (!$this->tenant->is_tenant_allowed()) {
+            throw new \moodle_exception('Tenant is not allowed.');
+        }
         $school = new school($this->tenant->get_tenantidentifier());
         if (!$school->record_exists()) {
             throw new \moodle_exception('Invalid tenant "' . $this->tenant->get_tenantidentifier() . '"!');

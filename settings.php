@@ -44,5 +44,19 @@ if ($hassiteconfig) {
                 new lang_string('addnavigationentrydesc', 'local_ai_manager'),
                 1
         ));
+
+        $settings->add(new admin_setting_configcheckbox(
+                'local_ai_manager/restricttenants',
+                new lang_string('restricttenants', 'local_ai_manager'),
+                new lang_string('restricttenants', 'local_ai_manager'),
+                0
+        ));
+
+        $settings->add(new admin_setting_configtextarea(
+                'local_ai_manager/allowedtenants',
+                new lang_string('allowedtenants', 'local_ai_manager'),
+                new lang_string('allowedtenantsdesc', 'local_ai_manager'),
+                ''
+        ));
     }
 }

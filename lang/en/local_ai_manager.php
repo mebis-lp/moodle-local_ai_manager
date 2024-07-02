@@ -25,6 +25,8 @@
 
 $string['addnavigationentry'] = 'Add navigation entry';
 $string['addnavigationentrydesc'] = 'Enable if the AI manager configuration should be accessible by the primary navigation';
+$string['allowedtenants'] = 'Allowed tenants';
+$string['allowedtenantsdesc'] = 'Specify a list of allowed tenants: One identifier per line.';
 $string['ai_manager:manage'] = 'Manage configuration of ai_manager';
 $string['ai_manager:use'] = 'Use ai_manager';
 $string['aiadministrationlink'] = 'AI tools administration';
@@ -35,6 +37,8 @@ $string['confirmaitoolsusage_description'] = 'You are about to use an AI tool. W
 the mebis Lernplattform you will be informed by an info box which contains specific information about the usage of your data.';
 $string['confirmaitoolsusage_details'] = 'Detailed information';
 $string['empty_api_key'] = 'Empty API Key';
+$string['restricttenants'] = 'Lock access for certain tenants';
+$string['restricttenantsdesc'] = 'Enable to limit the AI tools to specific tenants which can be defined by the "allowedtenants" config option.';
 $string['pleaseselect'] = 'Please, select';
 $string['pluginname'] = 'AI Manager';
 $string['privacy:metadata'] = 'The local ai_manager plugin does not store any personal data.';
@@ -49,6 +53,7 @@ $string['resetuserusagetask'] = 'Reset AI manager user usage data';
 $string['settingsgeneral'] = 'Allgemein';
 $string['temperature'] = 'Temperature';
 $string['temperature_desc'] = 'This describes "randomness" or "creativity". Low temperature will generate more coherent but predictable text. High numbers means more creative but not accurate. The range is from 0 to 1.';
+$string['tenantnotallowed'] = 'The feature is globally disabled for your tenant and thus not usable.';
 $string['empty'] = 'empty';
 $string['settings'] = 'Einstellungen';
 $string['tools'] = 'Languagemodels';

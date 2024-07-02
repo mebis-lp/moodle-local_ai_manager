@@ -167,6 +167,9 @@ class config_manager {
         if (!array_key_exists('tenantenabled', $this->config)) {
             return false;
         }
+        if (!$this->tenant->is_tenant_allowed()) {
+            return false;
+        }
         return $this->config['tenantenabled'];
     }
 

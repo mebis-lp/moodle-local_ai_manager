@@ -117,6 +117,7 @@ class ai_manager_utils {
                     'isconfigured' => !empty($purposeconfig[$purpose]),
                     'limitreached' => $userusage->get_currentusage() >=
                             $configmanager->get_max_requests($purposeinstance, $userinfo->get_role()),
+                    'lockedforrole' => $configmanager->get_max_requests($purposeinstance, $userinfo->get_role()) === 0,
             ];
         }
 

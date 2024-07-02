@@ -73,6 +73,9 @@ class get_ai_config extends external_api {
                                 'limitreached' => new external_value(PARAM_BOOL,
                                         'If the user has reached the maximum amount of requests for the purpose',
                                         VALUE_REQUIRED),
+                                'lockedforrole' => new external_value(PARAM_BOOL,
+                                        'If the purpose is locked for the user\'s role',
+                                        VALUE_REQUIRED),
                         ]
                 ));
         $singlestructuredefinition['tenantenabled'] =

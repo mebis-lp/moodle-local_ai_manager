@@ -25,6 +25,8 @@
 
 $string['addnavigationentry'] = 'In Navigation anzeigen';
 $string['addnavigationentrydesc'] = 'Aktivieren Sie diese Option, wenn die Konfiguration des AI-Managers in der Hauptnavigation angezeigt werden soll.';
+$string['allowedtenants'] = 'Erlaubte Tenant-Bezeichnern';
+$string['allowedtenantsdesc'] = 'Hier kann eine Liste von Tenant-Bezeichnern hinterlegt werden: Jeweils ein Bezeichner pro Zeile.';
 $string['ai_manager:manage'] = 'AI-Manager verwalten';
 $string['ai_manager:use'] = 'AI-Manager benutzen';
 $string['aiadministrationlink'] = 'KI-Tools-Administration';
@@ -35,10 +37,13 @@ $string['confirmaitoolsusage_description'] = 'Sie sind dabei, ein KI-Tool zu nut
  geschieht, werden Sie über eine Info-Box darüber informiert, die konkrete Informationen zur Verwendung Ihrer Daten enthält.';
 $string['confirmaitoolsusage_details'] = 'Weitere Informationen';
 $string['empty_api_key'] = 'Leerer API-Schlüssel';
+$string['restricttenants'] = 'Sperre Zugriff für bestimmte Tenants';
+$string['restricttenantsdesc'] = 'Aktivieren, um die KI-Tools nur für bestimmte Tenants zuzulassen, die bei "allowedtenants" definiert werden können.';
 $string['pleaseselect'] = 'Bitte, wählen Sie';
 $string['pluginname'] = 'AI Manager';
 $string['privacy:metadata'] = 'Das lokale ai_manager Plugin speichert keine persönlichen Daten.';
 $string['resetuserusagetask'] = 'AI-Manager-Nutzungsdaten zurücksetzen';
+$string['tenantnotallowed'] = 'Das Feature ist für Ihren Tenant zentral deaktiviert und daher nicht nutzbar.';
 $string['zweck_chat'] = 'Chatbot';
 $string['zweck_defaults_heading'] = 'Zwecke\' Standardmodell';
 $string['purpose_defaults_heading_desc'] = 'Definieren Sie das für verschiedene Zwecke verwendete Standardmodell';
