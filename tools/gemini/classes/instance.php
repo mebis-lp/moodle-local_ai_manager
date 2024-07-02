@@ -60,9 +60,6 @@ class instance extends base_instance {
     public function get_temperature(): float {
         return floatval($this->get_customfield1());
     }
-    public function get_top_p(): float {
-        return floatval($this->get_customfield2());
-    }
 
     public function get_endpoint(): string {
         return parent::get_endpoint() . '/' . $this->get_model() . ':generateContent';

@@ -97,4 +97,8 @@ class instance extends base_instance {
     public function get_temperature(): float {
         return floatval($this->get_customfield1());
     }
+
+    public function azure_enabled(): bool {
+        return !empty($this->get_customfield2());
+    }
 }

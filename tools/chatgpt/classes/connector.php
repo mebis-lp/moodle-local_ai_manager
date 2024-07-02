@@ -112,4 +112,16 @@ class connector extends \local_ai_manager\base_connector {
         return true;
     }
 
+    protected function get_headers(): array {
+        $headers = parent::get_headers();
+        if (!$this->instance->azure_enabled()) {
+            // If azure is not enabled, we just use the default headers for the OpenAI API.
+            return $headers;
+        }
+        if (in_array('Authorization', array_keys($headers))) {
+            unset($headers['Authorization']);
+            $headers['api-key'] = $this->instance->get_apikey();
+        }
+        return $headers;
+    }
 }

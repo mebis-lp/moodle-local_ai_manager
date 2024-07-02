@@ -103,10 +103,7 @@ abstract class base_connector {
                 'timeout' => 120,
         ]);
 
-        $options['headers'] = [
-                'Authorization' => 'Bearer ' . $this->get_api_key(),
-                'Content-Type' => 'application/json;charset=utf-8',
-        ];
+        $options['headers'] = $this->get_headers();
         $options['body'] = json_encode($data);
 
         $start = microtime(true);
@@ -161,5 +158,12 @@ abstract class base_connector {
         }
         return request_response::create_from_error($exception->getCode(), $message,
                 $exception->getMessage() . '\n' . $exception->getTraceAsString());
+    }
+
+    protected function get_headers(): array {
+        return [
+                'Authorization' => 'Bearer ' . $this->get_api_key(),
+                'Content-Type' => 'application/json;charset=utf-8',
+        ];
     }
 }

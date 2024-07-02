@@ -66,10 +66,7 @@ class connector extends \local_ai_manager\base_connector {
                 'timeout' => 60,
         ]);
 
-        $options['headers'] = [
-                'Content-Type' => 'application/json;charset=utf-8',
-                'x-goog-api-key' => $this->get_api_key(),
-        ];
+        $options['headers'] = $this->get_headers();
         $options['body'] = json_encode($data);
 
         $start = microtime(true);
@@ -145,7 +142,6 @@ class connector extends \local_ai_manager\base_connector {
                 'contents' => $messages,
                 'generationConfig' => [
                         'temperature' => $this->instance->get_temperature(),
-                        'topP' => $this->instance->get_top_p(),
                 ]
         ];
     }
@@ -156,6 +152,15 @@ class connector extends \local_ai_manager\base_connector {
 
     public function has_customvalue2(): bool {
         return true;
+    }
+
+    protected function get_headers(): array {
+        $headers = parent::get_headers();
+        if (in_array('Authorization', array_keys($headers))) {
+            unset($headers['Authorization']);
+            $headers['x-goog-api-key'] = $this->get_api_key();
+        }
+        return $headers;
     }
 
 }
