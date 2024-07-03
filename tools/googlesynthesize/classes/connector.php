@@ -30,6 +30,7 @@ use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use Locale;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -117,7 +118,7 @@ class connector extends \local_ai_manager\base_connector {
                         'text' => $prompttext,
                 ],
                 'voice' => [
-                        'voice' => $requestoptions['voices'][0],
+                        'ssmlGender' => $requestoptions['gender'][0],
                         'languageCode' => $requestoptions['languages'][0],
                 ],
                 'audioConfig' => [
@@ -136,13 +137,23 @@ class connector extends \local_ai_manager\base_connector {
 
     public function get_available_options(): array {
         // TODO We need to filter this huge list of voices. No idea yet how.
-        $voices =
-                array_map(fn($voicename) => ['key' => $voicename, 'displayname' => $voicename], $this->retrieve_available_voices());
-        $languagekeys = array_unique(array_map(fn($voice) => substr($voice['key'], 0, 2), $voices));
+        $voices = $this->retrieve_available_voices();
+        $languagekeys = [];
+        foreach ($voices as $voice) {
+            foreach ($voice['languageCodes'] as $languagecode) {
+                if (!in_array($languagecode, $languagekeys)) {
+                    $languagekeys[] = $languagecode;
+                }
+            }
+        }
         // The call array_values(...) is needed to re-index the array for later merging.
-        $languages = array_values(array_map(fn($voicekey) => ['key' => $voicekey, 'displayname' => strtoupper($voicekey)], $languagekeys));
+        $languages = array_values(array_map(fn($languagecode) => ['key' => $languagecode, 'displayname' => Locale::getDisplayLanguage($languagecode, current_language()) . ' (' . $languagecode . ')'], $languagekeys));
+        usort($languages, fn($a, $b) => strcmp($a['displayname'], $b['displayname']));
         return [
-                'voices' => $voices,
+                'gender' => [
+                        ['key' => 'MALE', 'displayname' => get_string('male', 'local_ai_manager')],
+                        ['key' => 'FEMALE', 'displayname' => get_string('female', 'local_ai_manager')],
+                ],
                 'languages' => $languages,
         ];
     }
@@ -178,8 +189,7 @@ class connector extends \local_ai_manager\base_connector {
                 return [];
             }
         }
-        $voicesarray = json_decode($response->getBody()->getContents(), true)['voices'];
-        $voices = array_map(fn($voice) => $voice['name'], $voicesarray);
+        $voices = json_decode($response->getBody()->getContents(), true)['voices'];
         $cache->set('voices', $voices);
         $cache->set('lastfetched', $clock->time());
         return $voices;

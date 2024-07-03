@@ -39,7 +39,7 @@ class aitool_option_temperature {
 
         $mform->addElement('checkbox', 'temperatureusecustom', 'NUTZE BENUTZERDEFINIERTEN WERT');
         $mform->addElement('text', 'temperaturecustom', 'TEMPERATURE CUSTOM (ZWISCHEN 0 UND 1)');
-        $mform->hideIf('temperaturecustom', 'temperatureusecustom');
+        $mform->disabledIf('temperaturecustom', 'temperatureusecustom');
         $mform->setType('temperaturecustom', PARAM_FLOAT);
         $mform->disabledIf('temperatureprechoicearray', 'temperatureusecustom', 'checked');
     }

@@ -94,11 +94,6 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_available_options(): array {
-        /*$languages = [];
-        foreach (language_codes::LANGUAGECODES as $key => $displayname) {
-            $languages[] = ['key' => $key, 'displayname' => $displayname];
-        }*/
-
         return [
                 'voices' => [
                          ['key' => 'alloy', 'displayname' => 'Alloy'],
@@ -108,8 +103,6 @@ class connector extends \local_ai_manager\base_connector {
                          ['key' => 'nova', 'displayname' => 'Nova'],
                          ['key' => 'shimmer', 'displayname' => 'Shimmer'],
                 ],
-                //'languages' => $languages,
-                'languages' => [],
         ];
     }
 

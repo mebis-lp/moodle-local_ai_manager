@@ -48,7 +48,7 @@ class purpose extends base_purpose {
         }
 
         // In this case we do not only provide additional purpose options, but also get them from the currently used connector.
-        $allowedoptionkeys = ['voices' => [] , 'languages' => []];
+        $allowedoptionkeys = ['voices' => [], 'languages' => [], 'gender' => []];
         $connectoroptions = $connector->get_available_options();
         foreach ($connectoroptions as $key => $value) {
             if (!in_array($key, array_keys($allowedoptionkeys))) {
