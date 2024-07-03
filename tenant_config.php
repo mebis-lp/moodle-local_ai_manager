@@ -31,9 +31,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 $tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
-
-$url = new moodle_url('/local/ai_manager/tenant_config.php');
-$PAGE->set_url($url);
+$enabletenant = optional_param('enabletenant', 'not_set', PARAM_ALPHANUM);
 
 $returnurl = new moodle_url('/course/index.php');
 
@@ -48,6 +46,8 @@ $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 $accessmanager->require_tenant_manager();
 
+$url = new moodle_url('/local/ai_manager/tenant_config.php', ['tenantid' => $tenant->get_tenantidentifier()]);
+$PAGE->set_url($url);
 $PAGE->set_context($tenant->get_tenant_context());
 
 $strtitle = get_string('schoolconfig_heading', 'local_ai_manager');
@@ -57,30 +57,26 @@ $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 $PAGE->set_secondary_navigation(false);
 
-$tenantconfigform = new tenant_config_form(null, ['tenant' => $tenantid, 'returnurl' => $PAGE->url]);
-// Will return the config manager for the current user.
 /** @var \local_ai_manager\local\config_manager $configmanager */
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
-
-// Standard form processing if statement.
-if ($tenantconfigform->is_cancelled()) {
-    redirect($returnurl);
-} else if ($data = $tenantconfigform->get_data()) {
-    if (property_exists($data, 'tenantenabled')) {
-        $configmanager->set_config('tenantenabled', $data->tenantenabled);
-    }
-
-    redirect($PAGE->url, 'CONFIG SAVED');
-} else {
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
-    $tenantnavbar = new tenantnavbar();
-    echo $OUTPUT->render($tenantnavbar);
-
-    $data = new stdClass();
-    $data->tenantenabled = $configmanager->is_tenant_enabled();
-    $tenantconfigform->set_data($data);
-    $tenantconfigform->display();
+$istenantenabled = $configmanager->is_tenant_enabled();
+if ($enabletenant !== 'not_set') {
+    $configmanager->set_config('tenantenabled', !empty($enabletenant) ? 1 : 0);
+    redirect($PAGE->url);
 }
+
+echo $OUTPUT->header();
+echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
+        [
+                'checked' => $istenantenabled,
+                'description' => $istenantenabled ? get_string('disabletenant', 'local_ai_manager') :
+                        get_string('enabletenant', 'local_ai_manager'),
+                'text' => $istenantenabled ? get_string('tenantenabled', 'local_ai_manager') :
+                        get_string('tenantdisabled', 'local_ai_manager'),
+                'targetwhenchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
+                        ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 0]))->out(false),
+                'targetwhennotchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
+                        ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 1]))->out(false),
+        ]);
 
 echo $OUTPUT->footer();

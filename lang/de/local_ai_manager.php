@@ -36,7 +36,9 @@ $string['confirmaitoolsusage_header'] = 'KI-Nutzung bestätigen';
 $string['confirmaitoolsusage_description'] = 'Sie sind dabei, ein KI-Tool zu nutzen. Immer, wenn dies innerhalb der mebis Lernplattform
  geschieht, werden Sie über eine Info-Box darüber informiert, die konkrete Informationen zur Verwendung Ihrer Daten enthält.';
 $string['confirmaitoolsusage_details'] = 'Weitere Informationen';
+$string['disabletenant'] = 'Tenant deaktivieren';
 $string['empty_api_key'] = 'Leerer API-Schlüssel';
+$string['enabletenant'] = 'Tenant aktivieren';
 $string['female'] = 'Weiblich';
 $string['male'] = 'Männlich';
 $string['pleaseselect'] = 'Bitte, wählen Sie';
@@ -55,6 +57,8 @@ $string['zweck_tts'] = 'Text in Sprache';
 $string['settingsgeneral'] = 'Allgemein';
 $string['temperatur'] = 'Temperatur';
 $string['temperature_desc'] = 'Dies beschreibt "Zufälligkeit" oder "Kreativität". Eine niedrige Temperatur erzeugt einen kohärenteren, aber vorhersehbaren Text. Hohe Zahlen bedeuten kreativer, aber ungenauer. Der Bereich reicht von 0 bis 1.';
+$string['tenantenabled'] = 'Tenant aktiviert';
+$string['tenantdisabled'] = 'Tenant deaktiviert';
 $string['unit_token'] = 'Token';
 $string['unit_count'] = 'Anfrage(n)';
 
