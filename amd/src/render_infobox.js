@@ -61,7 +61,7 @@ export const renderInfoBox = async(component, userId, selector, purposes) => {
  * @param {string} stringToHash the string to hash
  * @returns {Promise<string>} the promise containing a hex representation of the string encoded by SHA-256
  */
-const hash = async(stringToHash) => {
+export const hash = async(stringToHash) => {
     const encoder = new TextEncoder();
     const data = encoder.encode(stringToHash);
     const hashAsArrayBuffer = await window.crypto.subtle.digest("SHA-256", data);
