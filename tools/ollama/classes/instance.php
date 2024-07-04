@@ -36,7 +36,7 @@ class instance extends base_instance {
 
     protected function get_extended_formdata(): stdClass {
         $data = new stdClass();
-        $temperaturedata = aitool_option_temperature::add_temperature_to_form_data($temperature);
+        $temperaturedata = aitool_option_temperature::add_temperature_to_form_data($this->get_temperature());
         foreach ($temperaturedata as $key => $value) {
             $data->{$key} = $value;
         }
@@ -57,9 +57,5 @@ class instance extends base_instance {
 
     public function get_temperature(): float {
         return floatval($this->get_customfield1());
-    }
-
-    public function get_top_p(): float {
-        return floatval($this->get_customfield2());
     }
 }

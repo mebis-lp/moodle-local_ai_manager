@@ -110,7 +110,6 @@ class connector extends \local_ai_manager\base_connector {
                 'keep_alive' => '60m',
                 'options' => [
                         'temperature' => $this->instance->get_temperature(),
-                        'top_p' => $this->instance->get_top_p(),
                 ],
         ];
         return $data;

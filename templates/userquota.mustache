@@ -28,10 +28,9 @@
     {
     }
 }}
-<div class="alert alert-info" data-content="local_ai_manager_userquota" data-purposes="{{purposes}}">
+<span class="local_ai_manager_userquota_infobox" data-content="local_ai_manager_userquota">
     {{#purposes}}
-        <div>
-            EINSATZZWECK {{purpose}}: {{currentusage}}/{{maxusage}} PRO {{period}}
-        </div>
+        {{currentusage}}{{#showmaxusage}}/{{maxusage}}{{/showmaxusage}} {{querycounttext}}{{^islastelement}}, {{/islastelement}}
     {{/purposes}}
-</div>
+    {{#str}}per, local_ai_manager{{/str}} {{period}}
+</span>

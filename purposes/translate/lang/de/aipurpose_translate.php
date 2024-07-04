@@ -15,36 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Purpose chat methods
+ * Lang strings for aipurpose_translate - DE.
  *
- * @package    aipurpose_chat
+ * @package    aipurpose_translate
  * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aipurpose_chat;
-
-use local_ai_manager\base_purpose;
-
-/**
- * Purpose chat methods
- *
- * @package    aipurpose_chat
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class purpose extends base_purpose {
-    public function get_request_options(array $options): array {
-        if (array_key_exists('conversationcontext', $options)) {
-            return ['conversationcontext' => $options['conversationcontext']];
-        }
-        return [];
-    }
-
-    public function get_additional_purpose_options(): array {
-        return ['conversationcontext' => base_purpose::PARAM_ARRAY];
-    }
-
-}
+$string['pluginname'] = 'Zweck "Übersetzen"';
+$string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
+$string['requestcount'] = 'Übersetzungsanfragen';

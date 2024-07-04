@@ -41,6 +41,7 @@ $string['empty_api_key'] = 'Empty API Key';
 $string['enabletenant'] = 'Enable tenant';
 $string['female'] = 'Female';
 $string['male'] = 'Male';
+$string['per'] = 'per';
 $string['pleaseselect'] = 'Please, select';
 $string['pluginname'] = 'AI Manager';
 $string['privacy:metadata'] = 'The local ai_manager plugin does not store any personal data.';

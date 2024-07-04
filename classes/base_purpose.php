@@ -34,6 +34,7 @@ use Psr\Http\Message\StreamInterface;
 class base_purpose {
 
     public const PLACEHOLDER = 'placeholder';
+    const PARAM_ARRAY = 'array';
 
     public function get_request_options(array $options): array {
         return $options;

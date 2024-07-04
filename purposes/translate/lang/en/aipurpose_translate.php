@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *Lang strings for aipurpose_translate - EN.
+ * Lang strings for aipurpose_translate - EN.
  *
  * @package    aipurpose_translate
  * @copyright  ISB Bayern, 2024
@@ -25,6 +25,4 @@
 
 $string['pluginname'] = 'Purpose "Translate"';
 $string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
-$string['settings_test_tool'] = 'Make a test request';
-$string['settings_test_tool_heading'] = 'Test purpose';
-$string['prompt'] = 'Prompt';
+$string['requestcount'] = 'translation requests';
