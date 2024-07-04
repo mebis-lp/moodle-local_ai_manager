@@ -1,7 +1,59 @@
-.ai_manager_green{
-    color:green;
+.ai_manager_green {
+    color: green;
 }
 
 .ai_manager_red {
     color: red;
+}
+
+#page input[type="checkbox"]:not([disabled]).local_ai_manager-checkbox-switch, #page input[type="checkbox"]:checked:not([disabled]).local_ai_manager-checkbox-switch {
+    position: relative;
+    width: 2.75rem;
+    height: 1.5625rem;
+    padding: 0.125rem 1.5rem 0.125rem 0.125rem;
+    border-radius: 3.125rem;
+    border: 0.125rem solid grey;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    background-color: unset;
+}
+
+#page input[type="checkbox"].local_ai_manager-checkbox-switch::before, #page input[type="checkbox"]:hover.local_ai_manager-checkbox-switch::before {
+    content: "";
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    background: #a4a5ac;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0.125rem;
+    transition: 0.5s;
+}
+
+#page input[type="checkbox"]:checked.local_ai_manager-checkbox-switch::after {
+    content: "";
+}
+
+#page input[type="checkbox"]:checked:not([disabled]).local_ai_manager-checkbox-switch {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+#page input[type="checkbox"]:checked.local_ai_manager-checkbox-switch::before  {
+    transform: translate(100%, -50%);
+    background: #a4a5ac;
+}
+
+
+#page .local_ai_manager-checkbox-switch-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dark #page input[type="checkbox"]:checked:not([disabled]).local_ai_manager-checkbox-switch::before {
+    background-color: #fff;
 }

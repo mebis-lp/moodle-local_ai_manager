@@ -28,27 +28,18 @@
     {
     }
 }}
-<div class="input-group">
-    <label class="mr-2 mb-0 {{#checked}}text-primary{{/checked}}" for="local_ai_manager_toggle_input-{{uniqid}}">
-        {{description}}
-    </label>
-    <div id="local_ai_manager_toggle_clickable-{{uniqid}}" class="custom-control custom-switch" style="cursor: pointer;">
-        <input type="checkbox"{{!
-                }} name="local_ai_manager_toggle_input-{{uniqid}}"{{!
-                }}{{#checked}}{{!
-                    }} checked{{!
-                }}{{/checked}}{{!
-                }} class="custom-control-input"{{!
-                }} id="local_ai_manager_toggle_input-{{uniqid}}"{{!
+<label for="local_ai_manager_toggle_input-{{uniqid}}" class="local_ai_manager-checkbox-switch-label">
+    <input type="checkbox" id="local_ai_manager_toggle_input-{{uniqid}}" class="local_ai_manager-checkbox-switch"{{!
+                }} {{#checked}}checked{{/checked}}{{!
                 }} data-targetwhenchecked="{{{targetwhenchecked}}}"{{!
-                }} data-targetwhennotchecked="{{{targetwhennotchecked}}}"{{!
-                }} style="margin-left: 0"{{!
-            }}>
-        <span class="custom-control-label">{{text}}</span>
-    </div>
-</div>
+                }} data-targetwhennotchecked="{{{targetwhennotchecked}}}"{{!>
+                }}/>
+    mehrere Antworten
+</label>
+
+
 {{#js}}
     require(['local_ai_manager/toggle_handler'], function(ToggleHandler) {
-        ToggleHandler.init('local_ai_manager_toggle_input-{{uniqid}}', 'local_ai_manager_toggle_clickable-{{uniqid}}');
+        ToggleHandler.init('local_ai_manager_toggle_input-{{uniqid}}');
     });
 {{/js}}
