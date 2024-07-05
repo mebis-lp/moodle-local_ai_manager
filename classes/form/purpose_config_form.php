@@ -52,19 +52,12 @@ class purpose_config_form extends \moodleform {
      * Form definition.
      */
     public function definition() {
-        // global $USER;
-        // $returnurl = $this->_customdata['returnurl'];
         $tenant = \core\di::get(tenant::class);
         $mform = &$this->_form;
 
         $mform->addElement('hidden', 'tenant', $tenant->get_tenantidentifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
-        $mform->addElement(
-            'header',
-            'purposeheader',
-            get_string('heading_purposes', 'local_ai_manager')
-        );
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $factory = \core\di::get(connector_factory::class);
             $instances = $factory::get_connector_instances_for_purpose($purpose);

@@ -30,38 +30,18 @@ use local_ai_manager\local\tenant;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
-global $CFG, $DB, $PAGE, $USER;
+global $CFG, $DB, $PAGE, $OUTPUT, $USER;
 
 $tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 $connectorname = optional_param('connectorname', '', PARAM_TEXT);
 $id = optional_param('id', 0, PARAM_INT);
 $del = optional_param('del', 0, PARAM_INT);
 
-$url = new moodle_url('/local/ai_manager/edit_instance.php');
-$PAGE->set_url($url);
-
-$returnurl = new moodle_url('/local/ai_manager/instances_config.php');
-
-// Check permissions.
-require_login();
-
-if (!empty($tenantid)) {
-    $tenant = new \local_ai_manager\local\tenant($tenantid);
-    \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
-}
-$tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-$accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
-$accessmanager->require_tenant_manager();
-
-$PAGE->set_context($tenant->get_tenant_context());
-
-$strtitle = 'INSTANZ BEARBEITEN';
-$PAGE->set_title($strtitle);
-$PAGE->set_heading($strtitle);
-$PAGE->navbar->add($strtitle);
-$PAGE->set_secondary_navigation(false);
+\local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/edit_instance.php'));
 
 $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+$tenant = \core\di::get(tenant::class);
+$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 
 if (!empty($del)) {
     if (empty($id)) {
@@ -84,20 +64,29 @@ if (!empty($id)) {
 
 $editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url('/local/ai_manager/edit_instance.php',
         ['id' => $id, 'connectorname' => $connectorname]),
-        ['id' => $id, 'tenant' => $tenant->get_tenantidentifier(), 'connector' => $connectorname, 'returnurl' => $PAGE->url]);
+        ['id' => $id, 'tenant' => $tenant->get_tenantidentifier(), 'connector' => $connectorname]);
 
 // Standard form processing if statement.
 if ($editinstanceform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $editinstanceform->get_data()) {
     $connectorinstance->store_formdata($data);
-    redirect(new moodle_url('/local/ai_manager/instances_config.php'), 'DATA SAVED', '');
+    redirect(new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]), 'DATA SAVED',
+            '');
 } else {
     echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
-
+    echo html_writer::start_div('w-75 d-flex flex-column align-items-center ml-auto mr-auto');
+    echo $OUTPUT->render_from_template('local_ai_manager/edit_instance_heading',
+            [
+                    'heading' => $OUTPUT->heading(get_string('configureaitool', 'local_ai_manager')),
+                    'showdeletebutton' => !empty($id),
+                    'deleteurl' => new moodle_url('/local/ai_manager/edit_instance.php', ['id' => $id, 'del' => 1]),
+            ]);
     $editinstanceform->set_data($connectorinstance->get_formdata());
+    echo html_writer::start_div('w-100');
     $editinstanceform->display();
+    echo html_writer::end_div();
+    echo html_writer::end_div();
 }
 
 echo $OUTPUT->footer();

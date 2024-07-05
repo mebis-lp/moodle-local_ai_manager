@@ -6,6 +6,9 @@
     color: red;
 }
 
+/* TODO These super specific weird selectors are necessary to overwrite our theme definitions. Move the specific ones to the theme and replace these here by ones
+    working with boost.
+ */
 #page input[type="checkbox"]:not([disabled]).local_ai_manager-checkbox-switch, #page input[type="checkbox"]:checked:not([disabled]).local_ai_manager-checkbox-switch {
     position: relative;
     width: 2.75rem;
@@ -44,7 +47,7 @@
 
 #page input[type="checkbox"]:checked.local_ai_manager-checkbox-switch::before  {
     transform: translate(100%, -50%);
-    background: #a4a5ac;
+    background: #fff;
 }
 
 

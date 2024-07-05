@@ -26,7 +26,7 @@
 use core\output\notification;
 use local_ai_manager\base_purpose;
 use local_ai_manager\form\purpose_config_form;
-use local_ai_manager\form\user_config_form;
+use local_ai_manager\form\quota_config_form;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
 use local_ai_manager\output\tenantnavbar;
@@ -35,32 +35,12 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
-$tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
+\local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/quota_config.php'));
 
-// Check permissions.
-require_login();
-
-if (!empty($tenantid)) {
-    $tenant = new \local_ai_manager\local\tenant($tenantid);
-    \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
-}
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-$accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
-$accessmanager->require_tenant_manager();
-
-$url = new moodle_url('/local/ai_manager/user_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
-$PAGE->set_url($url);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
-$PAGE->set_context($tenant->get_tenant_context());
 
-$strtitle = get_string('heading_user_config', 'local_ai_manager');
-$PAGE->set_title($strtitle);
-$PAGE->set_heading($strtitle);
-$PAGE->navbar->add($strtitle);
-$PAGE->set_secondary_navigation(false);
-
-
-$userconfigform = new user_config_form(null, ['tenant' => $tenantid, 'returnurl' => $PAGE->url]);
+$userconfigform = new quota_config_form(null, ['tenant' => $tenant->get_tenantidentifier(), 'returnurl' => $PAGE->url]);
 // Will return the config manager for the current user.
 /** @var \local_ai_manager\local\config_manager $configmanager */
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
@@ -90,9 +70,10 @@ if ($userconfigform->is_cancelled()) {
     redirect($PAGE->url, 'CONFIG SAVED');
 } else {
     echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
     $tenantnavbar = new tenantnavbar();
     echo $OUTPUT->render($tenantnavbar);
+
+    echo $OUTPUT->heading(get_string('quotaconfig', 'local_ai_manager'));
 
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {

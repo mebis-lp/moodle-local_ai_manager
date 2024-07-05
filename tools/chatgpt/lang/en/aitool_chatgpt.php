@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *Lang strings for aitool_chatgpt - EN.
+ * Lang strings for aitool_chatgpt - EN.
  *
  * @package    aitool_chatgpt
  * @copyright  ISB Bayern, 2024
@@ -23,17 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// TODO add description
+$string['adddescription'] = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.';
 $string['pluginname'] = 'ChatGPT';
-$string['openaisettings'] = 'ChatGPT settings';
-$string['openaiapikey'] = 'OpenAI API Key';
-$string['openaiapikey_desc'] = 'The API Key for your OpenAI account, from https://platform.openai.com/account/api-keys . Sample key looks like this: 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';
-$string['sourceoftruth'] = 'Source of truth';
-$string['sourceoftruth_desc'] = 'Information that is specific for your organization. It will be passed to ChatGPT as facts that should be used when crafting the response.';
-$string['model'] = 'Model';
-$string['model_desc'] = 'The model used to generate the completion.';
-$string['max_length'] = 'Maximum length';
-$string['frequency_penalty'] = 'Frequency penalty';
-$string['frequency_penalty_desc'] = 'Reduces repetition of words that have already been generated. It counts how many times the word was already used.';
-$string['presence_penalty'] = 'Presence penalty';
-$string['presence_penalty_desc'] = 'Similar to frequency penalty, it reduces probability of using a word that was already used. The difference is that is does not matter how many times the word was used - just if it was or not.';
-$string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['privacy:metadata'] = 'The local ai_manager tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';

@@ -23,6 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Zweck "Bild-Generierung"';
+$string['pluginname'] = 'Bild-Generierung';
 $string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
 $string['requestcount'] = 'Bildgenerierungsanfragen';

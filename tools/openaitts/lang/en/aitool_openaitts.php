@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *Lang strings for aitool_openaitts - EN.
+ * Lang strings for aitool_openaitts - EN.
  *
  * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
@@ -23,14 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// TODO add description
+$string['adddescription'] = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.';
 $string['pluginname'] = 'OpenAI TTS';
-$string['openaisettings'] = 'OpenAI TTS settings';
-$string['openaiapikey'] = 'OpenAI API Key';
-$string['openaiapikey_desc'] = 'The API Key for your OpenAI account, from https://platform.openai.com/account/api-keys . Sample key looks like this: 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';
-$string['sourceoftruth'] = 'Source of truth';
-$string['sourceoftruth_desc'] = 'Information that is specific for your organization. It will be passed to Whisper as facts that should be used when crafting the response.';
-$string['model'] = 'Model';
-$string['model_desc'] = 'The model used to generate the completion.';
-$string['max_length'] = 'Maximum length';
 $string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
-$string['tools'] = 'Languagemodells';

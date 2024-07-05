@@ -36,8 +36,10 @@ class aitool_option_temperature {
         $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', 'AUSGEGLICHEN', 'selection_balanced');
         $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', 'PRÄZISE', 'selection_precise');
         $mform->addGroup($radioarray, 'temperatureprechoicearray', 'TEMPERATUR-VOREINSTELLUNGEN', ['<br/>'], false);
+        $mform->setDefault('temperatureprechoice', 'selection_balanced');
 
         $mform->addElement('checkbox', 'temperatureusecustom', 'NUTZE BENUTZERDEFINIERTEN WERT');
+        $mform->setDefault('temperatureusecustom', 0);
         $mform->addElement('text', 'temperaturecustom', 'TEMPERATURE CUSTOM (ZWISCHEN 0 UND 1)');
         $mform->disabledIf('temperaturecustom', 'temperatureusecustom');
         $mform->setType('temperaturecustom', PARAM_FLOAT);

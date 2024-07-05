@@ -23,6 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Zweck "Chat"';
+$string['pluginname'] = 'Chat';
 $string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
 $string['requestcount'] = 'Chat-Anfragen';

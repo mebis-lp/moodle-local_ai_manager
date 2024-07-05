@@ -32,11 +32,8 @@
     <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/tenant_config.php?tenant={{tenantidentifier}}">
         {{#str}} heading_home, local_ai_manager {{/str}}
     </a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/user_config.php?tenant={{tenantidentifier}}">
-        {{#str}} heading_user_config, local_ai_manager {{/str}}
-    </a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/instances_config.php?tenant={{tenantidentifier}}">
-        {{#str}} heading_ai_tools, local_ai_manager {{/str}}
+    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/quota_config.php?tenant={{tenantidentifier}}">
+        {{#str}} quotaconfig, local_ai_manager {{/str}}
     </a>
     <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/purpose_config.php?tenant={{tenantidentifier}}">
         {{#str}} heading_purposes, local_ai_manager {{/str}}
@@ -46,7 +43,4 @@
             {{#str}} heading_statistics, local_ai_manager {{/str}}
         </a>
     {{/showstatistics}}
-</div>
-<div>
-    {{tenantidentifier}}
 </div>

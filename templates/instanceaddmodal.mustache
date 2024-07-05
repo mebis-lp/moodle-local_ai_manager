@@ -15,22 +15,35 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_ai_manager/instancetable
+    @template local_ai_manager/instanceaddmodal
 
     Admin text setting template.
 
     Context variables required for this template:
     * label - form element name
-    * href - element id
+        * href - element id
     * forceltr - always display as ltr
 
     Example context (json):
     {
-        "label": "button label",
-        "href": "http://google.com",
-        "forceltr": false
     }
 }}
-<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}">{{#pix}} i/edit, core {{/pix}}</a>
-<a href="{{ config.wwwroot }}/local/ai_manager/edit_instance.php?id={{id}}&del=1">{{#pix}} i/delete, core {{/pix}}</a>
-<a data-instanceid="{{id}}" href="#">{{#pix}} i/info, core {{/pix}}</a>
+{{< core/modal}}
+    {{$title}}
+        {{#pix}} aiicon, local_ai_manager {{/pix}} {{#str}} instanceaddmodal_heading, local_ai_manager{{/str}}
+    {{/title}}
+    {{$body}}
+        <div class="row">
+            {{#tools}}
+                <div class="col-4 mb-3">
+                    <div class="card">
+                        <h4 class="card-title"><a class="btn btn-link" href="{{{addurl}}}">{{linklabel}}</a></h4>
+                        <div class="card-body">
+                            <p>{{adddescription}}</p>
+                        </div>
+                    </div>
+                </div>
+            {{/tools}}
+        </div>
+    {{/body}}
+{{/core/modal}}

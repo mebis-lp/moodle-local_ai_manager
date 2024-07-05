@@ -23,6 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Zweck "Sprachgenerierung"';
+$string['pluginname'] = 'Sprachgenerierung';
 $string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
 $string['requestcount'] = 'Sprachgenerierungsanfragen';

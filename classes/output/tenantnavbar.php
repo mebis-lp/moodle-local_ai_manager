@@ -33,7 +33,6 @@ class tenantnavbar implements renderable, \templatable {
         $data = new stdClass();
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_tenant_context());
-        $data->tenantidentifier = $tenant->get_tenantidentifier();
         return $data;
     }
 }

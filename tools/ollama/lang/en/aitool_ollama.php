@@ -23,10 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['apikey'] = 'API Key for your Ollama service';
-$string['apikey_desc'] = 'The API key is added as Authorization: Bearer <<apikey>> to your requests. It can be empty, then no header is added.';
-$string['ollamasettings'] = 'Ollama settings';
+// TODO add description
+$string['adddescription'] = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.';
 $string['pluginname'] = 'Ollama';
 $string['privacy:metadata'] = 'The local ai_managers tool subplugin aitool_ollama does not store any personal data.';
-$string['url'] = 'URL to Ollama host';
-$string['url_desc'] = 'The URL where you reach your Ollama host';

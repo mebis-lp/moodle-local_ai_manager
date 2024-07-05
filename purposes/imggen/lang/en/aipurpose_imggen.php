@@ -23,6 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Purpose "Image generation"';
+$string['pluginname'] = 'Image generation';
 $string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
 $string['requestcount'] = 'image generation requests';

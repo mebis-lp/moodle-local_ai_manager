@@ -32,30 +32,9 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
-$tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
-
-// Check permissions.
-require_login();
-
-if (!empty($tenantid)) {
-    $tenant = new \local_ai_manager\local\tenant($tenantid);
-    \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
-}
+\local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/purpose_config.php'));
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-$accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
-$accessmanager->require_tenant_manager();
-
-$url = new moodle_url('/local/ai_manager/purpose_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
-$PAGE->set_url($url);
-$PAGE->set_context($tenant->get_tenant_context());
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
-
-$strtitle = get_string('schoolconfig_heading', 'local_ai_manager');
-$PAGE->set_title($strtitle);
-$PAGE->set_heading($strtitle);
-$PAGE->navbar->add($strtitle);
-$PAGE->set_secondary_navigation(false);
-
 $purposeconfigform = new purpose_config_form(null, ['returnurl' => $PAGE->url]);
 // Will return the config manager for the current user.
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
@@ -76,9 +55,11 @@ if ($purposeconfigform->is_cancelled()) {
     redirect($PAGE->url, 'CONFIG SAVED');
 } else {
     echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
     $tenantnavbar = new tenantnavbar();
     echo $OUTPUT->render($tenantnavbar);
+
+    echo $OUTPUT->heading(get_string('configurepurposes', 'local_ai_manager'), 2, 'text-center');
+    echo html_writer::div(get_string('purposesdescription', 'local_ai_manager'), 'text-center mb-3');
 
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {

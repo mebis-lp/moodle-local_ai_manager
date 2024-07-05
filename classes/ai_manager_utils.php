@@ -19,6 +19,7 @@ namespace local_ai_manager;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
+use moodle_url;
 use stdClass;
 
 /**
@@ -105,6 +106,7 @@ class ai_manager_utils {
 
     public static function get_ai_config(stdClass $user): array {
         $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+        $tenant = \core\di::get(tenant::class);
         $userinfo = new userinfo($user->id);
         $purposes = [];
         $purposeconfig = $configmanager->get_purpose_config();
@@ -121,11 +123,26 @@ class ai_manager_utils {
             ];
         }
 
+        $tools = [];
+        foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $toolname) {
+            $tool['name'] = $toolname;
+            $addurl = new moodle_url('/local/ai_manager/edit_instance.php',
+                    [
+                            'tenant' => $tenant->get_tenantidentifier(),
+                            'returnurl' => (new moodle_url('/local/ai_manager/tenant_config.php',
+                                    ['tenant' => $tenant->get_tenantidentifier()]))->out(),
+                            'connectorname' => $toolname
+                    ]);
+            $tool['addurl'] = $addurl->out(false);
+            $tools[] = $tool;
+        }
+
         return [
                 'tenantenabled' => $configmanager->is_tenant_enabled(),
                 'userlocked' => $userinfo->is_locked(),
                 'role' => userinfo::get_role_as_string($userinfo->get_role()),
                 'purposes' => $purposes,
+                'tools' => $tools,
         ];
     }
 }

@@ -78,6 +78,13 @@ class get_ai_config extends external_api {
                                         VALUE_REQUIRED),
                         ]
                 ));
+        $singlestructuredefinition['tools'] = new external_multiple_structure(
+                new external_single_structure([
+                        'name' => new external_value(PARAM_TEXT, 'Name of the AI tool', VALUE_REQUIRED),
+                        'addurl' => new external_value(PARAM_RAW, 'URL to add an instance', VALUE_REQUIRED),
+                ])
+        );
+
         $singlestructuredefinition['tenantenabled'] =
                 new external_value(PARAM_BOOL, 'If AI manager is being enabled for this tenant', VALUE_REQUIRED);
         $singlestructuredefinition['userlocked'] =

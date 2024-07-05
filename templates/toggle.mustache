@@ -34,10 +34,8 @@
                 }} data-targetwhenchecked="{{{targetwhenchecked}}}"{{!
                 }} data-targetwhennotchecked="{{{targetwhennotchecked}}}"{{!>
                 }}/>
-    mehrere Antworten
+    {{text}}
 </label>
-
-
 {{#js}}
     require(['local_ai_manager/toggle_handler'], function(ToggleHandler) {
         ToggleHandler.init('local_ai_manager_toggle_input-{{uniqid}}');

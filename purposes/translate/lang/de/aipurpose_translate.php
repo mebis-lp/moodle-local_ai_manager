@@ -23,6 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Zweck "Übersetzen"';
+$string['pluginname'] = 'Übersetzen';
 $string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
 $string['requestcount'] = 'Übersetzungsanfragen';

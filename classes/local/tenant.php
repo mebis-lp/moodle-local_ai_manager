@@ -90,4 +90,12 @@ class tenant {
         }
         return false;
     }
+
+    public function get_fullname(): string {
+        if ($this->get_tenantidentifier() === self::DEFAULT_TENANTIDENTIFIER) {
+            return get_string('defaulttenantname', 'local_ai_manager');
+        }
+        $school = new \local_bycsauth\school($this->get_tenantidentifier());
+        return $school->get_name();
+    }
 }

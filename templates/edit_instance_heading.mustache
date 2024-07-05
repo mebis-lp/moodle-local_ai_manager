@@ -15,31 +15,31 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_ai_manager/tenantnavbar
+    @template local_ai_manager/edit_instance_heading
 
     Admin text setting template.
 
     Context variables required for this template:
     * label - form element name
-        * href - element id
+    * href - element id
     * forceltr - always display as ltr
 
     Example context (json):
     {
     }
 }}
-<div class="local_ai_manager-tenantenable m-5">
-    <div class="text-center">
-        <h1 class="p-3">KI in Ihrer Schule</h1>
-        <h4>{{tenantfullname}}</h4>
-        <p class="p-3">{{#str}} tenantenabledescription, local_ai_manager {{/str}}</p>
-    </div>
-    <div class="d-flex justify-content-center m-5">
-        {{> local_ai_manager/toggle }}
-    </div>
-    {{#checked}}
-        <div class="alert alert-info">
-            {{#str}}tenantenablednextsteps, local_ai_manager, {{{rightsmanagementlink}}} {{/str}}
+<div class="d-flex justify-content-between mb-5 align-items-center w-100" style="max-width: 80%">
+    {{{heading}}}
+    {{#showdeletebutton}}
+        <div>
+            <button class="btn"{{!
+                 }} data-confirmation="modal"{{!
+                 }} data-confirmation-title-str='["delete", "core"]'{{!
+                 }} data-confirmation-content-str='["instancedeleteconfirm", "local_ai_manager"]'{{!
+                 }} data-confirmation-yes-button-str='["delete", "core"]'{{!
+                 }} data-confirmation-destination='{{{deleteurl}}}'>
+                <i class="fa fa-trash"></i>
+            </button>
         </div>
-    {{/checked}}
+    {{/showdeletebutton}}
 </div>

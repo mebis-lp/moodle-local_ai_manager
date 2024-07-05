@@ -30,36 +30,14 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
-$tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 $purpose = optional_param('purpose', '', PARAM_ALPHANUM);
 
-// Check permissions.
-require_login();
+\local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/statistics.php'));
 
-if (!empty($tenantid)) {
-    $tenant = new \local_ai_manager\local\tenant($tenantid);
-    \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
-}
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-$accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
-$accessmanager->require_tenant_manager();
-
-$url = new moodle_url('/local/ai_manager/statistics.php', ['tenant' => $tenant->get_tenantidentifier()]);
-$PAGE->set_url($url);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
-$PAGE->set_context($tenant->get_tenant_context());
-
-$strtitle = get_string('statistics');
-$PAGE->set_title($strtitle);
-$PAGE->set_heading($strtitle);
-$PAGE->navbar->add($strtitle);
-$PAGE->set_secondary_navigation(false);
-
-//$download = optional_param('download', '', PARAM_ALPHA);
 
 $statisticsform = new \local_ai_manager\form\statistics_form(null, ['tenant' => $tenant, 'purpose' => $purpose]);
-// Will return the config manager for the current user.
-//$configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 
 // Standard form processing if statement.
 if ($statisticsform->is_cancelled()) {
@@ -86,11 +64,12 @@ if ($statisticsform->is_cancelled()) {
     redirect($PAGE->url, get_string('user_status_updated', 'local_ai_manager'));
 } else {
     echo $OUTPUT->header();
-    echo $OUTPUT->heading($strtitle);
     $tenantnavbar = new tenantnavbar();
     echo $OUTPUT->render($tenantnavbar);
     $statisticsnavbar = new \local_ai_manager\output\statistics_navbar();
     echo $OUTPUT->render($statisticsnavbar);
+
+    echo $OUTPUT->heading(get_string('statisticsoverview', 'local_ai_manager'), 2, 'text-center');
 
     $startpage = empty($purpose);
     $urlparams = [];
