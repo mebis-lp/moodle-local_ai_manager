@@ -222,7 +222,7 @@ class manager {
                 }
             } else {
                 if ($this->purpose->get_available_purpose_options()[$key] === base_purpose::PARAM_ARRAY) {
-                    $options[$key] = array_walk_recursive($value, fn($text) => clean_param($text, PARAM_NOTAGS));
+                    array_walk_recursive($value, fn($text) => clean_param($text, PARAM_NOTAGS));
                 } else {
                     $options[$key] = clean_param($value, $this->purpose->get_available_purpose_options()[$key]);
                 }
