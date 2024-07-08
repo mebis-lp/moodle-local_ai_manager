@@ -49,11 +49,12 @@
                     {{#str}} userconfig, local_ai_manager {{/str}}
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item{{#quotaconfigactive}} active active_tree_node{{/quotaconfigactive}}"
-                       href="{{config.wwwroot}}/local/ai_manager/quota_config.php?tenant={{tenantidentifier}}">
+                    <a class="dropdown-item{{#quotaconfigactive}} active active_tree_node{{/quotaconfigactive}}"{{!
+                       }} href="{{config.wwwroot}}/local/ai_manager/quota_config.php?tenant={{tenantidentifier}}">
                     {{#str}} quotaconfig, local_ai_manager {{/str}}
                     </a>
-                    <a class="dropdown-item{{#rightsconfigactive}} active active_tree_node{{/rightsconfigactive}}" href="#">
+                    <a class="dropdown-item{{#rightsconfigactive}} active active_tree_node{{/rightsconfigactive}}"{{!
+                       }} href="{{config.wwwroot}}/local/ai_manager/rights_config.php?tenant={{tenantidentifier}}">
                         {{#str}} rightsconfig, local_ai_manager {{/str}}
                     </a>
                 </div>

@@ -42,12 +42,10 @@ class userstats_table extends table_sql {
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
-        $columns = ['checkbox', 'lastname', 'firstname', 'locked'];
+        $columns = ['lastname', 'firstname'];
         $headers = [
-            '',
             get_string('lastname'),
             get_string('firstname'),
-            get_string('locked', 'local_ai_manager'),
         ];
         if (has_capability('local/ai_manager:viewusage', $tenant->get_tenant_context())) {
             $columns[] = 'requestcount';
@@ -74,9 +72,9 @@ class userstats_table extends table_sql {
                 ['tenant' => $this->tenant->get_tenantidentifier(), 'purpose' => $purpose]
             );
         } else {
-            $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount';
+            $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount';
             $from =
-                '{user} u LEFT JOIN {local_ai_manager_request_log} rl ON u.id = rl.userid LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
+                '{user} u LEFT JOIN {local_ai_manager_request_log} rl ON u.id = rl.userid';
             $where = 'institution = :tenant GROUP BY u.id';
             $params = ['tenant' => $this->tenant->get_tenantidentifier()];
             $this->set_count_sql(
@@ -97,82 +95,5 @@ class userstats_table extends table_sql {
     function col_firstname($value) {
         return $this->shownames ? $value->firstname : 'MUSTERMANN';
     }
-
-    /**
-     * Get the icon representing the lockes state.
-     *
-     * @param mixed $value
-     * @return string
-     */
-    function col_locked($value) {
-        if (empty($value->locked)) {
-            return '<i class="fa fa-unlock ai_manager_green"></i>';
-        } else {
-            return '<i class="fa fa-lock ai_manager_red"></i>';
-        }
-    }
-
-    function other_cols($column, $row) {
-        if ($column === 'checkbox') {
-            return '<input type="checkbox" data-userid="' . $row->id . '"/>';
-        }
-    }
-
-
-
-
-
-    ///**
-    // * Constructor
-    // * @param int $uniqueid all tables have to have a unique id, this is used
-    // *      as a key when storing table properties like sort order in the session.
-    // */
-    //function __construct($uniqueid, string $purpose, tenant $tenant) {
-    //    parent::__construct($uniqueid);
-    //    // Define the list of columns to show.
-    //    $columns = ['checkbox', 'lastname', 'firstname', 'locked', 'currentusage'];
-    //    $this->define_columns($columns);
-    //
-    //    // Define the titles of columns to show in header.
-    //    $headers = ['', 'NACHNAME', 'VORNAME', 'GESPERRT', 'ANZAHL REQUESTS'];
-    //    $this->define_headers($headers);
-    //    // TODO Could become tricky when trying to implement this generally without forcing "institution".
-    //    $this->set_sql('u.id, lastname, firstname, locked, sum', '{local_ai_manager_userinfo} ui JOIN {user} u ON u.id = ui.userid JOIN '
-    //    . '(SELECT userid, SUM(value) as sum FROM {local_ai_manager_request_log} WHERE purpose = :purpose GROUP BY userid) uu ON u.id = uu.userid', 'institution = ' . $tenant->get_tenantidentifier(), ['purpose' => $purpose]);
-    //
-    //    $this->sortable(true, 'lastname');
-    //    $this->text_sorting('lastname');
-    //    $this->text_sorting('firstname');
-    //    $this->text_sorting('locked');
-    //}
-    //
-    ///**
-    // * This function is called for each data row to allow processing of the
-    // * username value.
-    // *
-    // * @param object $values Contains object with all the values of record.
-    // * @return $string Return username with link to profile or username only
-    // *     when downloading.
-    // */
-    //function col_username($values) {
-    //    return $values->username;
-    //}
-    //
-    ///**
-    // * This function is called for each data row to allow processing of
-    // * columns which do not have a *_cols function.
-    // * @return string return processed value. Return NULL if no change has
-    // *     been made.
-    // */
-    //function other_cols($colname, $value) {
-    //    // For security reasons we don't want to show the password hash.
-    //    if ($colname === 'currentusage') {
-    //        return rand();
-    //    } else if ($colname === 'checkbox') {
-    //        return '<input type="checkbox" data-userid="' . $value->id . '"/>';
-    //    } else if ($colname === 'locked') {
-    //        return empty($value->locked) ? 'GRUENER HAKEN' : 'ROTES KREUZ';
-    //    }
-    //}
 
 }

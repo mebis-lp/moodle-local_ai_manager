@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Statistics config form.
+ * User config config form.
  *
  * This form handles the locking and unlocking of users on the statistics overview pages.
  *
@@ -39,27 +39,25 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * A form for a user to restore a course instantly into a new one.
+ * A form for enabling and disablin.
  *
  * @copyright  2021, ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class statistics_form extends \moodleform {
+class rights_config_form extends \moodleform {
 
     /**
      * Form definition.
      */
     public function definition() {
-        global $DB;
-        $purpose = $this->_customdata['purpose'];
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $mform = &$this->_form;
 
         $mform->addElement('hidden', 'tenant', $tenant->get_tenantidentifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
-        $mform->addElement('hidden', 'userids', '', ['id' => 'statistics-table-userids']);
+        $mform->addElement('hidden', 'userids', '', ['id' => 'rights-table-userids']);
         $mform->setType('userids', PARAM_TEXT);
 
         $buttonarray = [];
@@ -82,14 +80,5 @@ class statistics_form extends \moodleform {
         $errors = [];
         // TODO validate
         return $errors;
-    }
-
-    /**
-     * Resets the form to its default values.
-     *
-     * @return void
-     */
-    public function reset_form() {
-        $this->_form->updateSubmission(null, null);
     }
 }

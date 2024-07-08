@@ -70,6 +70,7 @@ $string['restricttenantsdesc'] = 'Aktivieren, um die KI-Tools nur für bestimmte
 $string['rightsconfig'] = 'Rechteeinstellungen';
 $string['tenantnotallowed'] = 'Das Feature ist für Ihren Tenant zentral deaktiviert und daher nicht nutzbar.';
 $string['userconfig'] = 'Benutzereinstellungen';
+$string['userusagestatistics'] = 'Verbrauchsübersicht pro Benutzer';
 $string['zweck_chat'] = 'Chatbot';
 $string['zweck_defaults_heading'] = 'Zwecke\' Standardmodell';
 $string['purpose_defaults_heading_desc'] = 'Definieren Sie das für verschiedene Zwecke verwendete Standardmodell';

@@ -16,7 +16,7 @@
 /**
  * Module handling the form submission of the statistics tables of local_ai_manager.
  *
- * @module     local_ai_manager/statistics_table
+ * @module     local_ai_manager/rights_config_table
  * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@ import Pending from 'core/pending';
 
 export const selectors = {
     CHECKBOX: 'input[data-userid]',
-    USERIDS_INPUT_FIELD: '#statistics-table-userids'
+    USERIDS_INPUT_FIELD: '#rights-table-userids'
 };
 
 /**
@@ -34,7 +34,7 @@ export const selectors = {
  * @param {string} id the id of the table to operate on
  */
 export const init = (id) => {
-    const pendingPromise = new Pending('local_ai_manager/statistics_table');
+    const pendingPromise = new Pending('local_ai_manager/rights_config_table');
     const table = document.getElementById(id);
     table.querySelectorAll(selectors.CHECKBOX).forEach(checkbox => {
         checkbox.addEventListener('change', event => {

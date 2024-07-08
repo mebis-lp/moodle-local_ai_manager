@@ -81,6 +81,7 @@ $string['tenantenablednextsteps'] = 'The AI features of the mebis Lernplattform 
 $string['tenantdisabled'] = 'disabled';
 $string['tenantnotallowed'] = 'The feature is globally disabled for your tenant and thus not usable.';
 $string['userconfig'] = 'User configuration';
+$string['userusagestatistics'] = 'Usage overview of users ';
 $string['empty'] = 'empty';
 $string['generalsettings'] = 'General settings';
 $string['unit_token'] = 'token';
