@@ -70,7 +70,7 @@ if ($userconfigform->is_cancelled()) {
     redirect($PAGE->url, 'CONFIG SAVED');
 } else {
     echo $OUTPUT->header();
-    $tenantnavbar = new tenantnavbar();
+    $tenantnavbar = new tenantnavbar('quota_config.php');
     echo $OUTPUT->render($tenantnavbar);
 
     echo $OUTPUT->heading(get_string('quotaconfig', 'local_ai_manager'));

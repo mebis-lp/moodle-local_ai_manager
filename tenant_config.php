@@ -49,7 +49,7 @@ $rightsmanagementlink = html_writer::link(new moodle_url('/local/ai_manager/stat
         get_string('rightsmanagement', 'local_ai_manager'));
 
 echo $OUTPUT->header();
-$tenantnavbar = new tenantnavbar();
+$tenantnavbar = new tenantnavbar('tenant_config.php');
 echo $OUTPUT->render($tenantnavbar);
 echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
         [

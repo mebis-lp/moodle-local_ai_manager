@@ -55,7 +55,7 @@ if ($purposeconfigform->is_cancelled()) {
     redirect($PAGE->url, 'CONFIG SAVED');
 } else {
     echo $OUTPUT->header();
-    $tenantnavbar = new tenantnavbar();
+    $tenantnavbar = new tenantnavbar('purpose_config.php');
     echo $OUTPUT->render($tenantnavbar);
 
     echo $OUTPUT->heading(get_string('configurepurposes', 'local_ai_manager'), 2, 'text-center');

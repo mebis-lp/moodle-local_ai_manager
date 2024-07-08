@@ -32,7 +32,7 @@ global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 $purpose = optional_param('purpose', '', PARAM_ALPHANUM);
 
-\local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/statistics.php'));
+\local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/rights_config.php'));
 
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
@@ -64,27 +64,13 @@ if ($statisticsform->is_cancelled()) {
     redirect($PAGE->url, get_string('user_status_updated', 'local_ai_manager'));
 } else {
     echo $OUTPUT->header();
-    $currentpage = 'statistics.php';
-    if (!empty($purpose)) {
-        $currentpage .= '?purpose=' . $purpose;
-    }
-    $tenantnavbar = new tenantnavbar($currentpage);
+    $tenantnavbar = new tenantnavbar('rights_config.php');
     echo $OUTPUT->render($tenantnavbar);
 
-    echo $OUTPUT->heading(get_string('statisticsoverview', 'local_ai_manager'), 2, 'text-center');
-
-    $startpage = empty($purpose);
-    $urlparams = [];
-    if (!$startpage) {
-        $urlparams['purpose'] = $purpose;
-    }
-    $baseurl = new moodle_url('/local/ai_manager/statistics.php', $urlparams);
-
-    if ($startpage) {
-        $baseurl = new moodle_url('/local/ai_manager/statistics.php');
-        $overviewtable = new \local_ai_manager\local\statistics_overview_table('statistics-overview-table', $tenant, $baseurl);
-        $overviewtable->out(100, false);
-    }
+    echo $OUTPUT->heading(get_string('rightsconfig', 'local_ai_manager'), 2, 'text-center');
+    
+    $rightstable = new \local_ai_manager\local\statistics_overview_table('statistics-overview-table', $tenant, $baseurl);
+    $rightstable->out(100, false);
 
     if (has_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context())) {
         $emptytable = $startpage ? $DB->count_records('local_ai_manager_request_log') === 0 :

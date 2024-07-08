@@ -16,6 +16,7 @@
 
 namespace local_ai_manager\output;
 
+use local_ai_manager\base_purpose;
 use renderable;
 use renderer_base;
 use stdClass;
@@ -29,10 +30,41 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tenantnavbar implements renderable, \templatable {
+
+    /**
+     * Constructor.
+     *
+     * @param string $relativeactiveurl the base url (without parameters) relative to '/local/ai_manager/' which should be shown as
+     *  active, for example 'tenant_config.php' or 'purpose_config.php' or 'statistics.php?purpose=chat'
+     */
+    public function __construct(private string $relativeactiveurl) {
+    }
+
     public function export_for_template(renderer_base $output): stdClass {
         $data = new stdClass();
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
+        $data->tenantidentifier = $tenant->get_tenantidentifier();
+
+        $data->homeactive = $this->relativeactiveurl === 'tenant_config.php';
+        $data->purposeconfigactive = $this->relativeactiveurl === 'purpose_config.php';
+        $data->quotaconfigactive = $this->relativeactiveurl === 'quota_config.php';
+        $data->rightsconfigactive = $this->relativeactiveurl === 'rights_config.php';
+        $data->statisticsoverviewactive = $this->relativeactiveurl === 'statistics.php';
+
         $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_tenant_context());
+        $statisticspurposes = [];
+        foreach (base_purpose::get_all_purposes() as $purpose) {
+            $statisticspurposes[] = [
+                    'pluginname' => $purpose,
+                    'fullname' => get_string('pluginname', 'aipurpose_' . $purpose),
+                    'active' => $this->relativeactiveurl === 'statistics.php?purpose=' . $purpose,
+            ];
+        }
+        $data->statisticspurposes = $statisticspurposes;
+
+        $data->userconfigactive = $data->quotaconfigactive || $data->rightsconfigactive;
+        $data->statisticsactive = $data->statisticsoverviewactive || array_reduce($statisticspurposes, fn($current, $node) => $current || $node['active'], false);
+
         return $data;
     }
 }

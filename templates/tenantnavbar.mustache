@@ -28,19 +28,58 @@
     {
     }
 }}
-<div class="local_ai_manager-tenantconfig-nav">
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/tenant_config.php?tenant={{tenantidentifier}}">
-        {{#str}} heading_home, local_ai_manager {{/str}}
-    </a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/quota_config.php?tenant={{tenantidentifier}}">
-        {{#str}} quotaconfig, local_ai_manager {{/str}}
-    </a>
-    <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/purpose_config.php?tenant={{tenantidentifier}}">
-        {{#str}} heading_purposes, local_ai_manager {{/str}}
-    </a>
-    {{#showstatistics}}
-        <a class="btn btn-link" href="{{config.wwwroot}}/local/ai_manager/statistics.php?tenant={{tenantidentifier}}&tsort=requestcount&tdir=3">
-            {{#str}} heading_statistics, local_ai_manager {{/str}}
-        </a>
-    {{/showstatistics}}
+<div class="secondary-navigation">
+    <nav class="local_ai_manager-tenantconfig-nav moremenu navigation observed">
+        <ul class="nav more-nav nav-tabs mr-auto">
+            <li class="navitem">
+                <a class="nav-link{{#homeactive}} active active_tree_node{{/homeactive}}" href="{{config.wwwroot}}/local/ai_manager/tenant_config.php?tenant={{tenantidentifier}}">
+                {{#str}} heading_home, local_ai_manager {{/str}}
+                </a>
+            </li>
+            <li class="navitem">
+                <a class="nav-link{{#purposeconfigactive}} active active_tree_node{{/purposeconfigactive}}"
+                   href="{{config.wwwroot}}/local/ai_manager/purpose_config.php?tenant={{tenantidentifier}}">
+                {{#str}} heading_purposes, local_ai_manager {{/str}}
+                </a>
+            </li>
+
+            <li class="navitem dropdown">
+                <a class="nav-link dropdown-toggle{{#userconfigactive}} active active_tree_node{{/userconfigactive}}" href="#" id="local_ai_manager_user_configuration_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                   aria-expanded="false">
+                    {{#str}} userconfig, local_ai_manager {{/str}}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item{{#quotaconfigactive}} active active_tree_node{{/quotaconfigactive}}"
+                       href="{{config.wwwroot}}/local/ai_manager/quota_config.php?tenant={{tenantidentifier}}">
+                    {{#str}} quotaconfig, local_ai_manager {{/str}}
+                    </a>
+                    <a class="dropdown-item{{#rightsconfigactive}} active active_tree_node{{/rightsconfigactive}}" href="#">
+                        {{#str}} rightsconfig, local_ai_manager {{/str}}
+                    </a>
+                </div>
+            </li>
+
+            {{#showstatistics}}
+                <li class="navitem dropdown">
+                    <a class="nav-link dropdown-toggle{{#statisticsactive}} active active_tree_node{{/statisticsactive}}" href="#" id="local_ai_manager_user_configuration_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false">{{!
+                       }} {{#str}} heading_statistics, local_ai_manager {{/str}}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item{{#statisticsoverviewactive}} active active_tree_node{{/statisticsoverviewactive}}"{{!
+                           }} href="{{config.wwwroot}}/local/ai_manager/statistics.php?tenant={{tenantidentifier}}&tsort=requestcount&tdir=3">
+                            {{#str}} statisticsoverview, local_ai_manager {{/str}}
+                        </a>
+                        {{#statisticspurposes}}
+                            <a class="dropdown-item{{#active}} active active_tree_node{{/active}}"{{!
+                               }} href="{{config.wwwroot}}/local/ai_manager/statistics.php?tenant={{tenantidentifier}}&purpose={{pluginname}}">
+                            {{fullname}}
+                            </a>
+                        {{/statisticspurposes}}
+                    </div>
+                </li>
+
+            {{/showstatistics}}
+        </ul>
+    </nav>
 </div>
