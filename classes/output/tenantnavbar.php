@@ -52,6 +52,7 @@ class tenantnavbar implements renderable, \templatable {
         $data->statisticsoverviewactive = $this->relativeactiveurl === 'statistics.php';
 
         $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_tenant_context());
+        $data->showuserstatistics = has_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context());
         $statisticspurposes = [];
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $statisticspurposes[] = [
