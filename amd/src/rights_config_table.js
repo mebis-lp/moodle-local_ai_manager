@@ -24,8 +24,11 @@
 
 import Pending from 'core/pending';
 
+let table = null;
+
 export const selectors = {
     CHECKBOX: 'input[data-userid]',
+    SELECTALLCHECKBOX: '#rights-table-selectall_checkbox',
     USERIDS_INPUT_FIELD: '#rights-table-userids'
 };
 
@@ -35,11 +38,14 @@ export const selectors = {
  */
 export const init = (id) => {
     const pendingPromise = new Pending('local_ai_manager/rights_config_table');
-    const table = document.getElementById(id);
+    table = document.getElementById(id);
     table.querySelectorAll(selectors.CHECKBOX).forEach(checkbox => {
         checkbox.addEventListener('change', event => {
             updateUserIds(event.target);
         });
+    });
+    table.querySelector(selectors.SELECTALLCHECKBOX).addEventListener('change', event => {
+        updateSelection(event);
     });
     pendingPromise.resolve();
 };
@@ -62,4 +68,46 @@ const updateUserIds = (checkbox) => {
         currentUserIds.splice(index, 1); // Remove item.
     }
     userIdsInputField.value = currentUserIds.join(';');
+    updateSelectAllCheckboxState();
+};
+
+/**
+ * Updates the checked states of the user checkboxes according to the change of the "select/deselect all" checkbox.
+ *
+ * @param {object} changedEvent the changed event of the "select/deselect all" checkbox
+ */
+const updateSelection = (changedEvent) => {
+    const allBoxes = table.querySelectorAll(selectors.CHECKBOX);
+    if (allBoxes.length === 0) {
+        return;
+    }
+    if (changedEvent.target.checked) {
+            allBoxes.forEach((box) => {
+                if (!box.checked) {
+                    box.checked = true;
+                }
+            });
+    } else {
+        allBoxes.forEach((box) => {
+            box.checked = false;
+        });
+    }
+};
+
+/**
+ * Updates the "select/deselect all" checkbox according to the state of the other checkboxes.
+ */
+const updateSelectAllCheckboxState = () => {
+    const selectAllCheckbox = table.querySelector(selectors.SELECTALLCHECKBOX);
+    selectAllCheckbox.checked = !!areAllBoxesChecked();
+};
+
+/**
+ * Helper function to determine if all user checkboxes are checked or not.
+ *
+ * @returns {bool} true if all boxes are checked, false otherwise
+ */
+const areAllBoxesChecked = () => {
+    const allBoxes = table.querySelectorAll(selectors.CHECKBOX);
+    return Array.from(allBoxes).reduce((a, b) => a && b.checked, true);
 };

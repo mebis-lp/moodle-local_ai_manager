@@ -44,7 +44,7 @@ class rights_config_table extends table_sql {
         // Define the list of columns to show.
         $columns = ['checkbox', 'lastname', 'firstname', 'idmgroupnames', 'locked'];
         $headers = [
-                '',
+                '<input type="checkbox" id="rights-table-selectall_checkbox"/>',
                 get_string('lastname'),
                 get_string('firstname'),
                 get_string('department'),
@@ -55,6 +55,7 @@ class rights_config_table extends table_sql {
         // Define the titles of columns to show in header.
         $this->define_headers($headers);
 
+        $this->no_sorting('checkbox');
         // TODO implement filter
         if (empty($filteridmgroups)) {
             $filtersql = '';
@@ -100,6 +101,7 @@ class rights_config_table extends table_sql {
         if ($column === 'checkbox') {
             return '<input type="checkbox" data-userid="' . $row->id . '"/>';
         }
+        return null;
     }
 
 }
