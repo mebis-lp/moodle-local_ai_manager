@@ -71,6 +71,7 @@ $string['resetuserusagetask'] = 'Reset AI manager user usage data';
 $string['restricttenants'] = 'Lock access for certain tenants';
 $string['restricttenantsdesc'] = 'Enable to limit the AI tools to specific tenants which can be defined by the "allowedtenants" config option.';
 $string['rightsconfig'] = 'Rights configuration';
+$string['selecteduserscount'] = '{$a} selected';
 $string['settingsgeneral'] = 'Allgemein';
 $string['statisticsoverview'] = 'Global overview';
 $string['temperature'] = 'Temperature';

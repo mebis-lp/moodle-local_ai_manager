@@ -69,6 +69,7 @@ $string['resetuserusagetask'] = 'AI-Manager-Nutzungsdaten zurücksetzen';
 $string['restricttenants'] = 'Sperre Zugriff für bestimmte Tenants';
 $string['restricttenantsdesc'] = 'Aktivieren, um die KI-Tools nur für bestimmte Tenants zuzulassen, die bei "allowedtenants" definiert werden können.';
 $string['rightsconfig'] = 'Rechteeinstellungen';
+$string['selecteduserscount'] = '{$a} ausgewählt';
 $string['tenantnotallowed'] = 'Das Feature ist für Ihren Tenant zentral deaktiviert und daher nicht nutzbar.';
 $string['userconfig'] = 'Benutzereinstellungen';
 $string['userstatistics'] = 'Benutzerübersicht';

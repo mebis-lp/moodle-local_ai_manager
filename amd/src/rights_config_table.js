@@ -23,12 +23,14 @@
  */
 
 import Pending from 'core/pending';
+import {getString} from 'core/str';
 
 let table = null;
 
 export const selectors = {
     CHECKBOX: 'input[data-userid]',
     SELECTALLCHECKBOX: '#rights-table-selectall_checkbox',
+    SELECTIONINFO: '#rights-table-selection_info',
     USERIDS_INPUT_FIELD: '#rights-table-userids'
 };
 
@@ -48,6 +50,7 @@ export const init = (id) => {
         updateSelection(event);
     });
     pendingPromise.resolve();
+    updateSelectionCountInfo();
 };
 
 /**
@@ -69,6 +72,7 @@ const updateUserIds = (checkbox) => {
     }
     userIdsInputField.value = currentUserIds.join(';');
     updateSelectAllCheckboxState();
+    updateSelectionCountInfo();
 };
 
 /**
@@ -92,6 +96,7 @@ const updateSelection = (changedEvent) => {
             box.checked = false;
         });
     }
+    updateSelectionCountInfo();
 };
 
 /**
@@ -110,4 +115,24 @@ const updateSelectAllCheckboxState = () => {
 const areAllBoxesChecked = () => {
     const allBoxes = table.querySelectorAll(selectors.CHECKBOX);
     return Array.from(allBoxes).reduce((a, b) => a && b.checked, true);
+};
+
+/**
+ * Returns the amount of currently checked checkboxes.
+ *
+ * @returns {number} the count of currently checked checkboxes
+ */
+const checkedCheckboxesCount = () => {
+    const allBoxes = table.querySelectorAll(selectors.CHECKBOX);
+    const checkedBoxes = Array.from(allBoxes).filter(checkbox => checkbox.checked);
+    return checkedBoxes.length;
+};
+
+/**
+ * Updates the selection count info text box.
+ */
+const updateSelectionCountInfo = async() => {
+    const selectionCountInfoTarget = table.querySelector(selectors.SELECTIONINFO);
+    const infoText = await getString('selecteduserscount', 'local_ai_manager', checkedCheckboxesCount());
+    selectionCountInfoTarget.innerHTML = infoText;
 };

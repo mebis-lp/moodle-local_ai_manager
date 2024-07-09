@@ -44,7 +44,7 @@ class rights_config_table extends table_sql {
         // Define the list of columns to show.
         $columns = ['checkbox', 'lastname', 'firstname', 'idmgroupnames', 'locked'];
         $headers = [
-                '<input type="checkbox" id="rights-table-selectall_checkbox"/>',
+                '<input type="checkbox" id="rights-table-selectall_checkbox"/><div id="rights-table-selection_info"></div>',
                 get_string('lastname'),
                 get_string('firstname'),
                 get_string('department'),
