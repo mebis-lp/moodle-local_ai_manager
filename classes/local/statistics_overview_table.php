@@ -39,17 +39,17 @@ class statistics_overview_table extends table_sql {
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
-        $columns = ['modelinfo', 'requestcount', 'usage'];
+        $columns = ['modelinfo', 'requestcount', 'userusage'];
         $headers = [
-                'MODEL',
+                get_string('model', 'local_ai_manager'),
                 get_string('request_count', 'local_ai_manager'),
-                'VERBRAUCH',
+                get_string('usage', 'local_ai_manager'),
         ];
         $this->define_columns($columns);
         // Define the titles of columns to show in header.
         $this->define_headers($headers);
 
-        $fields = 'model, modelinfo, COUNT(modelinfo) AS "requestcount", SUM(value) AS "usage"';
+        $fields = 'model, modelinfo, COUNT(modelinfo) AS requestcount, SUM(value) AS userusage';
         $from = '{local_ai_manager_request_log}';
         $where = '1=1 GROUP BY modelinfo';
         $this->set_sql($fields, $from, $where);
@@ -64,13 +64,14 @@ class statistics_overview_table extends table_sql {
      * @param stdClass $row the data object of the current row
      * @return string the string representation
      */
-    function col_usage(stdClass $row): string {
+    function col_userusage(stdClass $row): string {
         $connector = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_connector_by_model($row->model);
         if ($connector === null) {
             // This should only be in case we have disabled or removed a connector plugin. In this case we cannot provide a unit.
-            return $row->usage;
+            return $row->userusage;
         }
-        return $row->usage . " " . $connector->get_unit()->to_string();
+        // Currently there are only requests and tokens as units, so we can use intval for the moment.
+        return intval($row->userusage) . " " . $connector->get_unit()->to_string();
     }
 
     function other_cols($column, $row) {
@@ -78,6 +79,7 @@ class statistics_overview_table extends table_sql {
             return '<input type="checkbox" data-userid="' . $row->id . '"/>';
         }
     }
+
 
 
 }

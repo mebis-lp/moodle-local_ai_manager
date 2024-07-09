@@ -33,12 +33,12 @@ global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 \local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/user_statistics.php'));
 
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
+require_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context());
 
 echo $OUTPUT->header();
 $tenantnavbar = new tenantnavbar('user_statistics.php');
 echo $OUTPUT->render($tenantnavbar);
 
-require_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context());
 
 echo $OUTPUT->heading(get_string('userstatistics', 'local_ai_manager'), 2, 'text-center');
 if (!empty($purpose)) {

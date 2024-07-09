@@ -45,8 +45,8 @@ if ($enabletenant !== 'not_set') {
 
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 
-$rightsmanagementlink = html_writer::link(new moodle_url('/local/ai_manager/statistics.php'),
-        get_string('rightsmanagement', 'local_ai_manager'));
+$rightsconfiglink = html_writer::link(new moodle_url('/local/ai_manager/statistics.php'),
+        get_string('rightsconfig', 'local_ai_manager'));
 
 echo $OUTPUT->header();
 $tenantnavbar = new tenantnavbar('tenant_config.php');
@@ -63,7 +63,7 @@ echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
                 'targetwhennotchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
                         ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 1]))->out(false),
                 'tenantfullname' => $tenant->get_fullname(),
-                'rightsmanagementlink' => $rightsmanagementlink,
+                'rightsconfiglink' => $rightsconfiglink,
         ]);
 
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);

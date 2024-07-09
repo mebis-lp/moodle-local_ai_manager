@@ -37,57 +37,16 @@ $purpose = optional_param('purpose', '', PARAM_ALPHANUM);
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 
 echo $OUTPUT->header();
-$currentpage = 'statistics.php';
-if (!empty($purpose)) {
-    $currentpage .= '?purpose=' . $purpose;
-}
-$tenantnavbar = new tenantnavbar($currentpage);
+$tenantnavbar = new tenantnavbar('statistics.php');
 echo $OUTPUT->render($tenantnavbar);
 
-$startpage = empty($purpose);
-$urlparams = [];
-if (!$startpage) {
-    $urlparams['purpose'] = $purpose;
-}
-$baseurl = new moodle_url('/local/ai_manager/statistics.php', $urlparams);
+$baseurl = new moodle_url('/local/ai_manager/statistics.php', ['tenant' => $tenant->get_tenantidentifier()]);
 
-if ($startpage) {
-    echo $OUTPUT->heading(get_string('statisticsoverview', 'local_ai_manager'), 2, 'text-center');
-    $baseurl = new moodle_url('/local/ai_manager/statistics.php');
-    $overviewtable = new \local_ai_manager\local\statistics_overview_table('statistics-overview-table', $tenant, $baseurl);
-    $overviewtable->out(100, false);
-    echo html_writer::empty_tag('hr', ['class' => 'mb-3']);
-}
+echo $OUTPUT->heading(get_string('statisticsoverview', 'local_ai_manager'), 2, 'text-center');
+$baseurl = new moodle_url('/local/ai_manager/statistics.php');
+$overviewtable = new \local_ai_manager\local\statistics_overview_table('statistics-overview-table', $tenant, $baseurl);
+$overviewtable->out(100, false);
+echo html_writer::empty_tag('hr', ['class' => 'mb-3']);
 
-// TODO Move this to a statistcs_purpose page
-
-if (has_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context())) {
-    echo $OUTPUT->heading(get_string('userstatistics', 'local_ai_manager'), 2, 'text-center');
-    if (!empty($purpose)) {
-        echo $OUTPUT->heading(get_string('purpose', 'local_ai_manager') . ': '
-                . get_string('pluginname', 'aipurpose_' . $purpose), 4, 'text-center');
-    }
-
-    $recordscountsql = "SELECT COUNT(*) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id"
-            . " WHERE u.institution = :institution";
-    $recordscountparams = ['institution' => $tenant->get_tenantidentifier()];
-    if (!$startpage) {
-        $recordscountsql .= " AND rl.purpose = :purpose";
-        $recordscountparams['purpose'] = $purpose;
-    }
-    $recordscount = $DB->count_records_sql($recordscountsql, $recordscountparams);
-
-    if ($recordscount !== 0) {
-        $uniqid = $startpage ? 'statistics-table-all-purposes' : 'statistics-table-purpose-' . $purpose;
-        if (!$startpage) {
-            echo html_writer::div('Only user who already have used this purpose are being shown');
-        }
-
-        $table = new \local_ai_manager\local\userstats_table($uniqid, $purpose, $tenant, $baseurl);
-        $table->out(5, false);
-    } else {
-        echo html_writer::div('No data to show', 'alert alert-info');
-    }
-}
 
 echo $OUTPUT->footer();

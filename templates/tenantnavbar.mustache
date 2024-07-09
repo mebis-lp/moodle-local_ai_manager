@@ -79,9 +79,10 @@
                         {{#str}} userstatistics, local_ai_manager{{/str}}
                         {{/showuserstatistics}}
                         </a>
+                        <div class="dropdown-divider"></div>
                         {{#statisticspurposes}}
                             <a class="dropdown-item{{#active}} active active_tree_node{{/active}}"{{!
-                               }} href="{{config.wwwroot}}/local/ai_manager/statistics.php?tenant={{tenantidentifier}}&purpose={{pluginname}}">
+                               }} href="{{config.wwwroot}}/local/ai_manager/purpose_statistics.php?tenant={{tenantidentifier}}&purpose={{pluginname}}">
                             {{fullname}}
                             </a>
                         {{/statisticspurposes}}

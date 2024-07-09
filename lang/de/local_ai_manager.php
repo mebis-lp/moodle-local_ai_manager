@@ -78,6 +78,7 @@ $string['purpose_defaults_heading_desc'] = 'Definieren Sie das für verschiedene
 $string['zweck_imggen'] = 'Bilderzeugung';
 $string['zweck_stt'] = 'Sprachausgabe in Text';
 $string['zweck_tts'] = 'Text in Sprache';
+$string['request_count'] = 'Anfragen';
 $string['rightsmanagement'] = 'Rechteeinstellungen';
 $string['settingsgeneral'] = 'Allgemein';
 $string['statisticsoverview'] = 'Gesamtübersicht';
@@ -91,6 +92,7 @@ $string['tenantenableheading'] = 'KI-Tools in Ihrer Schule';
 $string['tenantdisabled'] = 'deaktiviert';
 $string['unit_token'] = 'Token';
 $string['unit_count'] = 'Anfrage(n)';
+$string['usage'] = 'Verbrauch';
 
 // Schoolconfiguration
 $string['schoolconfig_heading'] = 'Schulkonfiguration der KI-Tools';

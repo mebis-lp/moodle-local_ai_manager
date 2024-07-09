@@ -66,6 +66,7 @@ $string['purpose'] = 'Purpose';
 $string['purposesheading'] = 'Purposes ({$a->currentcount}/{$a->maxcount} assigned)';
 $string['purposesdescription'] = 'Which of your configured AI tools should be used for which purpose?';
 $string['quotaconfig'] = 'limits configuration';
+$string['request_count'] = 'Request count';
 $string['resetuserusagetask'] = 'Reset AI manager user usage data';
 $string['restricttenants'] = 'Lock access for certain tenants';
 $string['restricttenantsdesc'] = 'Enable to limit the AI tools to specific tenants which can be defined by the "allowedtenants" config option.';
@@ -87,6 +88,7 @@ $string['empty'] = 'empty';
 $string['generalsettings'] = 'General settings';
 $string['unit_token'] = 'token';
 $string['unit_count'] = 'request(s)';
+$string['usage'] = 'Usage';
 
 // General strings.
 $string['student'] = 'Student';
@@ -110,6 +112,4 @@ $string['disable_user'] = 'Disable User';
 $string['enable_user'] = 'Enable User';
 $string['statistics_for'] = 'Statistic for {$a}';
 $string['user_status_updated'] = 'The user status was updated';
-$string['request_count'] = 'Request count';
 $string['locked'] = 'Locked';
-$string['token_used'] = 'Used token';
