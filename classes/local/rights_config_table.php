@@ -57,12 +57,11 @@ class rights_config_table extends table_sql {
 
         // TODO implement filter
         if (empty($filteridmgroups)) {
-            $filtersql = '1=1';
+            $filtersql = '';
+            $filtersqlparams = [];
         } else {
-            $filtersql = 'bag.id = ' . array_shift($filteridmgroups);
-            foreach ($filteridmgroups as $idmgroup) {
-                $filtersql .= ' AND bag.id = ' . $idmgroup;
-            }
+            [$filtersql, $filtersqlparams] = $DB->get_in_or_equal($filteridmgroups, SQL_PARAMS_NAMED);
+            $filtersql = 'AND bag.id ' . $filtersql;
         }
 
         $sqlgroupconcat = $DB->sql_group_concat('name', ', ', 'name ASC');
@@ -71,8 +70,9 @@ class rights_config_table extends table_sql {
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid'
                     . ' LEFT JOIN {local_bycsauth_membership} bam ON u.id = bam.userid'
                     . ' LEFT JOIN {local_bycsauth_idmgroup} bag ON bam.idmgroupid = bag.id';
-        $where = 'institution = :tenant AND (bag.idmgrouptype = :idmgrouptype OR bag.idmgrouptype IS NULL) AND ' . $filtersql . ' GROUP BY u.id';
+        $where = 'institution = :tenant AND (bag.idmgrouptype = :idmgrouptype OR bag.idmgrouptype IS NULL) ' . $filtersql . ' GROUP BY u.id';
         $params = ['tenant' => $this->tenant->get_tenantidentifier(), 'idmgrouptype' => idmgroup::IDM_GROUP_TYPE['class']];
+        $params = array_merge($params, $filtersqlparams);
         $this->set_count_sql(
                 "SELECT COUNT(DISTINCT id) FROM {user} WHERE institution = :tenant",
                 ['tenant' => $this->tenant->get_tenantidentifier()]
