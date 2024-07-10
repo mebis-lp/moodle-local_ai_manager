@@ -86,11 +86,11 @@ const updateSelection = (changedEvent) => {
         return;
     }
     if (changedEvent.target.checked) {
-            allBoxes.forEach((box) => {
-                if (!box.checked) {
-                    box.checked = true;
-                }
-            });
+        allBoxes.forEach((box) => {
+            if (!box.checked) {
+                box.checked = true;
+            }
+        });
     } else {
         allBoxes.forEach((box) => {
             box.checked = false;
@@ -131,7 +131,7 @@ const checkedCheckboxesCount = () => {
 /**
  * Updates the selection count info text box.
  */
-const updateSelectionCountInfo = async() => {
+const updateSelectionCountInfo = async () => {
     const selectionCountInfoTarget = table.querySelector(selectors.SELECTIONINFO);
     const infoText = await getString('selecteduserscount', 'local_ai_manager', checkedCheckboxesCount());
     selectionCountInfoTarget.innerHTML = infoText;

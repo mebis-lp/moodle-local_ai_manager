@@ -60,3 +60,7 @@
 .dark #page input[type="checkbox"]:checked:not([disabled]).local_ai_manager-checkbox-switch::before {
     background-color: #fff;
 }
+
+.rights-table-selection_info {
+    font-weight: normal;
+}

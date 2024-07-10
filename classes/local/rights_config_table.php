@@ -43,8 +43,10 @@ class rights_config_table extends table_sql {
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
         $columns = ['checkbox', 'lastname', 'firstname', 'idmgroupnames', 'locked'];
+        $checkboxheader = html_writer::div('', 'rights-table-selection_info', ['id' => 'rights-table-selection_info']);
+        $checkboxheader .= html_writer::empty_tag('input', ['type' => 'checkbox', 'id' => 'rights-table-selectall_checkbox']);
         $headers = [
-                '<input type="checkbox" id="rights-table-selectall_checkbox"/><div id="rights-table-selection_info"></div>',
+                $checkboxheader,
                 get_string('lastname'),
                 get_string('firstname'),
                 get_string('department'),
@@ -102,6 +104,13 @@ class rights_config_table extends table_sql {
             return '<input type="checkbox" data-userid="' . $row->id . '"/>';
         }
         return null;
+    }
+
+    function show_hide_link($column, $index) {
+        if ($column === 'checkbox') {
+            return '';
+        }
+        return parent::show_hide_link($column, $index);
     }
 
 }
