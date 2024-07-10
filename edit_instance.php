@@ -49,6 +49,13 @@ if (!empty($del)) {
     }
 
     $factory->get_connector_instance_by_id($id)->delete();
+    // After deleteing we have to remove all purpose assignments to this instance, if there are any.
+    $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+    foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
+        if (intval($instanceid) === $id) {
+            $configmanager->unset_config(\local_ai_manager\base_purpose::get_purpose_tool_config_key($purpose));
+        }
+    }
     redirect($returnurl, 'Instance with id ' . $id . ' deleted');
 }
 

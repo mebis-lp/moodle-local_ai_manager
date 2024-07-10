@@ -60,6 +60,7 @@ $string['model'] = 'Modell';
 $string['per'] = 'pro';
 $string['pleaseselect'] = 'Bitte, wählen Sie';
 $string['pluginname'] = 'AI Manager';
+$string['preconfiguredmodel'] = 'vorkonfiguriertes Modell';
 $string['privacy:metadata'] = 'Das lokale ai_manager Plugin speichert keine persönlichen Daten.';
 $string['purpose'] = 'Einsatzzweck';
 $string['purposesheading'] = 'Verwendungszwecke  ({$a->currentcount}/{$a->maxcount} zugewiesen)';

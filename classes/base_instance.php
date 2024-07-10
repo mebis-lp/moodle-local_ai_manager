@@ -29,6 +29,8 @@ use stdClass;
  */
 class base_instance {
 
+    public const PRECONFIGURED_MODEL = 'preconfigured';
+
     protected ?stdClass $record = null;
 
     protected int $id = 0;
@@ -309,6 +311,9 @@ class base_instance {
         $this->set_apikey(trim($data->apikey));
         $this->set_connector($data->connector);
         $this->set_tenant($data->tenant);
+        if (empty($data->model)) {
+            $data->model = self::PRECONFIGURED_MODEL;
+        }
         $this->set_model($data->model);
         $this->set_infolink(trim($data->infolink));
         $this->extend_store_formdata($data);
@@ -351,8 +356,14 @@ class base_instance {
         if (empty($this->get_model())) {
             return [];
         }
-        $purposesofcurrentmodel = [];
         $connector = \core\di::get(connector_factory::class)->get_connector_by_connectorname($this->connector);
+        if ($this->get_model() === self::PRECONFIGURED_MODEL) {
+            // In case we have a preconfigured model (for example via Microsoft Azure) we have no information what the preconfigured
+            // model is capable of, so we just allow every purpose and have to deal with the fact that there might be errors when
+            // trying to use the preconfigured model for a purpose which it isn't capable of.
+            return array_keys($connector->get_models_by_purpose());
+        }
+        $purposesofcurrentmodel = [];
         foreach ($connector->get_models_by_purpose() as $purpose => $models) {
             if (in_array($this->get_model(), $models)) {
                 $purposesofcurrentmodel[] = $purpose;

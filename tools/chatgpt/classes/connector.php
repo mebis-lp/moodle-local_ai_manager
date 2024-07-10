@@ -97,11 +97,16 @@ class connector extends \local_ai_manager\base_connector {
             }
         }
         $messages[] = ['role' => 'user', 'content' => $prompttext];
-        return [
-                'model' => $this->instance->get_model(),
+
+        $parameters = [
                 'temperature' => $this->instance->get_temperature(),
                 'messages' => $messages,
         ];
+        if (!$this->instance->azure_enabled()) {
+            // If azure is enabled, the model will be preconfigured in the azure resource, so we do not need to send it.
+            $parameters['model'] = $this->instance->get_model();
+        }
+        return $parameters;
     }
 
     public function has_customvalue1(): bool {

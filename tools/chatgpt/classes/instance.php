@@ -36,17 +36,19 @@ class instance extends base_instance {
 
         $mform->addElement('text', 'azure_resourcename', 'AZURE RESOURCE NAME');
         $mform->setType('azure_resourcename', PARAM_TEXT);
-        $mform->hideIf('azure_resourcename', 'azure_enabled', 0);
+        $mform->hideIf('azure_resourcename', 'azure_enabled', 'eq', '0');
 
         $mform->addElement('text', 'azure_deploymentid', 'AZURE DEPLOYMENT ID');
         $mform->setType('azure_deploymentid', PARAM_TEXT);
-        $mform->hideIf('azure_deploymentid', 'azure_enabled', 0);
+        $mform->hideIf('azure_deploymentid', 'azure_enabled', 'eq', '0');
 
         aitool_option_temperature::extend_form_definition($mform);
 
         // We leave the endpoint empty on creation, because it depends if azure is being used or not.
         $mform->setDefault('endpoint', '');
         $mform->freeze('endpoint');
+
+        $mform->hideIf('model', 'azure_enabled', 'eq', 1);
     }
 
     protected function get_extended_formdata(): stdClass {

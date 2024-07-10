@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\base_instance;
 use local_ai_manager\local\tenant_config_output_utils;
 use local_ai_manager\output\tenantnavbar;
 
@@ -97,7 +98,9 @@ if ($configmanager->is_tenant_enabled()) {
         $instances[] = [
                 'name' => $linkedname,
                 'toolname' => get_string('pluginname', 'aitool_' . $instance->get_connector()),
-                'model' => $instance->get_model(),
+                'model' => $instance->get_model() === base_instance::PRECONFIGURED_MODEL
+                        ? get_string('preconfiguredmodel', 'local_ai_manager')
+                        : $instance->get_model(),
                 'purposes' => $purposes,
                 'nopurposeslink' => html_writer::link(new moodle_url('/local/ai_manager/purpose_config.php',
                         ['tenant' => $tenant->get_tenantidentifier()]),

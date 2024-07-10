@@ -60,6 +60,7 @@ $string['model'] = 'Model';
 $string['per'] = 'per';
 $string['pleaseselect'] = 'Please, select';
 $string['pluginname'] = 'AI Manager';
+$string['preconfiguredmodel'] = 'Preconfigured model';
 $string['privacy:metadata'] = 'The local ai_manager plugin does not store any personal data.';
 $string['prompterror'] = 'Prompt error';
 $string['purpose'] = 'Purpose';
