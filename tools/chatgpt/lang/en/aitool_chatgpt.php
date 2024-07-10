@@ -24,6 +24,6 @@
  */
 
 // TODO add description
-$string['adddescription'] = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.';
+$string['adddescription'] = 'ChatGPT is a versatile AI model used for natural language interactions such as customer support, virtual assistants, content creation and more.';
 $string['pluginname'] = 'ChatGPT';
 $string['privacy:metadata'] = 'The local ai_manager tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';

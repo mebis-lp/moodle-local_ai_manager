@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for aitool_googlesynthesize - EN.
+ * Lang strings for aitool_chatgpt - EN.
  *
- * @package    aitool_googlesynthesize
+ * @package    aitool_chatgpt
  * @copyright  ISB Bayern, 2024
- * @author     Philipp Memmel
+ * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // TODO add description
-$string['adddescription'] = 'Google Synthesize, often in the context of "Google Text-to-Speech", is a tool for converting text into spoken language.';
-$string['pluginname'] = 'Google Synthesize';
-$string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['adddescription'] = 'ChatGPT ist ein vielseitiges KI-Modell, das für natürliche Sprachinteraktionen wie Kundensupport, virtuelle Assistenzen, Content-Erstellung und mehr eingesetzt wird.';
+$string['pluginname'] = 'ChatGPT';
+$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';

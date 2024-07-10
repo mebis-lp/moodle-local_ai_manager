@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for aitool_googlesynthesize - EN.
+ * Lang strings for aitool_ollama.
  *
- * @package    aitool_googlesynthesize
+ * @package    aitool_ollama
  * @copyright  ISB Bayern, 2024
- * @author     Philipp Memmel
+ * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // TODO add description
-$string['adddescription'] = 'Google Synthesize, often in the context of "Google Text-to-Speech", is a tool for converting text into spoken language.';
-$string['pluginname'] = 'Google Synthesize';
-$string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['adddescription'] = 'Ollama ist eine Plattform oder ein Dienst, der sich auf den Einsatz von Sprach-KI und generativer KI konzentriert.';
+$string['pluginname'] = 'Ollama';
+$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for aitool_dalle - DE.
+ * Lang strings for aitool_dalle - EN.
  *
  * @package    aitool_dalle
  * @copyright  ISB Bayern, 2024
@@ -24,6 +24,6 @@
  */
 
 // TODO add description
-$string['adddescription'] = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.';
+$string['adddescription'] = 'DALL-E is an AI model from OpenAI that specializes in generating images from text descriptions.';
 $string['pluginname'] = 'Dall-E';
 $string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';

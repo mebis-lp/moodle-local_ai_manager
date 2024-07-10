@@ -24,6 +24,6 @@
  */
 
 // TODO add description
-$string['adddescription'] = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.';
+$string['adddescription'] = 'Gemini, Google DeepMind\'s AI model, combines advanced language models (LLMs) with tools and multimodal capabilities.';
 $string['pluginname'] = 'Gemini';
 $string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';

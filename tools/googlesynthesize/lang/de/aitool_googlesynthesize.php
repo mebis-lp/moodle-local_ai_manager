@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for aitool_googlesynthesize - EN.
+ * Lang strings for aitool_googlesynthesize - DE.
  *
  * @package    aitool_googlesynthesize
  * @copyright  ISB Bayern, 2024
@@ -24,6 +24,6 @@
  */
 
 // TODO add description
-$string['adddescription'] = 'Google Synthesize, often in the context of "Google Text-to-Speech", is a tool for converting text into spoken language.';
+$string['adddescription'] = 'Google Synthesize, oft im Kontext von “Google Text-to-Speech”, ist ein Werkzeug zur Umwandlung von Text in gesprochene Sprache.';
 $string['pluginname'] = 'Google Synthesize';
-$string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';

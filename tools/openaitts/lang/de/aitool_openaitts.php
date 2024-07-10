@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for aitool_googlesynthesize - EN.
+ * Lang strings for aitool_openaitts - DE.
  *
- * @package    aitool_googlesynthesize
+ * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
- * @author     Philipp Memmel
+ * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // TODO add description
-$string['adddescription'] = 'Google Synthesize, often in the context of "Google Text-to-Speech", is a tool for converting text into spoken language.';
-$string['pluginname'] = 'Google Synthesize';
-$string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['adddescription'] = 'TTS ist ein von OpenAI entwickeltes Modell zur Sprachausgabe von Texten.';
+$string['pluginname'] = 'OpenAI TTS';
+$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';

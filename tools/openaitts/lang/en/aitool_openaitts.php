@@ -24,6 +24,6 @@
  */
 
 // TODO add description
-$string['adddescription'] = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.';
+$string['adddescription'] = 'TTS is a text-to-speech model developed by OpenAI';
 $string['pluginname'] = 'OpenAI TTS';
 $string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
