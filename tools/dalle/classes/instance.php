@@ -17,6 +17,9 @@
 namespace aitool_dalle;
 
 use local_ai_manager\base_instance;
+use local_ai_manager\local\aitool_option_azure;
+use local_ai_manager\local\aitool_option_temperature;
+use stdClass;
 
 /**
  * Instance class for the connector instance of aitool_dalle.
@@ -29,7 +32,46 @@ use local_ai_manager\base_instance;
 class instance extends base_instance {
 
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->setDefault('endpoint', 'https://api.openai.com/v1/images/generations');
-        $mform->freeze('endpoint');
+        aitool_option_azure::extend_form_definition($mform);
+    }
+
+    protected function get_extended_formdata(): stdClass {
+        $data = new stdClass();
+        foreach (aitool_option_azure::add_azure_options_to_form_data($this->get_customfield1(), $this->get_customfield2(),
+                $this->get_customfield3()) as $key => $value) {
+            $data->{$key} = $value;
+        }
+        return $data;
+    }
+
+    protected function extend_store_formdata(stdClass $data): void {
+        // TODO eventually detect , or . as float separator and handle accordingly
+
+        [$enabled, $resourcename, $deploymentid] = aitool_option_azure::extract_azure_data_to_store($data);
+
+        if (!empty($enabled)) {
+            // TODO Eventually make api version an admin setting.
+            $endpoint = 'https://' . $resourcename .
+                    '.openai.azure.com/openai/deployments/'
+                    . $deploymentid . '/images/generations?api-version=2024-02-01';
+        } else {
+            $endpoint = 'https://api.openai.com/v1/images/generations';
+        }
+        $this->set_endpoint($endpoint);
+
+        $this->set_customfield1($enabled);
+        $this->set_customfield2($resourcename);
+        $this->set_customfield3($deploymentid);
+    }
+
+    protected function extend_validation(array $data, array $files): array {
+        $errors = [];
+        $errors = array_merge($errors, aitool_option_temperature::validate_temperature($data));
+        $errors = array_merge($errors, aitool_option_azure::validate_azure_options($data));
+        return $errors;
+    }
+
+    public function azure_enabled(): bool {
+        return !empty($this->get_customfield1());
     }
 }
