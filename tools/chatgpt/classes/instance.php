@@ -31,14 +31,14 @@ use stdClass;
 class instance extends base_instance {
 
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('selectyesno', 'azure_enabled', 'USE OPENAI VIA AZURE');
+        $mform->addElement('selectyesno', 'azure_enabled', get_string('use_openai_by_azure_heading', 'aitool_chatgpt'));
         $mform->setDefault('azure_enabled', false);
 
-        $mform->addElement('text', 'azure_resourcename', 'AZURE RESOURCE NAME');
+        $mform->addElement('text', 'azure_resourcename', get_string('use_openai_by_azure_name', 'aitool_chatgpt'));
         $mform->setType('azure_resourcename', PARAM_TEXT);
         $mform->hideIf('azure_resourcename', 'azure_enabled', 'eq', '0');
 
-        $mform->addElement('text', 'azure_deploymentid', 'AZURE DEPLOYMENT ID');
+        $mform->addElement('text', 'azure_deploymentid', get_string('use_openai_by_azure_deploymentid', 'aitool_chatgpt'));
         $mform->setType('azure_deploymentid', PARAM_TEXT);
         $mform->hideIf('azure_deploymentid', 'azure_enabled', 'eq', '0');
 

@@ -103,3 +103,11 @@ $string['configure_instance'] = 'KI Tool Instanzen konfigurieren';
 
 // User config.
 $string['heading_purposes'] = 'Einsatzzwecke';
+
+// Temperature.
+$string['temperature_more_creative'] = 'Kreativer';
+$string['temperature_creative_balanced'] = 'Ausgewogen';
+$string['temperature_more_precise'] = 'Präziser';
+$string['temperature_defaultsetting'] = 'Temperatur Voreinstellung';
+$string['temperature_use_custom_value'] = 'Eigenen Temperaturwert verwenden';
+$string['temperature_custom_value'] = 'Eigener Wert ( zwischen 0 und 1 )';

@@ -32,15 +32,15 @@ class aitool_option_temperature {
     public static function extend_form_definition(\MoodleQuickForm $mform): void {
         $mform->addElement('static', '', get_string('temperature', 'local_ai_manager'));
         $radioarray = [];
-        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', 'KREATIV', 'selection_creative');
-        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', 'AUSGEGLICHEN', 'selection_balanced');
-        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', 'PRÄZISE', 'selection_precise');
-        $mform->addGroup($radioarray, 'temperatureprechoicearray', 'TEMPERATUR-VOREINSTELLUNGEN', ['<br/>'], false);
+        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', get_string('temperature_more_creative', 'local_ai_manager'), 'selection_creative');
+        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', get_string('temperature_creative_balanced', 'local_ai_manager'), 'selection_balanced');
+        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', get_string('temperature_more_precise', 'local_ai_manager'), 'selection_precise');
+        $mform->addGroup($radioarray, 'temperatureprechoicearray', get_string('temperature_defaultsetting', 'local_ai_manager'), ['<br/>'], false);
         $mform->setDefault('temperatureprechoice', 'selection_balanced');
 
-        $mform->addElement('checkbox', 'temperatureusecustom', 'NUTZE BENUTZERDEFINIERTEN WERT');
+        $mform->addElement('checkbox', 'temperatureusecustom', get_string('temperature_use_custom_value', 'local_ai_manager'));
         $mform->setDefault('temperatureusecustom', 0);
-        $mform->addElement('text', 'temperaturecustom', 'TEMPERATURE CUSTOM (ZWISCHEN 0 UND 1)');
+        $mform->addElement('text', 'temperaturecustom', get_string('temperature_custom_value', 'local_ai_manager'));
         $mform->disabledIf('temperaturecustom', 'temperatureusecustom');
         $mform->setType('temperaturecustom', PARAM_FLOAT);
         $mform->disabledIf('temperatureprechoicearray', 'temperatureusecustom', 'checked');

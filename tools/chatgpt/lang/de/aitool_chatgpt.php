@@ -27,3 +27,6 @@
 $string['adddescription'] = 'ChatGPT ist ein vielseitiges KI-Modell, das für natürliche Sprachinteraktionen wie Kundensupport, virtuelle Assistenzen, Content-Erstellung und mehr eingesetzt wird.';
 $string['pluginname'] = 'ChatGPT';
 $string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';
+$string['use_openai_by_azure_heading'] = 'OpenAI via Azure verwenden';
+$string['use_openai_by_azure_name'] = 'Azure Resource Name';
+$string['use_openai_by_azure_deploymentid'] = 'Azure Deployment Name';

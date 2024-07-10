@@ -115,3 +115,11 @@ $string['enable_user'] = 'Enable User';
 $string['statistics_for'] = 'Statistic for {$a}';
 $string['user_status_updated'] = 'The user status was updated';
 $string['locked'] = 'Locked';
+
+// Temperature.
+$string['temperature_more_creative'] = 'More creative';
+$string['temperature_creative_balanced'] = 'Balanced';
+$string['temperature_more_precise'] = 'More precise';
+$string['temperature_defaultsetting'] = 'Temperature default';
+$string['temperature_use_custom_value'] = 'Use custom temperature value';
+$string['temperature_custom_value'] = 'Own value ( between 0 and 1 )';
