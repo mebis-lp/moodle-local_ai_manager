@@ -26,6 +26,7 @@
 $string['addinstance'] = 'KI-Tool hinzufügen';
 $string['addnavigationentry'] = 'In Navigation anzeigen';
 $string['addnavigationentrydesc'] = 'Aktivieren Sie diese Option, wenn die Konfiguration des AI-Managers in der Hauptnavigation angezeigt werden soll.';
+$string['aiisbeingused'] = 'Sie verwenden ein KI-Tool. Die eingegebenen Daten werden an ein externes KI-Tool gesendet.';
 $string['allowedtenants'] = 'Erlaubte Tenant-Bezeichner';
 $string['allowedtenantsdesc'] = 'Hier kann eine Liste von Tenant-Bezeichnern hinterlegt werden: Jeweils ein Bezeichner pro Zeile.';
 $string['aitool'] = 'KI-Tool';

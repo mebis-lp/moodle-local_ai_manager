@@ -26,6 +26,7 @@
 $string['addinstance'] = 'Add AI tool';
 $string['addnavigationentry'] = 'Add navigation entry';
 $string['addnavigationentrydesc'] = 'Enable if the AI manager configuration should be accessible by the primary navigation';
+$string['aiisbeingused'] = 'Sie verwenden ein KI-Tool. Die eingegebenen Daten werden an ein externes KI-Tool gesendet.';
 $string['aitool'] = 'AI tool';
 $string['allowedtenants'] = 'Allowed tenants';
 $string['allowedtenantsdesc'] = 'Specify a list of allowed tenants: One identifier per line.';

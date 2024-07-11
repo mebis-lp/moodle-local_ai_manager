@@ -6,6 +6,22 @@
     color: red;
 }
 
+.local_ai_manager-infobox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #60616D;
+    font-family: "Atkinson Hyperlegible";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.local_ai_manager-infobox p {
+    margin: 0;
+}
+
 /* TODO These super specific weird selectors are necessary to overwrite our theme definitions. Move the specific ones to the theme and replace these here by ones
     working with boost.
  */
