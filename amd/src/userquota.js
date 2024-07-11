@@ -56,8 +56,8 @@ export const renderUserQuota = async (selector, purposes) => {
     const targetElement = document.querySelector(selector);
     const userquotaData = await fetchUserquotaData();
     const purposeInfo = [];
+    console.log(userquotaData)
     purposes.forEach(purpose => {
-        console.log(queryCountStrings.chat)
         purposeInfo.push(
             {
                 purpose,

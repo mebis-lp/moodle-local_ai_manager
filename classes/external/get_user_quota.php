@@ -61,7 +61,7 @@ class get_user_quota extends external_api {
         $userinfo = new userinfo($USER->id);
 
         $response = [];
-        $response['period'] = format_time($configmanager->get_max_requests_period());
+        $response['period'] = preg_replace('/^1\s/', '', format_time($configmanager->get_max_requests_period()));
         $response['role'] = userinfo::get_role_as_string($userinfo->get_role());
         foreach ($purposes as $purpose) {
             $purposeobject = \core\di::get(connector_factory::class)->get_purpose_by_purpose_string($purpose);
