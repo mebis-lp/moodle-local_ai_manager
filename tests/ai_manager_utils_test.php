@@ -38,7 +38,7 @@ class ai_manager_utils_test extends \advanced_testcase {
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
 
-        $this->assertEquals(1, ai_manager_utils::get_next_free_itemid('\\block_ai_interface', 12));
+        $this->assertEquals(1, ai_manager_utils::get_next_free_itemid('block_ai_chat', 12));
 
         $record = new stdClass();
         $record->userid = $user->id;
@@ -47,11 +47,11 @@ class ai_manager_utils_test extends \advanced_testcase {
         $record->modelinfo = 'testmodel-3.5';
         $record->prompttext = 'some prompt';
         $record->promptcompletion = 'some prompt response';
-        $record->component = '\\block_ai_interface';
+        $record->component = 'block_ai_chat';
         $record->contextid = 12;
         $record->itemid = 5;
         $record->timecreated = time();
-        $records[] = $record;
+        $DB->insert_record('local_ai_manager_request_log', $record);
 
         $record = new stdClass();
         $record->userid = $user->id;
@@ -60,13 +60,13 @@ class ai_manager_utils_test extends \advanced_testcase {
         $record->modelinfo = 'anothertestmodel-4.0';
         $record->prompttext = 'some other prompt';
         $record->promptcompletion = 'some prompt response';
-        $record->component = '\\block_ai_interface';
+        $record->component = 'block_ai_chat';
         $record->contextid = 12;
         $record->itemid = 7;
         $record->timecreated = time();
-        $records[] = $record;
+        $DB->insert_record('local_ai_manager_request_log', $record);
 
-        $this->assertEquals(8, ai_manager_utils::get_next_free_itemid('\\block_ai_interface', 12));
+        $this->assertEquals(8, ai_manager_utils::get_next_free_itemid('block_ai_chat', 12));
 
         $record = new stdClass();
         $record->userid = $user->id;
@@ -75,15 +75,15 @@ class ai_manager_utils_test extends \advanced_testcase {
         $record->modelinfo = 'anothertestmodel-4.0';
         $record->prompttext = 'some other prompt';
         $record->promptcompletion = 'some prompt response';
-        $record->component = '\\block_ai_interface';
+        $record->component = 'block_ai_chat';
         // Other context id, so this record should not be relevant.
         $record->contextid = 23;
         $record->itemid = 10;
         $record->timecreated = time();
-        $records[] = $record;
-        $DB->insert_records('local_ai_manager_request_log', $records);
-        $this->assertEquals(8, ai_manager_utils::get_next_free_itemid('\\block_ai_interface', 12));
-        $this->assertEquals(2, ai_manager_utils::get_next_free_itemid('\\mod_ai', 23));
-        $this->assertEquals(2, ai_manager_utils::get_next_free_itemid('\\block_ai_interface', 23));
+        $DB->insert_record('local_ai_manager_request_log', $record);
+
+        $this->assertEquals(8, ai_manager_utils::get_next_free_itemid('block_ai_chat', 12));
+        $this->assertEquals(1, ai_manager_utils::get_next_free_itemid('mod_ai', 23));
+        $this->assertEquals(11, ai_manager_utils::get_next_free_itemid('block_ai_chat', 23));
     }
 }
