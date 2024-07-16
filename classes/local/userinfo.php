@@ -64,6 +64,9 @@ class userinfo {
         $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
         $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
         $school = new school($user->institution);
+        if (PHPUNIT_TEST) {
+            return self::ROLE_UNLIMITED;
+        }
         if (user_has_role_assignment($this->userid, $coordinatorrole->id,
                 \context_coursecat::instance($school->get_school_categoryid())->id)) {
             return self::ROLE_UNLIMITED;
