@@ -57,6 +57,10 @@ class userinfo {
         // TODO Extract this into a hook.
         // TODO Make this more performant
         $user = \core_user::get_user($this->userid);
+        $accessmanager = \core\di::get(access_manager::class);
+        if (\core\di::get(tenant::class)->is_default_tenant()) {
+            return $accessmanager->is_tenant_manager() ? self::ROLE_UNLIMITED : self::ROLE_BASIC;
+        }
         $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
         $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
         $school = new school($user->institution);
