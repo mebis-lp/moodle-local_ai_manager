@@ -42,7 +42,7 @@ class tenant {
     public function __construct(string $tenantidentifier = '') {
         global $USER;
         if (empty($tenantidentifier)) {
-            $tenantidentifier = $USER->institution;
+            $tenantidentifier = !empty($USER->institution) ? $USER->institution : '';
             if (empty($tenantidentifier)) {
                 $tenantidentifier = self::DEFAULT_TENANTIDENTIFIER;
             }

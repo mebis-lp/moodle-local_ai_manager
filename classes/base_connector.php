@@ -99,7 +99,7 @@ abstract class base_connector {
      */
     public function make_request(array $data): request_response {
         $client = new http_client([
-                // TODO Make timeout higher, LLM requests can take quite a bit of time
+            // TODO Make timeout higher, LLM requests can take quite a bit of time
                 'timeout' => 120,
         ]);
 
@@ -147,7 +147,8 @@ abstract class base_connector {
                     $message = 'Access to the API has been denied because of invalid credentials';
                     break;
                 case 429:
-                    $message = 'There have been sent too many or too big requests to the AI tool in a certain amount of time. Please try again later.';
+                    $message =
+                            'There have been sent too many or too big requests to the AI tool in a certain amount of time. Please try again later.';
                     break;
                 case 500:
                     $message = 'An internal server error of the AI tool occurred';
@@ -157,7 +158,8 @@ abstract class base_connector {
             }
         }
         return request_response::create_from_error($exception->getCode(), $message,
-                $exception->getMessage() . '\n' . $exception->getTraceAsString());
+                $exception->getMessage() . '\n' . $exception->getTraceAsString() . '\n'
+                . $exception->getResponse()->getBody()->getContents());
     }
 
     protected function get_headers(): array {

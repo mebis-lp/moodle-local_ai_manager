@@ -30,6 +30,7 @@ use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -58,33 +59,6 @@ class connector extends \local_ai_manager\base_connector {
 
     public function get_unit(): unit {
         return unit::TOKEN;
-    }
-
-    public function make_request(array $data): request_response {
-        $client = new http_client([
-            // TODO Make timeout higher, LLM requests can take quite a bit of time
-                'timeout' => 60,
-        ]);
-
-        $options['headers'] = $this->get_headers();
-        $options['body'] = json_encode($data);
-
-        $start = microtime(true);
-
-        $response = $client->post($this->get_endpoint_url(), $options);
-        $end = microtime(true);
-        $executiontime = round($end - $start, 2);
-        if ($response->getStatusCode() === 200) {
-            $return = request_response::create_from_result($response->getBody(), $executiontime);
-        } else {
-            // TODO localize
-            $return = request_response::create_from_error(
-                    'Sending request to tool api endpoint failed with code ' . $response->getStatusCode(),
-                    $response->getBody(),
-                    ''
-            );
-        }
-        return $return;
     }
 
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
