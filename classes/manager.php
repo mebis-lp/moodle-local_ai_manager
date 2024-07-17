@@ -105,30 +105,39 @@ class manager {
         try {
             $options = $this->sanitize_options($options);
         } catch (\Exception $exception) {
-            return prompt_response::create_from_error(400, 'Error sanitizing passed options', $exception->getMessage());
+            return prompt_response::create_from_error(
+                400,
+                get_string('error_http400', 'local_ai_manager'),
+                $exception->getMessage()
+            );
         }
 
         if (!$this->configmanager->is_tenant_enabled()) {
-            return prompt_response::create_from_error(403, 'Your ByCS admin has not enabled the AI tools feature', '');
+            return prompt_response::create_from_error(403, get_string('error_http403disabled', 'local_ai_manager'), '');
         }
 
         $userinfo = new userinfo($USER->id);
         if ($userinfo->is_locked()) {
-            return prompt_response::create_from_error(403, 'Your ByCS admin has blocked access to the AI tools for you', '');
+            return prompt_response::create_from_error(403, get_string('error_http403blocked', 'local_ai_manager'), '');
         }
 
         if (intval($this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) === 0) {
-            return prompt_response::create_from_error(403, 'Your ByCS admin has disabled this purpose for your user type', '');
+            return prompt_response::create_from_error(403, get_string('error_http403usertype', 'local_ai_manager'), '');
         }
 
         $userusage = new userusage($this->purpose, $USER->id);
+
         if ($userusage->get_currentusage() >= $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) {
             $period = format_time($this->configmanager->get_max_requests_period());
-            return prompt_response::create_from_error(429, 'You have reached the maximum amount of requests. '
-                    . 'You are only allowed to send ' .
-                    $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())
-                    . ' requests in a period of ' . $period . '.',
-                    '');
+            return prompt_response::create_from_error(
+                429,
+                get_string(
+                    'error_http429',
+                    'local_ai_manager',
+                    ['count' => $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role()), 'period' => $period]
+                ),
+                ''
+            );
         }
 
         $requestoptions = $this->purpose->get_request_options($options);
@@ -152,7 +161,7 @@ class manager {
                 $existingitemid = $options['itemid'];
                 unset($options['itemid']);
                 $this->log_request($prompttext, $promptcompletion, $requestoptions, $options);
-                return prompt_response::create_from_error(409, 'The itemid ' . $existingitemid . ' already taken', '');
+                return prompt_response::create_from_error(409, get_string('error_http409', 'local_ai_manager'), '');
             }
         }
 

@@ -32,6 +32,8 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
+$PAGE->add_body_class('limitcontentwidth');
+
 \local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/purpose_config.php'));
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
@@ -52,14 +54,14 @@ if ($purposeconfigform->is_cancelled()) {
                     $data->{base_purpose::get_purpose_tool_config_key($purpose)});
         }
     }
-    redirect($PAGE->url, 'CONFIG SAVED');
+    redirect($PAGE->url, get_string('configsaved', 'repository'));
 } else {
     echo $OUTPUT->header();
     $tenantnavbar = new tenantnavbar('purpose_config.php');
     echo $OUTPUT->render($tenantnavbar);
 
-    echo $OUTPUT->heading(get_string('configurepurposes', 'local_ai_manager'), 2, 'text-center');
-    echo html_writer::div(get_string('purposesdescription', 'local_ai_manager'), 'text-center mb-3');
+    echo $OUTPUT->heading(get_string('configurepurposes', 'local_ai_manager'), 3, 'text-center');
+    echo html_writer::div(get_string('purposesdescription', 'local_ai_manager'), 'text-center mb-4');
 
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {

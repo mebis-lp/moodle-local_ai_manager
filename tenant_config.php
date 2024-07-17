@@ -31,6 +31,8 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
+$PAGE->add_body_class('limitcontentwidth');
+
 $enabletenant = optional_param('enabletenant', 'not_set', PARAM_ALPHANUM);
 
 $url = new moodle_url('/local/ai_manager/tenant_config.php');
@@ -53,19 +55,19 @@ echo $OUTPUT->header();
 $tenantnavbar = new tenantnavbar('tenant_config.php');
 echo $OUTPUT->render($tenantnavbar);
 echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
-        [
-                'checked' => $istenantenabled,
-                'description' => $istenantenabled ? get_string('disabletenant', 'local_ai_manager') :
-                        get_string('enabletenant', 'local_ai_manager'),
-                'text' => $istenantenabled ? get_string('tenantenabled', 'local_ai_manager') :
-                        get_string('tenantdisabled', 'local_ai_manager'),
-                'targetwhenchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                        ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 0]))->out(false),
-                'targetwhennotchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                        ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 1]))->out(false),
-                'tenantfullname' => $tenant->get_fullname(),
-                'rightsconfiglink' => $rightsconfiglink,
-        ]);
+    [
+        'checked' => $istenantenabled,
+        'description' => $istenantenabled ? get_string('disabletenant', 'local_ai_manager') :
+                get_string('enabletenant', 'local_ai_manager'),
+        'text' => $istenantenabled ? get_string('tenantenabled', 'local_ai_manager') :
+                get_string('tenantdisabled', 'local_ai_manager'),
+        'targetwhenchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
+                ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 0]))->out(false),
+        'targetwhennotchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
+                ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 1]))->out(false),
+        'tenantfullname' => $tenant->get_fullname(),
+        'rightsconfiglink' => $rightsconfiglink,
+    ]);
 
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 

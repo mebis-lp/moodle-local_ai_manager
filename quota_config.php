@@ -35,6 +35,8 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
+$PAGE->add_body_class('limitcontentwidth');
+
 \local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/quota_config.php'));
 
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
@@ -67,13 +69,14 @@ if ($userconfigform->is_cancelled()) {
         $configmanager->unset_config('max_requests_period');
     }
 
-    redirect($PAGE->url, 'CONFIG SAVED');
+    redirect($PAGE->url, get_string('configsaved', 'repository'));
 } else {
     echo $OUTPUT->header();
     $tenantnavbar = new tenantnavbar('quota_config.php');
     echo $OUTPUT->render($tenantnavbar);
 
-    echo $OUTPUT->heading(get_string('quotaconfig', 'local_ai_manager'));
+    echo $OUTPUT->heading(get_string('quotaconfig', 'local_ai_manager'), 2, 'text-center');
+    echo html_writer::div(get_string('quotadescription', 'local_ai_manager'), 'text-center mb-4');
 
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {

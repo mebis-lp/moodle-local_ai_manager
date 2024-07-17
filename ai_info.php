@@ -45,7 +45,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($tenant->get_tenant_context());
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 
-$strtitle = 'KI-TOOLS IN DER MEBIS LERNPLATTFORM';
+$strtitle = get_string('aiinfotitle', 'local_ai_manager');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);

@@ -80,3 +80,19 @@
 .rights-table-selection_info {
     font-weight: normal;
 }
+
+#page-local-ai_manager-quota_config .mbseasytoggle {
+    display: none !important;
+}
+
+#page-local-ai_manager-purpose_config #region-main select {
+    width: 100%;
+}
+
+body.path-local-ai_manager .secondary-navigation {
+    padding-bottom: 2rem;
+}
+body.limitcontentwidth #page-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}

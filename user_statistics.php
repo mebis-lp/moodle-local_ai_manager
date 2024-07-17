@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_ai_manager\local\userinfo;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
@@ -40,7 +39,7 @@ $tenantnavbar = new tenantnavbar('user_statistics.php');
 echo $OUTPUT->render($tenantnavbar);
 
 
-echo $OUTPUT->heading(get_string('userstatistics', 'local_ai_manager'), 2, 'text-center');
+echo $OUTPUT->heading(get_string('userstatistics', 'local_ai_manager'), 2, 'text-center pb-3');
 if (!empty($purpose)) {
     echo $OUTPUT->heading(get_string('purpose', 'local_ai_manager') . ': '
             . get_string('pluginname', 'aipurpose_' . $purpose), 4, 'text-center');
@@ -58,7 +57,7 @@ if ($recordscount !== 0) {
     $table = new \local_ai_manager\local\userstats_table($uniqid, '', $tenant, $baseurl);
     $table->out(5, false);
 } else {
-    echo html_writer::div('No data to show', 'alert alert-info');
+    echo html_writer::div(get_string('nodata', 'local_ai_manager'), 'alert alert-info');
 }
 
 echo $OUTPUT->footer();

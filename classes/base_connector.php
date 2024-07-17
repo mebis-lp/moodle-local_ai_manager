@@ -139,22 +139,21 @@ abstract class base_connector {
         // Guzzle API functions, so we have to hope the cURL error messages are kinda stable.
         if (str_contains($exception->getMessage(), 'cURL error')) {
             if (str_contains($exception->getMessage(), 'cURL error 28')) {
-                $message = 'The API took too long to process your request or could not be reached in a reasonable time';
+                $message = get_string('exception_curl28', 'local_ai_manager');
             }
         } else {
             switch ($exception->getCode()) {
                 case 401:
-                    $message = 'Access to the API has been denied because of invalid credentials';
+                    $message = get_string('exception_http401', 'local_ai_manager');
                     break;
                 case 429:
-                    $message =
-                            'There have been sent too many or too big requests to the AI tool in a certain amount of time. Please try again later.';
+                    $message = get_string('exception_http429', 'local_ai_manager');
                     break;
                 case 500:
-                    $message = 'An internal server error of the AI tool occurred';
+                    $message = get_string('exception_http500', 'local_ai_manager');
                     break;
                 default:
-                    $message = 'A general error occurred while trying to send the request to the AI tool';
+                    $message = get_string('exception_default', 'local_ai_manager');
             }
         }
         return request_response::create_from_error($exception->getCode(), $message,

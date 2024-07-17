@@ -45,7 +45,6 @@ class tenant_config_output_utils {
         $url->param('tenant', $tenant->get_tenantidentifier());
         $PAGE->set_url($url);
         $PAGE->set_context($tenant->get_tenant_context());
-        //$PAGE->add_body_class('limitedwidth');
         $PAGE->set_pagelayout('admin');
 
         $strtitle = get_string('schoolconfig_heading', 'local_ai_manager');

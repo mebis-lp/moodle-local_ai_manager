@@ -48,24 +48,24 @@ echo $OUTPUT->render($tenantnavbar);
 
 $baseurl = new moodle_url('/local/ai_manager/purpose_statistics.php', ['purpose' => $purpose]);
 
-    echo $OUTPUT->heading(get_string('userstatistics', 'local_ai_manager'), 2, 'text-center');
-        echo $OUTPUT->heading(get_string('purpose', 'local_ai_manager') . ': '
-                . get_string('pluginname', 'aipurpose_' . $purpose), 4, 'text-center');
+echo $OUTPUT->heading(get_string('userstatistics', 'local_ai_manager'), 2, 'text-center');
+echo $OUTPUT->heading(get_string('purpose', 'local_ai_manager') . ': '
+    . get_string('pluginname', 'aipurpose_' . $purpose), 4, 'text-center pb-3');
 
-    $recordscountsql = "SELECT COUNT(*) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id"
-            . " WHERE u.institution = :institution AND rl.purpose = :purpose";
-    $recordscountparams = ['institution' => $tenant->get_tenantidentifier(), 'purpose' => $purpose];
-    $recordscount = $DB->count_records_sql($recordscountsql, $recordscountparams);
+$recordscountsql = "SELECT COUNT(*) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id"
+        . " WHERE u.institution = :institution AND rl.purpose = :purpose";
+$recordscountparams = ['institution' => $tenant->get_tenantidentifier(), 'purpose' => $purpose];
+$recordscount = $DB->count_records_sql($recordscountsql, $recordscountparams);
 
-    if ($recordscount !== 0) {
-        $uniqid = 'statistics-table-purpose-' . $purpose;
+if ($recordscount !== 0) {
+    $uniqid = 'statistics-table-purpose-' . $purpose;
 
-        echo html_writer::div('Only user who already have used this purpose are being shown');
+    echo html_writer::div('Only user who already have used this purpose are being shown');
 
-        $table = new \local_ai_manager\local\userstats_table($uniqid, $purpose, $tenant, $baseurl);
-        $table->out(5, false);
-    } else {
-        echo html_writer::div('No data to show', 'alert alert-info');
-    }
+    $table = new \local_ai_manager\local\userstats_table($uniqid, $purpose, $tenant, $baseurl);
+    $table->out(5, false);
+} else {
+    echo html_writer::div(get_string('nodata', 'local_ai_manager'), 'alert alert-info');
+}
 
 echo $OUTPUT->footer();
