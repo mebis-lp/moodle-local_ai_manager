@@ -49,7 +49,7 @@ export const renderInfoBox = async(component, userId, selector, purposes) => {
     const currentTime = new Date().getTime();
     // If the box has not been shown for more than 2 hours, we show it again.
     if (!localStorageContent || (currentTime - localStorageContent > 120 * 60 * 1000)) {
-        await ModalConfirm.create({});
+        //await ModalConfirm.create({});
         const date = new Date();
         LocalStorage.set(hashKey, date.getTime());
     }

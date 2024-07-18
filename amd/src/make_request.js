@@ -28,5 +28,5 @@ const execMakeRequest = (
  * @returns {mixed}
  */
 export const makeRequest = async(purpose, prompt, options = {}) => {
-    return execMakeRequest(purpose, prompt, options);
+    return execMakeRequest(purpose, prompt, JSON.stringify(options));
 };
