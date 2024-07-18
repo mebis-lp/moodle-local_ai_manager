@@ -47,7 +47,7 @@ class ai_manager_utils {
             // The column 'deleted' is defined to have the value 0 by default, so we should be safe to use this as query param.
             $params['deleted'] = 0;
         }
-        $records = $DB->get_records('local_ai_manager_request_log', $params, 'timecreated DESC');
+        $records = $DB->get_records('local_ai_manager_request_log', $params, 'timecreated ASC');
         return !empty($records) ? $records : [];
     }
 
