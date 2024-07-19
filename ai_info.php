@@ -50,10 +50,10 @@ $PAGE->set_title($strtitle);
 $PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 $PAGE->set_secondary_navigation(false);
+$PAGE->add_body_class('limitcontentwidth');
 
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading($strtitle);
 
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 $templatecontext = [];
