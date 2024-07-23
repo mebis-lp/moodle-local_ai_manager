@@ -106,9 +106,9 @@ class manager {
             $options = $this->sanitize_options($options);
         } catch (\Exception $exception) {
             return prompt_response::create_from_error(
-                400,
-                get_string('error_http400', 'local_ai_manager'),
-                $exception->getMessage()
+                    400,
+                    get_string('error_http400', 'local_ai_manager'),
+                    $exception->getMessage()
             );
         }
 
@@ -121,6 +121,10 @@ class manager {
             return prompt_response::create_from_error(403, get_string('error_http403blocked', 'local_ai_manager'), '');
         }
 
+        if (!$userinfo->is_confirmed()) {
+            return prompt_response::create_from_error(403, get_string('error_http403notconfirmed', 'local_ai_manager'), '');
+        }
+
         if (intval($this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) === 0) {
             return prompt_response::create_from_error(403, get_string('error_http403usertype', 'local_ai_manager'), '');
         }
@@ -130,13 +134,14 @@ class manager {
         if ($userusage->get_currentusage() >= $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) {
             $period = format_time($this->configmanager->get_max_requests_period());
             return prompt_response::create_from_error(
-                429,
-                get_string(
-                    'error_http429',
-                    'local_ai_manager',
-                    ['count' => $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role()), 'period' => $period]
-                ),
-                ''
+                    429,
+                    get_string(
+                            'error_http429',
+                            'local_ai_manager',
+                            ['count' => $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role()),
+                                    'period' => $period]
+                    ),
+                    ''
             );
         }
 
@@ -223,11 +228,14 @@ class manager {
     private function sanitize_options(array $options): array {
         foreach ($options as $key => $value) {
             if (!array_key_exists($key, $this->purpose->get_available_purpose_options())) {
-                throw new \coding_exception('Option ' . $key . ' is not allowed for the purpose ' . $this->purpose->get_plugin_name());
+                throw new \coding_exception('Option ' . $key . ' is not allowed for the purpose ' .
+                        $this->purpose->get_plugin_name());
             }
             if (is_array($this->purpose->get_available_purpose_options()[$key])) {
-                if (!in_array($value[0], array_map(fn($valueobject) => $valueobject['key'], $this->purpose->get_available_purpose_options()[$key]))) {
-                    throw new \coding_exception('Value ' . $value[0] . ' for option ' . $key . ' is not allowed for the purpose ' . $this->purpose->get_plugin_name());
+                if (!in_array($value[0], array_map(fn($valueobject) => $valueobject['key'],
+                        $this->purpose->get_available_purpose_options()[$key]))) {
+                    throw new \coding_exception('Value ' . $value[0] . ' for option ' . $key . ' is not allowed for the purpose ' .
+                            $this->purpose->get_plugin_name());
                 }
             } else {
                 if ($this->purpose->get_available_purpose_options()[$key] === base_purpose::PARAM_ARRAY) {

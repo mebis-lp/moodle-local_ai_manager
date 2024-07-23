@@ -40,6 +40,7 @@ class userinfo {
     private int $role;
 
     private bool $locked;
+    private bool $confirmed;
 
     public function __construct(private readonly int $userid) {
         $this->load();
@@ -50,6 +51,7 @@ class userinfo {
         $this->record = $DB->get_record('local_ai_manager_userinfo', ['userid' => $this->userid]);
         $this->role = !empty($this->record->role) ? $this->record->role : $this->get_default_role();
         $this->locked = !empty($this->record->locked);
+        $this->confirmed = !empty($this->record->confirmed);
     }
 
     public function get_default_role() {
@@ -89,6 +91,7 @@ class userinfo {
         $newrecord->userid = $this->userid;
         $newrecord->role = $this->role;
         $newrecord->locked = $this->locked ? 1 : 0;
+        $newrecord->confirmed = $this->confirmed ? 1 : 0;
         $newrecord->timemodified = time();
         if ($this->record) {
             $newrecord->id = $this->record->id;
@@ -110,12 +113,20 @@ class userinfo {
         $this->locked = $locked;
     }
 
+    public function set_confirmed(bool $confirmed): void {
+        $this->confirmed = $confirmed;
+    }
+
     public function get_role(): int {
         return $this->role;
     }
 
     public function is_locked(): bool {
         return $this->locked;
+    }
+
+    public function is_confirmed(): bool {
+        return $this->confirmed;
     }
 
     public static function get_tenant_for_user($userid): ?tenant {

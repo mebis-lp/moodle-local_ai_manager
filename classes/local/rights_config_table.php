@@ -42,7 +42,7 @@ class rights_config_table extends table_sql {
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
-        $columns = ['checkbox', 'lastname', 'firstname', 'idmgroupnames', 'locked'];
+        $columns = ['checkbox', 'lastname', 'firstname', 'idmgroupnames', 'locked', 'confirmed'];
         $checkboxheader = html_writer::div('', 'rights-table-selection_info', ['id' => 'rights-table-selection_info']);
         $checkboxheader .= html_writer::empty_tag('input', ['type' => 'checkbox', 'id' => 'rights-table-selectall_checkbox']);
         $headers = [
@@ -51,6 +51,7 @@ class rights_config_table extends table_sql {
                 get_string('firstname'),
                 get_string('department'),
                 get_string('locked', 'local_ai_manager'),
+                get_string('confirmed', 'local_ai_manager'),
         ];
 
         $this->define_columns($columns);
@@ -68,7 +69,7 @@ class rights_config_table extends table_sql {
         }
 
         $sqlgroupconcat = $DB->sql_group_concat('name', ', ', 'name ASC');
-        $fields = 'u.id as id, lastname, firstname, ' . $sqlgroupconcat . ' AS idmgroupnames, locked';
+        $fields = 'u.id as id, lastname, firstname, ' . $sqlgroupconcat . ' AS idmgroupnames, locked, ui.confirmed';
         $from =
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid'
                     . ' LEFT JOIN {local_bycsauth_membership} bam ON u.id = bam.userid'
@@ -93,6 +94,20 @@ class rights_config_table extends table_sql {
      */
     function col_locked($value) {
         if (empty($value->locked)) {
+            return '<i class="fa fa-unlock ai_manager_green"></i>';
+        } else {
+            return '<i class="fa fa-lock ai_manager_red"></i>';
+        }
+    }
+
+    /**
+     * Get the icon representing the user confirmed state.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    function col_confirmed($value) {
+        if (!empty($value->confirmed)) {
             return '<i class="fa fa-unlock ai_manager_green"></i>';
         } else {
             return '<i class="fa fa-lock ai_manager_red"></i>';

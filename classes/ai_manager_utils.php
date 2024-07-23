@@ -140,6 +140,7 @@ class ai_manager_utils {
         return [
                 'tenantenabled' => $configmanager->is_tenant_enabled(),
                 'userlocked' => $userinfo->is_locked(),
+                'userconfirmed' => $userinfo->is_confirmed(),
                 'role' => userinfo::get_role_as_string($userinfo->get_role()),
                 'purposes' => $purposes,
                 'tools' => $tools,

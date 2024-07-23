@@ -89,6 +89,8 @@ class get_ai_config extends external_api {
                 new external_value(PARAM_BOOL, 'If AI manager is being enabled for this tenant', VALUE_REQUIRED);
         $singlestructuredefinition['userlocked'] =
                 new external_value(PARAM_BOOL, 'If user is being locked, thus must not use any AI tools', VALUE_REQUIRED);
+        $singlestructuredefinition['userconfirmed'] =
+                new external_value(PARAM_BOOL, 'If user has confirmed to use the AI tools', VALUE_REQUIRED);
         $singlestructuredefinition['role'] =
                 new external_value(PARAM_TEXT, 'The user\'s role in the context of the AI manager', VALUE_REQUIRED);
         return new external_single_structure(
