@@ -48,12 +48,14 @@ class userstats_table extends table_sql {
             get_string('firstname'),
         ];
         if (has_capability('local/ai_manager:viewusage', $tenant->get_tenant_context())) {
-            $connector = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_connector_by_purpose($this->purpose);
             $columns[] = 'requestcount';
             $headers[] = get_string('request_count', 'local_ai_manager');
-            if (!empty($purpose) && $connector->get_unit() !== unit::COUNT) {
-                $columns[] = 'currentusage';
-                $headers[] = $connector->get_unit()->to_string();
+            if (!empty($purpose)) {
+                $connector = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_connector_by_purpose($purpose);
+                if ($connector->get_unit() !== unit::COUNT) {
+                    $columns[] = 'currentusage';
+                    $headers[] = $connector->get_unit()->to_string();
+                }
             }
         }
 
