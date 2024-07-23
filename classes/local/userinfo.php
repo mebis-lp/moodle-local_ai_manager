@@ -69,7 +69,7 @@ class userinfo {
         if (user_has_role_assignment($this->userid, $coordinatorrole->id,
                 \context_coursecat::instance($school->get_school_categoryid())->id)) {
             return self::ROLE_UNLIMITED;
-        } else if (user_has_role_assignment($this->userid . $idmteacherrole->id, \context_system::instance()->id)) {
+        } else if (user_has_role_assignment($this->userid, $idmteacherrole->id, \context_system::instance()->id)) {
             return self::ROLE_EXTENDED;
         } else {
             return self::ROLE_BASIC;

@@ -108,6 +108,7 @@ class ai_manager_utils {
         $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
         $tenant = \core\di::get(tenant::class);
         $userinfo = new userinfo($user->id);
+
         $purposes = [];
         $purposeconfig = $configmanager->get_purpose_config();
         $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);

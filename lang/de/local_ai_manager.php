@@ -98,6 +98,7 @@ $string['userconfig'] = 'Benutzereinstellungen';
 $string['userconfirmation_headline'] = 'KI-Nutzung bestätigen';
 $string['userconfirmation_description'] = 'Mit Aktivieren des folgenden Schalters akzeptieren Sie die zusätzlichen Nutzungsbedingungen hinsichtlich der Nutzung der KI-Tools.';
 $string['userstatistics'] = 'Benutzerübersicht';
+$string['within'] = 'innerhalb von';
 $string['zweck_chat'] = 'Chatbot';
 $string['zweck_defaults_heading'] = 'Zwecke\' Standardmodell';
 $string['purpose_defaults_heading_desc'] = 'Definieren Sie das für verschiedene Zwecke verwendete Standardmodell';

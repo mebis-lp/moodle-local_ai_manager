@@ -110,6 +110,7 @@ $string['userconfirmation_headline'] = 'Confirmation for usage of AI tools';
 $string['userconfirmation_description'] = 'By enabling the switch below you accept the additional terms of use related to the usage of the AI tools.';
 $string['userstatistics'] = 'User overview';
 $string['usernotfound'] = 'Cannot update the user - user doesn\'t exist';
+$string['within'] = 'in';
 $string['empty'] = 'empty';
 $string['generalsettings'] = 'General settings';
 $string['unit_token'] = 'token';

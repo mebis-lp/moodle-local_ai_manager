@@ -32,5 +32,7 @@
     {{#purposes}}
         {{currentusage}}{{#showmaxusage}}/{{maxusage}}{{/showmaxusage}} {{querycounttext}}{{^islastelement}}, {{/islastelement}}
     {{/purposes}}
-    {{#str}}per, local_ai_manager{{/str}} {{period}}
+    {{#unlimited}}{{#str}}within, local_ai_manager{{/str}}{{/unlimited}}
+    {{^unlimited}}{{#str}}per, local_ai_manager{{/str}}{{/unlimited}}{{!
+    }} {{period}}
 </span>

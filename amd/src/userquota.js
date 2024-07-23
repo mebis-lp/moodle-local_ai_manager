@@ -72,8 +72,10 @@ export const renderUserQuota = async (selector, purposes) => {
     console.log(purposeInfo)
     const userquotaContentTemplateContext = {
         purposes: purposeInfo,
-        period: userquotaData.period
+        period: userquotaData.period,
+        unlimited: userquotaData.role === 'role_unlimited'
     };
+    console.log(userquotaContentTemplateContext.unlimited)
     const {html, js} = await Templates.renderForPromise('local_ai_manager/userquota', userquotaContentTemplateContext);
     Templates.appendNodeContents(targetElement, html, js);
 };
