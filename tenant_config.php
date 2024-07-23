@@ -52,8 +52,10 @@ $rightsconfiglink = html_writer::link(new moodle_url('/local/ai_manager/statisti
         get_string('rightsconfig', 'local_ai_manager'));
 
 echo $OUTPUT->header();
-$tenantnavbar = new tenantnavbar('tenant_config.php');
-echo $OUTPUT->render($tenantnavbar);
+if ($configmanager->is_tenant_enabled()) {
+    $tenantnavbar = new tenantnavbar('tenant_config.php');
+    echo $OUTPUT->render($tenantnavbar);
+}
 echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
     [
         'checked' => $istenantenabled,
@@ -68,8 +70,6 @@ echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
         'tenantfullname' => $tenant->get_fullname(),
         'rightsconfiglink' => $rightsconfiglink,
     ]);
-
-$configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 
 if ($configmanager->is_tenant_enabled()) {
     $instances = [];
