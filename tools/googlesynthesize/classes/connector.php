@@ -59,8 +59,7 @@ class connector extends \local_ai_manager\base_connector {
 
     public function make_request(array $data): request_response {
         $client = new http_client([
-            // TODO Make timeout higher, LLM requests can take quite a bit of time
-                'timeout' => 60,
+                'timeout' => get_config('local_ai_manager', 'requesttimeout'),
         ]);
 
         $options['headers'] = [

@@ -58,5 +58,12 @@ if ($hassiteconfig) {
                 new lang_string('allowedtenantsdesc', 'local_ai_manager'),
                 ''
         ));
+
+        $settings->add(new admin_setting_configtext(
+                'local_ai_manager/requesttimeout',
+                new lang_string('requesttimeout', 'local_ai_manager'),
+                new lang_string('requesttimeoutdesc', 'local_ai_manager'),
+                '60'
+        ));
     }
 }

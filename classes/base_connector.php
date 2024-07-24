@@ -99,8 +99,7 @@ abstract class base_connector {
      */
     public function make_request(array $data): request_response {
         $client = new http_client([
-            // TODO Make timeout higher, LLM requests can take quite a bit of time
-                'timeout' => 120,
+            'timeout' => get_config('local_ai_manager', 'requesttimeout'),
         ]);
 
         $options['headers'] = $this->get_headers();
@@ -152,9 +151,11 @@ abstract class base_connector {
                     $message = get_string('exception_default', 'local_ai_manager');
             }
         }
-        return request_response::create_from_error($exception->getCode(), $message,
-                $exception->getMessage() . '\n' . $exception->getTraceAsString() . '\n'
-                . $exception->getResponse()->getBody()->getContents());
+        $debuginfo = $exception->getMessage() . '\n' . $exception->getTraceAsString() . '\n';
+        if (method_exists($exception, 'getResponse')) {
+            $debuginfo .= $exception->getResponse()->getBody()->getContents();
+        }
+        return request_response::create_from_error($exception->getCode(), $message, $debuginfo);
     }
 
     protected function get_headers(): array {
