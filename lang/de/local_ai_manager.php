@@ -59,6 +59,7 @@ $string['error_http403notconfirmed'] = 'Sie haben die Nutzungsbedingungen noch n
 $string['error_http403usertype'] = 'Ihr ByCS-Administrator hat diesen Zweck für Ihren Benutzertyp deaktiviert';
 $string['error_http429'] = 'Sie haben die maximale Anzahl an Anfragen erreicht. Sie dürfen nur {$a->count} Anfragen in einem Zeitraum von {$a->period} senden.';
 $string['error_http409'] = 'Die itemid {$a} ist bereits vergeben';
+$string['error_noaitoolassignedforpurpose'] = 'Es ist kein AI-Tool für den Einsatzzweck "{$a}" definiert.';
 $string['exception_curl28'] = 'Die API hat zu lange gebraucht, um Ihre Anfrage zu verarbeiten, oder konnte nicht in angemessener Zeit erreicht werden.';
 $string['exception_http401'] = 'Der Zugriff auf die API wurde aufgrund ungültiger Anmeldedaten verweigert.';
 $string['exception_http429'] = 'Es wurden zu viele oder zu große Anfragen in einem bestimmten Zeitraum an das KI-Tool gesendet. Bitte versuchen Sie es später erneut.';

@@ -51,8 +51,13 @@ class userstats_table extends table_sql {
             $columns[] = 'requestcount';
             $headers[] = get_string('request_count', 'local_ai_manager');
             if (!empty($purpose)) {
+                // TODO This is actually a bad thing: When designing the structure we did not think of the case that for a purpose
+                //  there can be multiple connectors with different units.
+                //  So we must not use the unit of the current connector here, but have to use the connectors of each single record
+                //  before aggregating. This is somehow tough. Probably we need to fall back to the case that we cannot show any
+                //  information at all, if there are connectors with different units.
                 $connector = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_connector_by_purpose($purpose);
-                if ($connector->get_unit() !== unit::COUNT) {
+                if (!empty($connector) && $connector->get_unit() !== unit::COUNT) {
                     $columns[] = 'currentusage';
                     $headers[] = $connector->get_unit()->to_string();
                 }

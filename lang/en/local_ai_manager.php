@@ -59,6 +59,7 @@ $string['error_http403notconfirmed'] = 'You have not yet confirmed the terms of 
 $string['error_http403usertype'] = 'Your ByCS admin has disabled this purpose for your user type';
 $string['error_http429'] = 'You have reached the maximum amount of requests. You are only allowed to send {$a->count} requests in a period of {$a->period}';
 $string['error_http409'] = 'The itemid {$a} already taken';
+$string['error_noaitoolassignedforpurpose'] = 'There is no AI tool assigned for the purpose "{$a}"';
 $string['exception_curl28'] = 'The API took too long to process your request or could not be reached in a reasonable time';
 $string['exception_http401'] = 'Access to the API has been denied because of invalid credentials';
 $string['exception_http429'] = 'There have been sent too many or too big requests to the AI tool in a certain amount of time. Please try again later.';

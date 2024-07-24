@@ -71,7 +71,12 @@ class manager {
     public function __construct(string $purpose) {
         $this->factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
         $this->purpose = $this->factory->get_purpose_by_purpose_string($purpose);
-        $this->toolconnector = $this->factory->get_connector_by_purpose($purpose);
+        $toolconnector = $this->factory->get_connector_by_purpose($purpose);
+        if (!empty($toolconnector)) {
+            $this->toolconnector = $toolconnector;
+        } else {
+            throw new \moodle_exception('error_noaitoolassignedforpurpose', 'local_ai_manager', '', $purpose);
+        }
         $this->configmanager = \core\di::get(config_manager::class);
     }
 
@@ -165,16 +170,16 @@ class manager {
                     ['component' => $options['component'], 'contextid' => $options['contextid'], 'itemid' => $options['itemid']])) {
                 $existingitemid = $options['itemid'];
                 unset($options['itemid']);
-                $this->log_request($prompttext, $promptcompletion, $requestoptions, $options);
+                $this->log_request($prompttext, $promptcompletion, $requestresult->get_executiontime(), $requestoptions, $options);
                 return prompt_response::create_from_error(409, get_string('error_http409', 'local_ai_manager'), '');
             }
         }
 
-        $this->log_request($prompttext, $promptcompletion, $requestoptions, $options);
+        $this->log_request($prompttext, $promptcompletion, $requestresult->get_executiontime(), $requestoptions, $options);
         return $promptcompletion;
     }
 
-    public function log_request(string $prompttext, prompt_response $promptcompletion, array $requestoptions = [],
+    public function log_request(string $prompttext, prompt_response $promptcompletion, float $executiontime, array $requestoptions = [],
             array $options = []): void {
         global $DB, $USER;
 
@@ -199,6 +204,7 @@ class manager {
         $data->modelinfo = $promptcompletion->get_modelinfo();
         $data->prompttext = $prompttext;
         $data->promptcompletion = $promptcompletion->get_content();
+        $data->duration = $executiontime;
         if (!empty($requestoptions)) {
             $data->requestoptions = json_encode($requestoptions);
         }

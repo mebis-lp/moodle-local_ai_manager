@@ -80,8 +80,11 @@ class connector_factory {
         return $this->connector;
     }
 
-    public function get_connector_by_purpose(string $purpose): base_connector {
+    public function get_connector_by_purpose(string $purpose): ?base_connector {
         $instance = $this->get_connector_instance_by_purpose($purpose);
+        if ($instance === null) {
+            return null;
+        }
         $connectorclassname = '\\aitool_' . $instance->get_connector() . '\\connector';
         $this->connector = new $connectorclassname($instance);
         return $this->connector;
