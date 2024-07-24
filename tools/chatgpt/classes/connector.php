@@ -45,7 +45,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_models_by_purpose(): array {
-        $chatgptmodels = ['gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o'];
+        $chatgptmodels = ['gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'];
         return [
                 'chat' => $chatgptmodels,
                 'feedback' => $chatgptmodels,

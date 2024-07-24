@@ -45,7 +45,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     public function get_models_by_purpose(): array {
-        $textmodels = ['gemma', 'llama3', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
+        $textmodels = ['gemma', 'llama3', 'llama3.1', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
                 'tinyllama'];
         return [
                 'chat' => $textmodels,
