@@ -29,8 +29,6 @@ use Psr\Http\Message\StreamInterface;
 class request_response {
 
     private StreamInterface $response;
-    private float $executiontime;
-
     private int $code;
     private string $errormessage;
 
@@ -41,10 +39,6 @@ class request_response {
 
     public function set_response(StreamInterface $response): void {
         $this->response = $response;
-    }
-
-    public function set_executiontime(float $executiontime): void {
-        $this->executiontime = $executiontime;
     }
 
     public function set_errormessage(string $errormessage): void {
@@ -72,10 +66,6 @@ class request_response {
         return $this->response;
     }
 
-    public function get_executiontime(): float {
-        return $this->executiontime;
-    }
-
     public function get_code(): int {
         return $this->code;
     }
@@ -88,11 +78,10 @@ class request_response {
         return $requestresponse;
     }
 
-    public static function create_from_result(StreamInterface $response, float $executiontime): request_response {
+    public static function create_from_result(StreamInterface $response): request_response {
         $requestresponse = new self();
         $requestresponse->set_code(200);
         $requestresponse->set_response($response);
-        $requestresponse->set_executiontime($executiontime);
         return $requestresponse;
     }
 

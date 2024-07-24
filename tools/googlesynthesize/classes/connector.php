@@ -69,13 +69,9 @@ class connector extends \local_ai_manager\base_connector {
         ];
         $options['body'] = json_encode($data);
 
-        $start = microtime(true);
-
         $response = $client->post($this->get_endpoint_url(), $options);
-        $end = microtime(true);
-        $executiontime = round($end - $start, 2);
         if ($response->getStatusCode() === 200) {
-            $return = request_response::create_from_result($response->getBody(), $executiontime);
+            $return = request_response::create_from_result($response->getBody());
         } else {
             // TODO localize
             $return = request_response::create_from_error(

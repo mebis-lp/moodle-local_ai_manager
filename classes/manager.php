@@ -152,6 +152,7 @@ class manager {
 
         $requestoptions = $this->purpose->get_request_options($options);
         $promptdata = $this->toolconnector->get_prompt_data($prompttext, $requestoptions);
+        $starttime = microtime(true);
         try {
             $requestresult = $this->toolconnector->make_request($promptdata);
         } catch (\Exception $exception) {
@@ -159,6 +160,8 @@ class manager {
             // So we do not do any more beautifying of exceptions here.
             return prompt_response::create_from_error(500, $exception->getMessage(), $exception->getTraceAsString());
         }
+        $endtime = microtime(true);
+        $duration = round($endtime - $starttime, 2);
         if ($requestresult->get_code() !== 200) {
             return prompt_response::create_from_error($requestresult->get_code(), $requestresult->get_errormessage(),
                     $requestresult->get_debuginfo());
@@ -170,12 +173,12 @@ class manager {
                     ['component' => $options['component'], 'contextid' => $options['contextid'], 'itemid' => $options['itemid']])) {
                 $existingitemid = $options['itemid'];
                 unset($options['itemid']);
-                $this->log_request($prompttext, $promptcompletion, $requestresult->get_executiontime(), $requestoptions, $options);
+                $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
                 return prompt_response::create_from_error(409, get_string('error_http409', 'local_ai_manager'), '');
             }
         }
 
-        $this->log_request($prompttext, $promptcompletion, $requestresult->get_executiontime(), $requestoptions, $options);
+        $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
         return $promptcompletion;
     }
 

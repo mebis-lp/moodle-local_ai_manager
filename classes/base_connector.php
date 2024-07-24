@@ -106,17 +106,13 @@ abstract class base_connector {
         $options['headers'] = $this->get_headers();
         $options['body'] = json_encode($data);
 
-        $start = microtime(true);
-
         try {
             $response = $client->post($this->get_endpoint_url(), $options);
         } catch (ClientExceptionInterface $exception) {
             return $this->create_error_response_from_exception($exception);
         }
-        $end = microtime(true);
-        $executiontime = round($end - $start, 2);
         if ($response->getStatusCode() === 200) {
-            $return = request_response::create_from_result($response->getBody(), $executiontime);
+            $return = request_response::create_from_result($response->getBody());
         } else {
             // TODO localize
             $return = request_response::create_from_error(
