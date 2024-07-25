@@ -56,7 +56,7 @@ export const renderUserQuota = async (selector, purposes) => {
     const targetElement = document.querySelector(selector);
     const userquotaData = await fetchUserquotaData();
     const purposeInfo = [];
-    console.log(userquotaData)
+
     purposes.forEach(purpose => {
         purposeInfo.push(
             {
@@ -69,13 +69,12 @@ export const renderUserQuota = async (selector, purposes) => {
             });
     });
     purposeInfo[purposeInfo.length - 1].islastelement = true;
-    console.log(purposeInfo)
+
     const userquotaContentTemplateContext = {
         purposes: purposeInfo,
         period: userquotaData.period,
         unlimited: userquotaData.role === 'role_unlimited'
     };
-    console.log(userquotaContentTemplateContext.unlimited)
     const {html, js} = await Templates.renderForPromise('local_ai_manager/userquota', userquotaContentTemplateContext);
     Templates.appendNodeContents(targetElement, html, js);
 };
@@ -91,4 +90,4 @@ const localizeQueryCountTexts = async () => {
         queryCountStrings[key] = strings[i];
         i++;
     }
-}
+};

@@ -41,14 +41,12 @@ export const renderInstanceAddModal = async() => {
     });
     const descriptionStrings = await getStrings(descriptionStringsToFetch);
 
-    let i = 0;
-    for (const key in pluginnameStringsToFetch) {
+    for (let i = 0; i < pluginnameStringsToFetch.length; i++) {
         toolsContext.push({
             linklabel: pluginNameStrings[i],
             addurl: aiConfig.tools[i].addurl,
             adddescription: descriptionStrings[i],
         });
-        i++;
     }
     const templateContext = {
         tools: toolsContext
@@ -59,6 +57,6 @@ export const renderInstanceAddModal = async() => {
             large: true,
             templateContext
         });
-        instanceAddModal.show();
+        await instanceAddModal.show();
     });
-}
+};

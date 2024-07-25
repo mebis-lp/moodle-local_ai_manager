@@ -13,8 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-import Log from 'core/log';
-
 /**
  * Toggle handler.
  *
@@ -27,25 +25,16 @@ import Log from 'core/log';
 export const init = (inputid) => {
     const toggle = document.getElementById(inputid);
     if (toggle) {
-        toggle.addEventListener('change', (e) => {
-
-            Log.error(toggle.checked)
-            Log.error(toggle.dataset)
+        toggle.addEventListener('change', () => {
             // New state incoming.
             if (!toggle.checked) {
-                Log.error("Ich ruf targetwhenchecked")
-                //console.log(toggle.dataset.targetwhenchecked)
-                //return;
-
                 window.location.replace(toggle.dataset.targetwhenchecked);
             } else {
-                //console.log(toggle.dataset.targetwhennotchecked)
-                //return;
                 window.location.replace(toggle.dataset.targetwhennotchecked);
             }
             return false;
-        })
+        });
     }
-}
+};
 
 

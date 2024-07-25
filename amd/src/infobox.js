@@ -16,7 +16,7 @@
 /**
  * Module handling the form submission of the statistics tables of local_ai_manager.
  *
- * @module     local_ai_manager/render_infobox
+ * @module     local_ai_manager/infobox
  * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -24,7 +24,6 @@
 
 import * as Templates from 'core/templates';
 import LocalStorage from 'core/localstorage';
-import ModalConfirm from 'local_ai_manager/confirm_modal';
 
 /**
  * Inserts the infobox into the beginning of element with the given selector.
