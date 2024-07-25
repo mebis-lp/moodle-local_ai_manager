@@ -39,9 +39,8 @@ class submit_query extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'purpose' => new external_value(PARAM_TEXT, 'The purpose of the prompt.', VALUE_REQUIRED),
-            'prompt' => new external_value(PARAM_TEXT, 'The prompt', VALUE_REQUIRED),
-            'options' => new external_value(PARAM_TEXT, 'Options array', VALUE_DEFAULT, []),
-            'contextid' => new external_value(PARAM_INT, 'Context id for the call', VALUE_DEFAULT, 0),
+            'prompt' => new external_value(PARAM_RAW, 'The prompt', VALUE_REQUIRED),
+            'options' => new external_value(PARAM_RAW, 'Options object JSON stringified', VALUE_DEFAULT, ''),
         ]);
     }
 
@@ -50,11 +49,10 @@ class submit_query extends external_api {
      *
      * @param string $purpose the purpose to use
      * @param string $prompt the user's prompt
-     * @param array $options additional options which should be passed to the request to the AI tool
+     * @param string $options additional options which should be passed to the request to the AI tool
      * @return array associative array containing the result of the request
      */
     public static function execute(string $purpose, string $prompt, string $options): array {
-
         [
             'purpose' => $purpose,
             'prompt' => $prompt,
@@ -83,11 +81,12 @@ class submit_query extends external_api {
                 }
                 $return = ['code' => $result->get_code(), 'string' => 'error', 'result' => json_encode($error)];
             } else {
-                $return = ['code' => 200, 'string' => 'ok', 'result' => $result->get_content()];
+                $return = ['code' => 200, 'string' => 'ok', 'result' => format_text($result->get_content(), FORMAT_MARKDOWN)];
             }
         } catch (\Exception $e) {
             $return = ['code' => 500, 'string' => 'error', 'result' => $e->getMessage()];
         }
+
         return $return;
     }
 
