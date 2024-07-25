@@ -25,16 +25,14 @@
 
 namespace local_ai_manager;
 
-use core_date;
 use core_plugin_manager;
-use DateInterval;
 use dml_exception;
+use local_ai_manager\event\get_ai_response_failed;
+use local_ai_manager\event\get_ai_response_succeeded;
 use local_ai_manager\local\config_manager;
 use local_ai_manager\local\prompt_response;
-use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
-use local_bycsauth\school;
 use stdClass;
 
 /**
@@ -158,13 +156,19 @@ class manager {
         } catch (\Exception $exception) {
             // This hopefully very rarely happens, because we catch exceptions already inside the make_request method.
             // So we do not do any more beautifying of exceptions here.
-            return prompt_response::create_from_error(500, $exception->getMessage(), $exception->getTraceAsString());
+            $endtime = microtime(true);
+            $duration = round($endtime - $starttime, 2);
+            $promptresponse = prompt_response::create_from_error(500, $exception->getMessage(), $exception->getTraceAsString());
+            get_ai_response_failed::create_from_prompt_response($promptdata, $promptresponse, $duration)->trigger();
+            return $promptresponse;
         }
         $endtime = microtime(true);
         $duration = round($endtime - $starttime, 2);
         if ($requestresult->get_code() !== 200) {
-            return prompt_response::create_from_error($requestresult->get_code(), $requestresult->get_errormessage(),
+            $promptresponse = prompt_response::create_from_error($requestresult->get_code(), $requestresult->get_errormessage(),
                     $requestresult->get_debuginfo());
+            get_ai_response_failed::create_from_prompt_response($promptdata, $promptresponse, $duration)->trigger();
+            return $promptresponse;
         }
         $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response(), $options);
         if (!empty($options['forcenewitemid']) && !empty($options['component']) &&
@@ -174,22 +178,23 @@ class manager {
                 $existingitemid = $options['itemid'];
                 unset($options['itemid']);
                 $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
-                return prompt_response::create_from_error(409, get_string('error_http409', 'local_ai_manager'), '');
+                $promptresponse = prompt_response::create_from_error(409, get_string('error_http409', 'local_ai_manager',
+                        $existingitemid), '');
+                get_ai_response_failed::create_from_prompt_response($promptdata, $promptresponse, $duration)->trigger();
+                return $promptresponse;
             }
         }
 
-        $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
+        $logrecordid = $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
+        get_ai_response_succeeded::create_from_prompt_response($promptcompletion, $logrecordid)->trigger();
+
         return $promptcompletion;
     }
 
-    public function log_request(string $prompttext, prompt_response $promptcompletion, float $executiontime, array $requestoptions = [],
-            array $options = []): void {
+    public function log_request(string $prompttext, prompt_response $promptcompletion, float $executiontime,
+            array $requestoptions = [],
+            array $options = []): int {
         global $DB, $USER;
-
-        if ($promptcompletion->get_code() !== 200) {
-            // TODO We probably used some tokens despite an error? Need to properly log this.
-            return;
-        }
 
         // TODO Move this handling to a data class "log_entry".
 
@@ -221,7 +226,7 @@ class manager {
             $data->itemid = intval($options['itemid']);
         }
         $data->timecreated = time();
-        $DB->insert_record('local_ai_manager_request_log', $data);
+        $recordid = $DB->insert_record('local_ai_manager_request_log', $data);
 
         // Check if we already have a userinfo object for this. If not we need to create one to initially set the correct role.
         $userinfo = new userinfo($data->userid);
@@ -232,6 +237,7 @@ class manager {
         $userusage = new userusage($this->purpose, $USER->id);
         $userusage->set_currentusage($userusage->get_currentusage() + 1);
         $userusage->store();
+        return $recordid;
     }
 
     private function sanitize_options(array $options): array {
