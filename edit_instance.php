@@ -78,8 +78,8 @@ if ($editinstanceform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $editinstanceform->get_data()) {
     $connectorinstance->store_formdata($data);
-    redirect(new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]), 'DATA SAVED',
-            '');
+    redirect(new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]),
+            get_string('aitoolsaved', 'local_ai_manager'), '');
 } else {
     echo $OUTPUT->header();
     echo html_writer::start_div('w-75 d-flex flex-column align-items-center ml-auto mr-auto');

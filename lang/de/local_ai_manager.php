@@ -37,6 +37,7 @@ $string['aiadministrationlink'] = 'KI-Tools-Administration';
 $string['aiinfotitle'] = 'KI Tools in der Lernplattform';
 $string['aiisbeingused'] = 'Sie verwenden ein KI-Tool. Die eingegebenen Daten werden an ein externes KI-Tool gesendet.';
 $string['aitool'] = 'KI-Tool';
+$string['aitoolsaved'] = 'KI-Tool gespeichert';
 $string['allowedtenants'] = 'Erlaubte Tenant-Bezeichner';
 $string['allowedtenantsdesc'] = 'Hier kann eine Liste von Tenant-Bezeichnern hinterlegt werden: Jeweils ein Bezeichner pro Zeile.';
 $string['apikey'] = 'Zugriffsschlüssel für die API';
