@@ -28,6 +28,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 $tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
+$purposes = optional_param_array('purposes', [], PARAM_TEXT);
 
 // Check permissions.
 require_login();
@@ -62,13 +63,14 @@ foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
     if ($instanceid === null) {
         continue;
     }
-    $templatepurpose['purpose'] = $purpose;
+    $templatepurpose['purpose'] = get_string('pluginname', 'aipurpose_' . $purpose);
     $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
     $instance = $factory->get_connector_instance_by_id($instanceid);
     $templatepurpose['name'] = $instance->get_name();
     $templatepurpose['endpoint'] = $instance->get_endpoint();
     $templatepurpose['model'] = $instance->get_model();
     $templatepurpose['infolink'] = $instance->get_infolink();
+    $templatepurpose['highlight'] = in_array($purpose, $purposes);
     $templatecontext['purposes'][] = $templatepurpose;
 }
 echo $OUTPUT->render_from_template('local_ai_manager/purpose_info', $templatecontext);

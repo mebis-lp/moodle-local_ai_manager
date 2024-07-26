@@ -24,6 +24,7 @@
 
 import * as Templates from 'core/templates';
 import LocalStorage from 'core/localstorage';
+import * as config from 'core/config';
 
 /**
  * Inserts the infobox into the beginning of element with the given selector.
@@ -35,10 +36,15 @@ import LocalStorage from 'core/localstorage';
  * @param {string} selector the id of the element to insert the infobox
  * @param {string[]} purposes the purposes which are being used
  */
-export const renderInfoBox = async(component, userId, selector, purposes) => {
+export const renderInfoBox = async(component, userId, selector, purposes = []) => {
     const targetElement = document.querySelector(selector);
+    const aiInfoUrl = new URL(config.wwwroot + '/local/ai_manager/ai_info.php');
+    purposes.forEach(purpose => {
+        aiInfoUrl.searchParams.append('purposes[]', purpose);
+    })
+    console.log(aiInfoUrl);
     const templateContext = {
-        'purposes': purposes
+        'aiinfourl': aiInfoUrl
     };
     const {html, js} = await Templates.renderForPromise('local_ai_manager/infobox', templateContext);
     Templates.prependNodeContents(targetElement, html, js);

@@ -1,3 +1,11 @@
+.local_ai_manager-green {
+    color: #00bf00;
+}
+
+.local_ai_manager-red {
+    color: #ff0000;
+}
+
 .local_ai_manager-infobox {
     display: flex;
     align-items: center;

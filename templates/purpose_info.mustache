@@ -51,7 +51,7 @@
         <p>{{#str}}privacy_terms_text2, local_ai_manager{{/str}}</p>
     </div>
 
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered">
         <thead>
             <th>{{#str}}table_heading_purpose, local_ai_manager{{/str}}</th>
             <th>{{#str}}table_heading_instance_name, local_ai_manager{{/str}}</th>
@@ -60,7 +60,7 @@
         </thead>
         <tbody>
         {{#purposes}}
-            <tr>
+            <tr class="{{#highlight}}alert-info{{/highlight}}">
                 <td>{{purpose}}</td>
                 <td>{{name}}</td>
                 <td>{{model}}</td>
@@ -69,4 +69,5 @@
         {{/purposes}}
         </tbody>
     </table>
+    <div class="alert alert-info mt-3 small">{{#str}}ai_info_table_row_highlighted, local_ai_manager{{/str}}</div>
 </div>

@@ -94,9 +94,9 @@ class rights_config_table extends table_sql {
      */
     function col_locked($value) {
         if (empty($value->locked)) {
-            return '<i class="fa fa-unlock ai_manager_green"></i>';
+            return '<i class="fa fa-unlock local_ai_manager-green"></i>';
         } else {
-            return '<i class="fa fa-lock ai_manager_red"></i>';
+            return '<i class="fa fa-lock local_ai_manager-red"></i>';
         }
     }
 
@@ -108,9 +108,9 @@ class rights_config_table extends table_sql {
      */
     function col_confirmed($value) {
         if (!empty($value->confirmed)) {
-            return '<i class="fa fa-unlock ai_manager_green"></i>';
+            return '<i class="fa fa-unlock local_ai_manager-green"></i>';
         } else {
-            return '<i class="fa fa-lock ai_manager_red"></i>';
+            return '<i class="fa fa-lock local_ai_manager-red"></i>';
         }
     }
 
