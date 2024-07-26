@@ -60,9 +60,9 @@ class purpose extends base_purpose {
     }
 
     public function format_output(string $output): string {
-        // We do not want any formatting and trust the output of the LLM.
-        $output = clean_param($output, PARAM_NOTAGS);
-        return format_text($output, FORMAT_PLAIN);
+        // We do not want any formatting.
+        // The clean_param is only to be extra safe, there shouldn't be any tags in the output anyway.
+        return clean_param($output, PARAM_NOTAGS);
     }
 
 }
