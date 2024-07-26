@@ -62,11 +62,12 @@ class purpose_config_form extends \moodleform {
             $factory = \core\di::get(connector_factory::class);
             $instances = $factory::get_connector_instances_for_purpose($purpose);
             $instances = array_map(fn ($instance) => $instance->get_name(), $instances);
-            $instances[0] = get_string('not_selected', 'local_ai_manager');
+            $instances[0] = get_string('notselected', 'local_ai_manager');
             $mform->addElement(
                 'select',
                 'purpose_' . $purpose . '_tool',
-                get_string('select_tool_for_purpose', 'local_ai_manager', $purpose),
+                get_string('select_tool_for_purpose', 'local_ai_manager',
+                        get_string('pluginname', 'aipurpose_' . $purpose)),
                 $instances
             );
             $mform->setDefault('purpose_' . $purpose . '_tool', 0);

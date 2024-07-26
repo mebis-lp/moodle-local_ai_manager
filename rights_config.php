@@ -59,7 +59,7 @@ if ($rightsconfigform->is_cancelled()) {
         $userinfo->store();
     }
 
-    redirect($PAGE->url, get_string('user_status_updated', 'local_ai_manager'));
+    redirect($PAGE->url, get_string('userstatusupdated', 'local_ai_manager'));
 } else {
     echo $OUTPUT->header();
     $tenantnavbar = new tenantnavbar('rights_config.php');

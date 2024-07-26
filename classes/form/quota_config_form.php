@@ -77,7 +77,7 @@ class quota_config_form extends \moodleform {
             $mform->addElement(
                 'text',
                 $purpose . '_max_requests_basic',
-                get_string('max_requests_purpose', 'local_ai_manager', get_string('student', 'local_ai_manager'))
+                get_string('max_requests_purpose', 'local_ai_manager', get_string('role_basic', 'local_ai_manager'))
             );
             $mform->setType($purpose . '_max_requests_basic', PARAM_INT);
             $mform->setDefault($purpose . '_max_requests_basic', userusage::MAX_REQUESTS_DEFAULT_ROLE_BASE);
@@ -86,7 +86,7 @@ class quota_config_form extends \moodleform {
             $mform->addElement(
                 'text',
                 $purpose . '_max_requests_extended',
-                get_string('max_requests_purpose', 'local_ai_manager', get_string('teacher', 'local_ai_manager'))
+                get_string('max_requests_purpose', 'local_ai_manager', get_string('role_extended', 'local_ai_manager'))
             );
             $mform->setType($purpose . '_max_requests_extended', PARAM_INT);
             $mform->setDefault($purpose . '_max_requests_extended', userusage::MAX_REQUESTS_DEFAULT_ROLE_EXTENDED);
