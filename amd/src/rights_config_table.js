@@ -43,36 +43,35 @@ export const init = (id) => {
     table = document.getElementById(id);
     table.querySelectorAll(selectors.CHECKBOX).forEach(checkbox => {
         checkbox.addEventListener('change', event => {
+            updateSelectAllCheckboxState();
             updateUserIds(event.target);
         });
     });
     table.querySelector(selectors.SELECTALLCHECKBOX).addEventListener('change', event => {
         updateSelection(event);
+        // If we set the status of the checkboxes via JS there is no change event on the checkboxes,
+        // so we need to manually trigger the update of the user ids.
+        updateUserIds();
     });
-    pendingPromise.resolve();
     updateSelectionCountInfo();
+    // In case the browser remembered the state after site reload, we need to set the initial state of user ids dependent on the
+    // boxes' current state.
+    updateUserIds();
+    pendingPromise.resolve();
 };
 
 /**
- * Update the user ids.
- *
- * @param {string} checkbox the checkbox object which has been changed
+ * Update the user ids input field for form submission.
  */
-const updateUserIds = (checkbox) => {
+const updateUserIds = () => {
     const userIdsInputField = document.querySelector(selectors.USERIDS_INPUT_FIELD);
-    const currentValue = userIdsInputField.value.trim().length === 0 ? '' : userIdsInputField.value.trim();
-    const currentUserIds = currentValue.length === 0 ? [] : currentValue.split(';');
-    const userid = checkbox.dataset.userid;
-    if (checkbox.checked && !currentUserIds.includes(userid)) {
-        currentUserIds.push(checkbox.dataset.userid);
-    }
-    if (!checkbox.checked && currentUserIds.includes(userid)) {
-        const index = currentUserIds.indexOf(userid);
-        currentUserIds.splice(index, 1); // Remove item.
-    }
-    userIdsInputField.value = currentUserIds.join(';');
-    updateSelectAllCheckboxState();
-    updateSelectionCountInfo();
+    const userIds = [];
+    document.querySelectorAll(selectors.CHECKBOX).forEach(checkbox => {
+        if (checkbox.checked) {
+            userIds.push(checkbox.dataset.userid);
+        }
+    });
+    userIdsInputField.value = userIds.join(';');
 };
 
 /**

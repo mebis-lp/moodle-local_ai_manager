@@ -74,7 +74,7 @@ class rights_config_table extends table_sql {
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid'
                     . ' LEFT JOIN {local_bycsauth_membership} bam ON u.id = bam.userid'
                     . ' LEFT JOIN {local_bycsauth_idmgroup} bag ON bam.idmgroupid = bag.id';
-        $where = 'institution = :tenant AND (bag.idmgrouptype = :idmgrouptype OR bag.idmgrouptype IS NULL) ' . $filtersql . ' GROUP BY u.id';
+        $where = 'u.deleted != 1 AND u.suspended != 1 AND institution = :tenant AND (bag.idmgrouptype = :idmgrouptype OR bag.idmgrouptype IS NULL) ' . $filtersql . ' GROUP BY u.id';
         $params = ['tenant' => $this->tenant->get_tenantidentifier(), 'idmgrouptype' => idmgroup::IDM_GROUP_TYPE['class']];
         $params = array_merge($params, $filtersqlparams);
         $this->set_count_sql(
