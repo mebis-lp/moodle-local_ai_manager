@@ -20,6 +20,7 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
+use local_ai_manager\local\connector_factory;
 use stdClass;
 
 /**
@@ -66,6 +67,9 @@ class submit_query extends external_api {
         self::validate_context($context);
         require_capability('local/ai_manager:use', $context);
 
+        $factory = \core\di::get(connector_factory::class);
+        $purposeobject = $factory->get_purpose_by_purpose_string($purpose);
+
         try {
             if (!empty($options)) {
                 $options = json_decode($options, true);
@@ -81,7 +85,7 @@ class submit_query extends external_api {
                 }
                 $return = ['code' => $result->get_code(), 'string' => 'error', 'result' => json_encode($error)];
             } else {
-                $return = ['code' => 200, 'string' => 'ok', 'result' => format_text($result->get_content(), FORMAT_MARKDOWN)];
+                $return = ['code' => 200, 'string' => 'ok', 'result' => $purposeobject->format_output($result->get_content())];
             }
         } catch (\Exception $e) {
             $return = ['code' => 500, 'string' => 'error', 'result' => $e->getMessage()];

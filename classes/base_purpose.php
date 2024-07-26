@@ -72,4 +72,17 @@ class base_purpose {
         return [];
     }
 
+    /**
+     * Most AI tools will return Markdown code, so we use this as default.
+     *
+     * Can be overwritten by purposes which return special content, for example single strings which should not be wrapped
+     * or cleaned.
+     *
+     * @param string $output the output/result from the API of the AI tool
+     * @return string the formatted output
+     */
+    public function format_output(string $output): string {
+        return format_text($output, FORMAT_MARKDOWN, ['filter' => false]);
+    }
+
 }
