@@ -29,11 +29,15 @@ use stdClass;
  */
 class userinfo {
 
+
     public const ROLE_BASIC = 1;
 
     public const ROLE_EXTENDED = 2;
 
     public const ROLE_UNLIMITED = 3;
+
+    /** @var int This is not really a role, but is being used to signal that the default role for a user should be assigned. */
+    public const ROLE_DEFAULT = -1;
 
     private false|stdClass $record;
 
@@ -103,8 +107,12 @@ class userinfo {
     }
 
     public function set_role(int $role): void {
-        if (!in_array($role, [self::ROLE_BASIC, self::ROLE_EXTENDED, self::ROLE_UNLIMITED])) {
-            throw new \coding_exception('Wrong role specified, use one of ROLE_BASIC, ROLE_EXTENDED or ROLE_UNLIMITED');
+        if (!in_array($role, [self::ROLE_BASIC, self::ROLE_EXTENDED, self::ROLE_UNLIMITED, self::ROLE_DEFAULT])) {
+            throw new \coding_exception('Wrong role specified, use one of ROLE_BASIC, ROLE_EXTENDED, ROLE_UNLIMITED or ROLE_DEFAULT');
+        }
+        if ($role === self::ROLE_DEFAULT) {
+            $this->role = $this->get_default_role();
+            return;
         }
         $this->role = $role;
     }

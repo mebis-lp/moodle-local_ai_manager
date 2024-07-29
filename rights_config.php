@@ -55,6 +55,9 @@ if ($rightsconfigform->is_cancelled()) {
             $userinfo->set_locked(true);
         } else if (isset($data->unlockusers)) {
             $userinfo->set_locked(false);
+        } else if (isset($data->changerole) && isset($data->role)) {
+            $role = intval($data->role);
+            $userinfo->set_role($role);
         }
         $userinfo->store();
     }

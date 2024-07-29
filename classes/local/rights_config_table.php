@@ -42,7 +42,7 @@ class rights_config_table extends table_sql {
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
-        $columns = ['checkbox', 'lastname', 'firstname', 'idmgroupnames', 'locked', 'confirmed'];
+        $columns = ['checkbox', 'lastname', 'firstname', 'idmgroupnames', 'role', 'locked', 'confirmed'];
         $checkboxheader = html_writer::div('', 'rights-table-selection_info', ['id' => 'rights-table-selection_info']);
         $checkboxheader .= html_writer::empty_tag('input', ['type' => 'checkbox', 'id' => 'rights-table-selectall_checkbox']);
         $headers = [
@@ -50,6 +50,7 @@ class rights_config_table extends table_sql {
                 get_string('lastname'),
                 get_string('firstname'),
                 get_string('department'),
+                get_string('role', 'local_ai_manager'),
                 get_string('locked', 'local_ai_manager'),
                 get_string('confirmed', 'local_ai_manager'),
         ];
@@ -70,7 +71,7 @@ class rights_config_table extends table_sql {
         }
 
         $sqlgroupconcat = $DB->sql_group_concat('name', ', ', 'name ASC');
-        $fields = 'u.id as id, lastname, firstname, ' . $sqlgroupconcat . ' AS idmgroupnames, locked, ui.confirmed';
+        $fields = 'u.id as id, lastname, firstname, ' . $sqlgroupconcat . ' AS idmgroupnames, role, locked, ui.confirmed';
         $from =
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid'
                     . ' LEFT JOIN {local_bycsauth_membership} bam ON u.id = bam.userid'
@@ -85,6 +86,17 @@ class rights_config_table extends table_sql {
 
         $this->set_sql($fields, $from, $where, $params);
         parent::setup();
+    }
+
+    /**
+     * Convert the role identifier to a display name.
+     */
+    function col_role($value) {
+
+        if (!empty($value->role)) {
+            return get_string(userinfo::get_role_as_string($value->role), 'local_ai_manager');
+        }
+        return $value->role;
     }
 
     /**
