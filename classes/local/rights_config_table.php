@@ -59,6 +59,7 @@ class rights_config_table extends table_sql {
         $this->define_headers($headers);
 
         $this->no_sorting('checkbox');
+        $this->collapsible(false);
         // TODO implement filter
         if (empty($filteridmgroups)) {
             $filtersql = '';

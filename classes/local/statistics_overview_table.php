@@ -48,6 +48,7 @@ class statistics_overview_table extends table_sql {
         $this->define_columns($columns);
         // Define the titles of columns to show in header.
         $this->define_headers($headers);
+        $this->collapsible(false);
 
         $fields = 'model, modelinfo, COUNT(modelinfo) AS requestcount, SUM(value) AS userusage';
         $from = '{local_ai_manager_request_log}';

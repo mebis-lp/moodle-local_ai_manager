@@ -67,6 +67,7 @@ class userstats_table extends table_sql {
         $this->define_columns($columns);
         // Define the titles of columns to show in header.
         $this->define_headers($headers);
+        $this->collapsible(false);
 
         if (!empty($purpose)) {
             $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount, SUM(value) AS currentusage';
