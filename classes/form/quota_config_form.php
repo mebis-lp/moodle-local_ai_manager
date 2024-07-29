@@ -44,9 +44,7 @@ class quota_config_form extends \moodleform {
      * Form definition.
      */
     public function definition() {
-        // global $USER;
         $tenant = $this->_customdata['tenant'];
-        // $returnurl = $this->_customdata['returnurl'];
 
         $mform = &$this->_form;
 
@@ -54,45 +52,45 @@ class quota_config_form extends \moodleform {
         $mform->setType('tenant', PARAM_ALPHANUM);
 
         $mform->addElement(
-            'header',
-            'general_user_config_settings_header',
-            get_string('general_user_settings', 'local_ai_manager')
+                'header',
+                'general_user_config_settings_header',
+                get_string('general_user_settings', 'local_ai_manager')
         );
 
         $mform->addElement(
-            'duration',
-            'max_requests_period',
-            get_string('max_request_time_window', 'local_ai_manager'),
-            ['units' => [HOURSECS, DAYSECS, WEEKSECS]]
+                'duration',
+                'max_requests_period',
+                get_string('max_request_time_window', 'local_ai_manager'),
+                ['units' => [HOURSECS, DAYSECS, WEEKSECS]]
         );
         $mform->setType('max_requests_period', PARAM_INT);
         $mform->setDefault('max_requests_period', userusage::MAX_REQUESTS_DEFAULT_PERIOD);
 
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $mform->addElement(
-                'header',
-                $purpose . '_purpose_config_header',
-                get_string('max_requests_purpose_heading', 'local_ai_manager', $purpose)
+                    'header',
+                    $purpose . '_purpose_config_header',
+                    get_string('max_requests_purpose_heading', 'local_ai_manager',
+                            get_string('pluginname', 'aipurpose_' . $purpose))
             );
             $mform->addElement(
-                'text',
-                $purpose . '_max_requests_basic',
-                get_string('max_requests_purpose', 'local_ai_manager', get_string('role_basic', 'local_ai_manager'))
+                    'text',
+                    $purpose . '_max_requests_basic',
+                    get_string('max_requests_purpose', 'local_ai_manager', get_string('role_basic', 'local_ai_manager'))
             );
             $mform->setType($purpose . '_max_requests_basic', PARAM_INT);
             $mform->setDefault($purpose . '_max_requests_basic', userusage::MAX_REQUESTS_DEFAULT_ROLE_BASE);
 
             //$purposegroup[] = $mform->createElement('text', $purpose . '_max_requests_extended', 'MAXIMALE REQUESTS EXTENDED');
             $mform->addElement(
-                'text',
-                $purpose . '_max_requests_extended',
-                get_string('max_requests_purpose', 'local_ai_manager', get_string('role_extended', 'local_ai_manager'))
+                    'text',
+                    $purpose . '_max_requests_extended',
+                    get_string('max_requests_purpose', 'local_ai_manager', get_string('role_extended', 'local_ai_manager'))
             );
             $mform->setType($purpose . '_max_requests_extended', PARAM_INT);
             $mform->setDefault($purpose . '_max_requests_extended', userusage::MAX_REQUESTS_DEFAULT_ROLE_EXTENDED);
             //$mform->addGroup($purposegroup, $purpose . '_maxrequests_config_group', 'test', [' '], false);
         }
-
 
         $this->add_action_buttons();
         /*
@@ -147,7 +145,8 @@ class quota_config_form extends \moodleform {
         $errors = [];
         if (isset($data['max_requests_period']) && intval($data['max_requests_period']) < userusage::MAX_REQUESTS_MIN_PERIOD) {
             // TODO localize
-            $errors['max_requests_period'] = get_string('error_max_requests_period', 'local_ai_manager'); 'Period needs to be at least 1 day';
+            $errors['max_requests_period'] = get_string('error_max_requests_period', 'local_ai_manager');
+            'Period needs to be at least 1 day';
         }
         // TODO validate
         return $errors;

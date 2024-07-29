@@ -27,6 +27,7 @@ use core\output\notification;
 use local_ai_manager\base_purpose;
 use local_ai_manager\form\purpose_config_form;
 use local_ai_manager\form\quota_config_form;
+use local_ai_manager\local\config_manager;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
 use local_ai_manager\output\tenantnavbar;
@@ -42,15 +43,15 @@ $PAGE->add_body_class('limitcontentwidth');
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 
-$userconfigform = new quota_config_form(null, ['tenant' => $tenant->get_tenantidentifier(), 'returnurl' => $PAGE->url]);
+$quotaconfigform = new quota_config_form(null, ['tenant' => $tenant->get_tenantidentifier(), 'returnurl' => $PAGE->url]);
 // Will return the config manager for the current user.
-/** @var \local_ai_manager\local\config_manager $configmanager */
-$configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+/** @var config_manager $configmanager */
+$configmanager = \core\di::get(config_manager::class);
 
 // Standard form processing if statement.
-if ($userconfigform->is_cancelled()) {
+if ($quotaconfigform->is_cancelled()) {
     redirect($returnurl);
-} else if ($data = $userconfigform->get_data()) {
+} else if ($data = $quotaconfigform->get_data()) {
     foreach (base_purpose::get_all_purposes() as $purpose) {
 
         foreach ([$purpose . '_max_requests_basic', $purpose . '_max_requests_extended'] as $configkey) {
@@ -92,8 +93,8 @@ if ($userconfigform->is_cancelled()) {
         $data->max_requests_period = $configmanager->get_max_requests_period();
     }
 
-    $userconfigform->set_data($data);
-    $userconfigform->display();
+    $quotaconfigform->set_data($data);
+    $quotaconfigform->display();
 }
 
 echo $OUTPUT->footer();

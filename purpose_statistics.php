@@ -60,7 +60,7 @@ $recordscount = $DB->count_records_sql($recordscountsql, $recordscountparams);
 if ($recordscount !== 0) {
     $uniqid = 'statistics-table-purpose-' . $purpose;
 
-    echo html_writer::div('Only user who already have used this purpose are being shown');
+    echo html_writer::div(get_string('userwithusageonlyshown', 'local_ai_manager'));
 
     $table = new \local_ai_manager\local\userstats_table($uniqid, $purpose, $tenant, $baseurl);
     $table->out(5, false);
