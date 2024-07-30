@@ -38,6 +38,7 @@ $string['aiinfotitle'] = 'AI tools in your learning plattform';
 $string['aiisbeingused'] = 'You are using an AI tool. The entered data will be sent to an external AI tool.';
 $string['aitool'] = 'AI tool';
 $string['aitoolsaved'] = 'AI tool data saved';
+$string['aiwarning'] = 'AI generated content should always be validated.';
 $string['allowedtenants'] = 'Allowed tenants';
 $string['allowedtenantsdesc'] = 'Specify a list of allowed tenants: One identifier per line.';
 $string['apikey'] = 'API key';
