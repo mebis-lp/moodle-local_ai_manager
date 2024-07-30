@@ -26,3 +26,4 @@
 $string['pluginname'] = 'Chat';
 $string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
 $string['requestcount'] = 'Chat-Anfragen';
+$string['requestcount_shortened'] = 'Chat-';

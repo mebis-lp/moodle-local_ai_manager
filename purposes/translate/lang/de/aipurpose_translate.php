@@ -26,3 +26,4 @@
 $string['pluginname'] = 'Übersetzen';
 $string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
 $string['requestcount'] = 'Übersetzungsanfragen';
+$string['requestcount_shortened'] = 'Übersetzungs-';

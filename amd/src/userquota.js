@@ -32,11 +32,17 @@ const constants = {
 
 const queryCountStrings = {
     chat: 'chat requests',
+    chat_shortened: 'chat',
     feedback: 'feedback requests',
+    feedback_shortened: 'feedback',
     imggen: 'image generation generation requests',
+    imggen_shortened: 'image generation generation',
     singleprompt: 'text requests',
+    singleprompt_shortened: 'text',
     translate: 'translation requests',
-    tts: 'audio requests'
+    translate_shortened: 'translation',
+    tts: 'audio requests',
+    tts_shortened: 'audio'
 };
 
 const fetchUserquotaData = () => fetchMany([{
@@ -63,12 +69,13 @@ export const renderUserQuota = async (selector, purposes) => {
                 purpose,
                 'currentusage': userquotaData.usage[purpose].currentusage,
                 maxusage: userquotaData.usage[purpose].maxusage,
-                'querycounttext': queryCountStrings[purpose],
+                'querycounttext': queryCountStrings[purpose + '_shortened'],
                 showmaxusage: userquotaData.usage[purpose].maxusage !== constants.MAXUSAGE_UNLIMITED,
                 islastelement: false
             });
     });
     purposeInfo[purposeInfo.length - 1].islastelement = true;
+    purposeInfo[purposeInfo.length - 1].querycounttext = queryCountStrings[purposeInfo[purposeInfo.length - 1]['purpose']];
 
     const userquotaContentTemplateContext = {
         purposes: purposeInfo,
@@ -81,8 +88,9 @@ export const renderUserQuota = async (selector, purposes) => {
 
 const localizeQueryCountTexts = async () => {
     const stringsToFetch = [];
-    Object.keys(queryCountStrings).forEach((key) => {
+    Object.keys(queryCountStrings).filter(key => !key.endsWith('_shortened')).forEach((key) => {
         stringsToFetch.push({key: 'requestcount', component: 'aipurpose_' + key});
+        stringsToFetch.push({key: 'requestcount_shortened', component: 'aipurpose_' + key});
     });
     const strings = await getStrings(stringsToFetch);
     let i = 0;

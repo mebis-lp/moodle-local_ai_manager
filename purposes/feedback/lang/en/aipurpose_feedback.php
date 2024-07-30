@@ -26,3 +26,4 @@
 $string['pluginname'] = 'Feedback';
 $string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
 $string['requestcount'] = 'feedback requests';
+$string['requestcount_shortened'] = 'feedback';

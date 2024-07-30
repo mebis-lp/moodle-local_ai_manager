@@ -26,3 +26,4 @@
 $string['pluginname'] = 'Single prompt';
 $string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
 $string['requestcount'] = 'text requests';
+$string['requestcount_shortened'] = 'text';

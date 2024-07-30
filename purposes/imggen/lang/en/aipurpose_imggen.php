@@ -26,3 +26,4 @@
 $string['pluginname'] = 'Image generation';
 $string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
 $string['requestcount'] = 'image generation requests';
+$string['requestcount_shortened'] = 'image generation';
