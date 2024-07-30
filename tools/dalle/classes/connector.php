@@ -101,18 +101,16 @@ class connector extends base_connector {
         switch ($this->instance->get_model()) {
             case 'dall-e-2':
                 $options['sizes'] = [
-                        // TODO localize
-                        ['key' => '256x256', 'displayname' => 'klein (256x256)'],
-                        ['key' => '512x512', 'displayname' => 'mittel (512x512)'],
-                        ['key' => '1024x1024', 'displayname' => 'groß (1024x1024)'],
+                        ['key' => '256x256', 'displayname' => get_string('small', 'local_ai_manager') . ' (256px x 256px)'],
+                        ['key' => '512x512', 'displayname' => get_string('medium', 'local_ai_manager') . ' (512px x 512px)'],
+                        ['key' => '1024x1024', 'displayname' => get_string('large', 'local_ai_manager') . ' (1024px x 1024px)'],
                 ];
                 break;
             case 'dall-e-3':
                 $options['sizes'] = [
-                        // TODO localize
-                        ['key' => '1024x1024', 'displayname' => 'quadratisch (1024x1024)'],
-                        ['key' => '1792x1024', 'displayname' => 'Querformat (1792x1024)'],
-                        ['key' => '1024x1792', 'displayname' => 'Hochformat (1024x1792)'],
+                        ['key' => '1024x1024', 'displayname' => get_string('squared', 'local_ai_manager') . ' (1024px x 1024px)'],
+                        ['key' => '1792x1024', 'displayname' => get_string('landscape', 'local_ai_manager') . ' (1792px x 1024px)'],
+                        ['key' => '1024x1792', 'displayname' => get_string('portrait', 'local_ai_manager') . ' (1024px x 1792px)'],
                 ];
                 break;
             default:
