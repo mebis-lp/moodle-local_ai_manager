@@ -71,6 +71,7 @@ export const renderUserQuota = async (selector, purposes) => {
                 maxusage: userquotaData.usage[purpose].maxusage,
                 'querycounttext': queryCountStrings[purpose + '_shortened'],
                 showmaxusage: userquotaData.usage[purpose].maxusage !== constants.MAXUSAGE_UNLIMITED,
+                limitreached: userquotaData.usage[purpose].currentusage === userquotaData.usage[purpose].maxusage,
                 islastelement: false
             });
     });

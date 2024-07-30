@@ -18,6 +18,10 @@
     line-height: 20px;
 }
 
+.local_ai_manager-userquota_limitreached {
+    color: #ff0000;
+}
+
 .local_ai_manager-infobox p {
     margin: 0;
 }

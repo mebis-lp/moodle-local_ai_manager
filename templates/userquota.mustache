@@ -30,7 +30,9 @@
 }}
 <span class="local_ai_manager_userquota_infobox" data-content="local_ai_manager_userquota">
     {{#purposes}}
-        {{currentusage}}{{#showmaxusage}}/{{maxusage}}{{/showmaxusage}} {{querycounttext}}{{^islastelement}}, {{/islastelement}}
+        {{#limitreached}}<span class="local_ai_manager-userquota_limitreached">{{/limitreached}}
+            {{currentusage}}{{#showmaxusage}}/{{maxusage}}{{/showmaxusage}} {{querycounttext}}{{#limitreached}}</span>{{/limitreached}}{{^islastelement}}, {{/islastelement}}
+
     {{/purposes}}
     {{#unlimited}}{{#str}}within, local_ai_manager{{/str}}{{/unlimited}}
     {{^unlimited}}{{#str}}per, local_ai_manager{{/str}}{{/unlimited}}{{!
