@@ -180,7 +180,7 @@ $string['unit_token'] = 'Token';
 $string['unlockuser'] = 'Benutzer entsperren';
 $string['usage'] = 'Verbrauch';
 $string['userconfig'] = 'Benutzereinstellungen';
-$string['userconfirmation_description'] = 'Mit Aktivieren des folgenden Schalters akzeptieren Sie die zusätzlichen Nutzungsbedingungen hinsichtlich der Nutzung der KI-Tools.';
+$string['userconfirmation_description'] = '<ol style="text-align: left;"><li><b>Datenschutz und Informationssicherheit:</b> Es dürfen keine personenbezogenen Daten verarbeitet werden.</li><li><b>Verwendung der Ergebnisse:</b> Die generierten Inhalte müssen stets auf inhaltliche Richtigkeit und Angemessenheit überprüft werden. Die Verantwortung für die Verwendung trägt die Nutzerin oder der Nutzer. Künstliche Intelligenz kann falsche Ergebnisse liefern, die überzeugend wirken (Halluzinationen).</li><li><b>Berechtigtenkreis:</b> Der Dienst darf nur von Lehrkräften Ihrer Schule verwendet werden.</li><li><b>Verwendungszweck:</b> Die KI-Funktionalitäten in der Lernplattform dürfen nur für allgemein dienstliche Zwecke benutzt werden.</li><li><b>Entscheidungsfindung:</b> Das Tool darf nicht für abschließende Entscheidungen verwendet werden, die gegenüber Personen rechtliche Wirkung entfalten oder sie in ähnlicher Weise erheblich beeinträchtigen.</li></ol><br>Mit Aktivieren des folgenden Schalters akzeptieren Sie die zusätzlichen Nutzungsbedingungen hinsichtlich der Nutzung der KI-Dienste innerhalb der Lernplattform:<br>';
 $string['userconfirmation_headline'] = 'KI-Nutzung bestätigen';
 $string['userstatistics'] = 'Benutzerübersicht';
 $string['userstatusupdated'] = 'Der Status des Benutzers/der Benutzer wurde aktualisiert';
