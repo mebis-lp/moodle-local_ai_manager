@@ -25,5 +25,6 @@
 
 // TODO add description
 $string['adddescription'] = 'Ollama ist eine Plattform oder ein Dienst, der sich auf den Einsatz von Sprach-KI und generativer KI konzentriert.';
+$string['formvalidation_noendpoint'] = 'Sie müssen eine gültige Adresse angeben.';
 $string['pluginname'] = 'Ollama';
 $string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';

@@ -337,14 +337,11 @@ class base_instance {
     public final function validation(array $data, array $files): array {
         $errors = [];
         if (empty($data['name'])) {
-            $errors['name'] = 'Please specify an instance name';
+            $errors['name'] = get_string('formvalidation_editinstance_name', 'local_ai_manager');
         }
-        // TODO enable the following again, just disabled for debugging purposes because of ollama being connected via http locally
-        /*
-        if (!str_starts_with($data['endpoint'], 'https://')) {
-            $errors['endpoint'] = 'For security and data privacy reasons only HTTPS endpoints are allowed';
+        if (str_starts_with($data['endpoint'], 'http://' && !str_starts_with($data['endpoint'], 'https'))) {
+            $errors['endpoint'] = get_string('formvalidation_editinstance_endpointnossl', 'local_ai_manager');
         }
-        */
         return $errors + $this->extend_validation($data, $files);
     }
 

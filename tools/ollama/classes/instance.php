@@ -46,6 +46,9 @@ class instance extends base_instance {
     protected function extend_validation(array $data, array $files): array {
         $errors = [];
         aitool_option_temperature::validate_temperature($data);
+        if (empty($data['endpoint'])) {
+            $errors['endpoint'] = get_string('formvalidation_noendpoint', 'aitool_ollama');
+        }
         return $errors;
     }
 
