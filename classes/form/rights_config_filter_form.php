@@ -33,6 +33,8 @@ use local_ai_manager\base_purpose;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\manager;
+use local_bycsauth\idmgroup;
+use local_bycsauth\school;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -40,13 +42,13 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * A form for enabling and disablin.
+ * A form for filtering IDM groups.
  *
  * @copyright  2021, ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rights_config_form extends \moodleform {
+class rights_config_filter_form extends \moodleform {
 
     /**
      * Form definition.
@@ -58,25 +60,18 @@ class rights_config_form extends \moodleform {
         $mform->addElement('hidden', 'tenant', $tenant->get_tenantidentifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
-        $mform->addElement('hidden', 'userids', '', ['id' => 'rights-table-userids']);
-        $mform->setType('userids', PARAM_TEXT);
+        $elementarray = [];
 
-        $roleelementsarray = [];
-        $roleelementsarray[] = $mform->createElement('select', 'role', '', [
-                userinfo::ROLE_BASIC => get_string(userinfo::get_role_as_string(userinfo::ROLE_BASIC), 'local_ai_manager'),
-                userinfo::ROLE_EXTENDED => get_string(userinfo::get_role_as_string(userinfo::ROLE_EXTENDED), 'local_ai_manager'),
-                userinfo::ROLE_UNLIMITED => get_string(userinfo::get_role_as_string(userinfo::ROLE_UNLIMITED), 'local_ai_manager'),
-                userinfo::ROLE_DEFAULT => get_string('defaultrole', 'local_ai_manager'),
-        ]);
-        $roleelementsarray[] = $mform->createElement('submit', 'changerole', get_string('assignrole', 'local_ai_manager'));
-        $mform->addGroup($roleelementsarray, 'buttonarrayrole', '', [' '], false);
+        $school = new school($tenant->get_tenantidentifier());
+        $idmgrouplist = $school->get_idmgroup_names([idmgroup::IDM_GROUP_TYPE['class'], idmgroup::IDM_GROUP_TYPE['team']]);
+        $idmgroupmultiselect = $mform->createElement('select', 'idmgroupids', '', $idmgrouplist,
+        ['size' => 2, 'class' => 'local_ai_manager-idmgroupfilter_select pr-1']);
+        $idmgroupmultiselect->setMultiple(true);
+        $elementarray[] = $idmgroupmultiselect;
 
-        $buttonarray = [];
-        $buttonarray[] = $mform->createElement('submit', 'lockusers', get_string('lockuser', 'local_ai_manager'));
-        $buttonarray[] = $mform->createElement('submit', 'unlockusers', get_string('unlockuser', 'local_ai_manager'));
-        $buttonarray[] = $mform->createElement('cancel');
-        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
-        $mform->closeHeaderBefore('buttonar');
+        $elementarray[] = $mform->createElement('submit', 'applyfilter', get_string('applyfilter', 'local_ai_manager'));
+        $elementarray[] = $mform->createElement('cancel', 'resetfilter', get_string('resetfilter', 'local_ai_manager'));
+        $mform->addGroup($elementarray, 'elementarray', get_string('filteridmgroups', 'local_ai_manager'), [' '], false);
     }
 
     /**

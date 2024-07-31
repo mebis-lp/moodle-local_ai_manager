@@ -35,7 +35,7 @@ class rights_config_table extends table_sql {
             string $uniqid,
             private readonly tenant $tenant,
             moodle_url $baseurl,
-            $filteridmgroups,
+            $idmgroupids,
     ) {
         global $DB;
         parent::__construct($uniqid);
@@ -61,12 +61,12 @@ class rights_config_table extends table_sql {
 
         $this->no_sorting('checkbox');
         $this->collapsible(false);
-        // TODO implement filter
-        if (empty($filteridmgroups)) {
+        // TODO make filter upstream compatible
+        if (empty($idmgroupids)) {
             $filtersql = '';
             $filtersqlparams = [];
         } else {
-            [$filtersql, $filtersqlparams] = $DB->get_in_or_equal($filteridmgroups, SQL_PARAMS_NAMED);
+            [$filtersql, $filtersqlparams] = $DB->get_in_or_equal($idmgroupids, SQL_PARAMS_NAMED);
             $filtersql = 'AND bag.id ' . $filtersql;
         }
 

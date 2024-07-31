@@ -85,6 +85,10 @@
     font-weight: normal;
 }
 
+.local_ai_manager-idmgroupfilter_select {
+    min-width: 20rem;
+}
+
 #page-local-ai_manager-quota_config .mbseasytoggle {
     display: none !important;
 }

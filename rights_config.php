@@ -25,6 +25,7 @@
 
 use local_ai_manager\local\userinfo;
 use local_ai_manager\output\tenantnavbar;
+use local_bycsauth\idmgroup;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
@@ -35,7 +36,10 @@ global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
 
+
+
 $rightsconfigform = new \local_ai_manager\form\rights_config_form(null, ['tenant' => $tenant]);
+
 
 // Standard form processing if statement.
 if ($rightsconfigform->is_cancelled()) {
@@ -70,8 +74,28 @@ if ($rightsconfigform->is_cancelled()) {
 
     echo $OUTPUT->heading(get_string('rightsconfig', 'local_ai_manager'), 2, 'text-center');
 
+    $filterform = new \local_ai_manager\form\rights_config_filter_form(null, ['tenant' => $tenant]);
+
+    if ($filterform->is_cancelled() || empty($filterform->get_data())) {
+        $idmgroupstofilter = [];
+    } else  {
+        $idmgroupstofilter = [];
+        if (!empty($filterform->get_data())) {
+            $idmgroupstofilter = $filterform->get_data()->idmgroupids;
+            foreach ($idmgroupstofilter as $idmgroupid) {
+                // Just create the group, will throw an exception if it does not exist which is fine enough, because it means,
+                // someone manipulated the url.
+                $idmgroup = idmgroup::create_from_id($idmgroupid);
+                if ($idmgroup->get_schoolid() !== $tenant->get_tenantidentifier()) {
+                    throw new \moodle_exception('You can only filter IDM groups which belong to the current school');
+                }
+            }
+        }
+    }
+    $filterform->display();
+
     $uniqid = 'rights-config-table-' . uniqid();
-    $rightstable = new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, []);
+    $rightstable = new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $idmgroupstofilter);
     $rightstable->out(100, false);
     $rightsconfigform->display();
     $PAGE->requires->js_call_amd('local_ai_manager/rights_config_table', 'init', ['id' => $uniqid]);
