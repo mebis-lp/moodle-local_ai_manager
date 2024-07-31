@@ -100,7 +100,7 @@ abstract class base_connector {
     public function make_request(array $data): request_response {
         $client = new http_client([
             'timeout' => get_config('local_ai_manager', 'requesttimeout'),
-            'verify' => false,
+            'verify' => !empty(get_config('local_ai_manager', 'verifyssl')),
         ]);
 
         $options['headers'] = $this->get_headers();
@@ -135,6 +135,8 @@ abstract class base_connector {
         if (str_contains($exception->getMessage(), 'cURL error')) {
             if (str_contains($exception->getMessage(), 'cURL error 28')) {
                 $message = get_string('exception_curl28', 'local_ai_manager');
+            } else if (str_contains($exception->getMessage(), 'cURL error')) {
+                $message = get_string('exception_curl', 'local_ai_manager');
             }
         } else {
             switch ($exception->getCode()) {

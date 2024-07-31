@@ -41,8 +41,7 @@ export const renderInfoBox = async(component, userId, selector, purposes = []) =
     const aiInfoUrl = new URL(config.wwwroot + '/local/ai_manager/ai_info.php');
     purposes.forEach(purpose => {
         aiInfoUrl.searchParams.append('purposes[]', purpose);
-    })
-    console.log(aiInfoUrl);
+    });
     const templateContext = {
         'aiinfourl': aiInfoUrl
     };

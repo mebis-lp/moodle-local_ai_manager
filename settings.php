@@ -46,6 +46,13 @@ if ($hassiteconfig) {
         ));
 
         $settings->add(new admin_setting_configcheckbox(
+                'local_ai_manager/verifyssl',
+                new lang_string('verifyssl', 'local_ai_manager'),
+                new lang_string('verifyssldesc', 'local_ai_manager'),
+                1
+        ));
+
+        $settings->add(new admin_setting_configcheckbox(
                 'local_ai_manager/restricttenants',
                 new lang_string('restricttenants', 'local_ai_manager'),
                 new lang_string('restricttenants', 'local_ai_manager'),
