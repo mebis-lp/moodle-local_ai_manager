@@ -100,6 +100,7 @@ abstract class base_connector {
     public function make_request(array $data): request_response {
         $client = new http_client([
             'timeout' => get_config('local_ai_manager', 'requesttimeout'),
+            'verify' => false,
         ]);
 
         $options['headers'] = $this->get_headers();
@@ -128,7 +129,6 @@ abstract class base_connector {
     }
 
     protected function create_error_response_from_exception(ClientExceptionInterface $exception): request_response {
-        // TODO Improve messages and localize
         $message = '';
         // This is actually pretty bad, but it does not seem possible to get to these kind of errors through some kind of
         // Guzzle API functions, so we have to hope the cURL error messages are kinda stable.
@@ -152,7 +152,7 @@ abstract class base_connector {
             }
         }
         $debuginfo = $exception->getMessage() . '\n' . $exception->getTraceAsString() . '\n';
-        if (method_exists($exception, 'getResponse')) {
+        if (method_exists($exception, 'getResponse') && !empty($exception->getResponse())) {
             $debuginfo .= $exception->getResponse()->getBody()->getContents();
         }
         return request_response::create_from_error($exception->getCode(), $message, $debuginfo);

@@ -61,6 +61,10 @@ if (!empty($del)) {
 
 if (!empty($id)) {
     $connectorinstance = $factory->get_connector_instance_by_id($id);
+    // TODO Replace is_siteadmin() by adding and checking a capability "Configure all instances"
+    if ($connectorinstance->get_tenant() !== $tenant->get_tenantidentifier() || is_siteadmin()) {
+        throw new moodle_exception('You must not edit this AI tool instance');
+    }
     $connectorname = $connectorinstance->get_connector();
 } else {
     if (empty($connectorname) || !in_array($connectorname, \local_ai_manager\plugininfo\aitool::get_enabled_plugins())) {

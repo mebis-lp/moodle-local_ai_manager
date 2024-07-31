@@ -52,7 +52,6 @@ class instance extends base_instance {
     protected function extend_store_formdata(stdClass $data): void {
         $temperature = aitool_option_temperature::extract_temperature_to_store($data);
         $this->set_customfield1($temperature);
-        $this->set_customfield2(strval($data->top_p));
     }
 
     public function get_temperature(): float {

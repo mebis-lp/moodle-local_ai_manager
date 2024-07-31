@@ -17,6 +17,7 @@
 namespace local_ai_manager;
 
 use local_ai_manager\local\connector_factory;
+use local_ai_manager\local\tenant;
 use stdClass;
 
 /**
@@ -128,10 +129,20 @@ class base_instance {
         $this->record = $record;
     }
 
-    public static function get_all_instances(): array {
+    /**
+     * @param bool $allinstances true if all instances should be returned, by default only the instances of the current tenant are
+     *  returned
+     * @return array
+     * @throws \dml_exception
+     */
+    public static function get_all_instances(bool $allinstances = false): array {
         global $DB;
 
-        $records = $DB->get_records('local_ai_manager_instance', null, '', 'id');
+        $params = [];
+        if (!$allinstances) {
+            $params['tenant'] = \core\di::get(tenant::class)->get_tenantidentifier();
+        }
+        $records = $DB->get_records('local_ai_manager_instance', $params, '', 'id');
         $instances = [];
         foreach ($records as $record) {
             $instances[] = new self($record->id);
