@@ -70,7 +70,7 @@ class aitool_option_temperature {
     public static function extract_temperature_to_store(stdClass $data): string {
         // TODO Handle float vs. string somehow
         $temperature = null;
-        if (!empty($data->temperatureprechoice)) {
+        if (empty($data->temperatureusecustom)) {
             switch ($data->temperatureprechoice) {
                 case 'selection_creative':
                     $temperature = 0.8;
