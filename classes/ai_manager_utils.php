@@ -104,7 +104,11 @@ class ai_manager_utils {
         return $factory->get_connector_instance_by_purpose($purpose);
     }
 
-    public static function get_ai_config(stdClass $user): array {
+    public static function get_ai_config(stdClass $user, string $tenant = null): array {
+        if (!is_null($tenant)) {
+            $tenant = new tenant($tenant);
+            \core\di::set(tenant::class, $tenant);
+        }
         $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
         $tenant = \core\di::get(tenant::class);
         $userinfo = new userinfo($user->id);

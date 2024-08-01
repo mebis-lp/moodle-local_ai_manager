@@ -16,7 +16,9 @@
 
 namespace local_ai_manager\local;
 
+use local_ai_manager\base_instance;
 use local_bycsauth\school;
+use stdClass;
 
 /**
  * Class for managing the configuration of tenants.
@@ -40,6 +42,9 @@ class access_manager {
 
     public function is_tenant_manager(): bool {
         // TODO Convert this into a hook.
+        if (has_capability('local/ai_manager:managetenants', \context_system::instance())) {
+            return true;
+        }
         if (!$this->tenant->is_default_tenant()) {
             $school = new school($this->tenant->get_tenantidentifier());
             if (!$school->record_exists()) {
@@ -67,6 +72,15 @@ class access_manager {
             throw new \moodle_exception('You must not access information for the tenant '
                     . $this->tenant->get_tenantidentifier() . '!');
         }
+    }
 
+    public function can_manage_connectorinstance(base_instance $instance, stdClass $USER) {
+        if (has_capability('local/ai_manager:managetenants', \context_system::instance())) {
+            return true;
+        }
+        if ($instance->get_tenant() === $this->tenant->get_tenantidentifier()) {
+            return has_capability('local/ai_manager:manage', $this->tenant->get_tenant_context());
+        }
+        return false;
     }
 }

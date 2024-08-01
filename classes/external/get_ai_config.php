@@ -21,6 +21,7 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
+use core_external\restricted_context_exception;
 use local_ai_manager\ai_manager_utils;
 
 /**
@@ -38,21 +39,26 @@ class get_ai_config extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters([]);
+        return new external_function_parameters([
+                'tenant' => new external_value(PARAM_TEXT,
+                        'The tenant identifier, only useful to add if the user has access to multiple tenants', VALUE_DEFAULT, null)
+        ]);
     }
 
     /**
      * Retrieve the purpose config.
      *
+     * @param ?string $tenant the tenant to use, only useful for accounts which can access/manage more than their own tenant
      * @return array associative array containing the result of the request
      */
-    public static function execute(): array {
+    public static function execute(?string $tenant = null): array {
         global $USER;
+        ['tenant' => $tenant] = self::validate_parameters(self::execute_parameters(), ['tenant' => $tenant]);
         $context = \context_system::instance();
         self::validate_context($context);
         require_capability('local/ai_manager:use', $context);
 
-        return ai_manager_utils::get_ai_config($USER);
+        return ai_manager_utils::get_ai_config($USER, $tenant);
     }
 
     /**

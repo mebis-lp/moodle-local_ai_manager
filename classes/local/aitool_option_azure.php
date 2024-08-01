@@ -58,7 +58,9 @@ class aitool_option_azure {
     }
 
     public static function extract_azure_data_to_store(stdClass $data): array {
-        return [$data->azure_enabled, $data->azure_resourcename, $data->azure_deploymentid];
+        $resourcename = empty($data->azure_resourcename) ? null : $data->azure_resourcename;
+        $deploymentid = empty($data->azure_deploymentid) ? null : $data->azure_deploymentid;
+        return [$data->azure_enabled, $resourcename, $deploymentid];
     }
 
     public static function validate_azure_options(array $data): array {

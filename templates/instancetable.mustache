@@ -32,7 +32,7 @@
     }
 }}
 <hr>
-<div class="local_ai_manager-instancetable">
+<div id="local_ai_manager-instancetable-{{uniqid}}" class="local_ai_manager-instancetable" data-tenant="{{tenant}}">
     <div class="d-flex justify-content-between mb-5 align-items-center">
         <div><h3>{{#str}} currentlyusedaitools, local_ai_manager {{/str}}</h3></div>
         <div>
@@ -71,6 +71,6 @@
 </div>
 {{#js}}
     require(['local_ai_manager/instanceaddmodal'], function(InstanceAddModal) {
-    InstanceAddModal.renderInstanceAddModal();
+        InstanceAddModal.renderInstanceAddModal('#local_ai_manager-instancetable-{{uniqid}}');
     });
 {{/js}}

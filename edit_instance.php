@@ -32,7 +32,6 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $PAGE, $OUTPUT, $USER;
 
-$tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 $connectorname = optional_param('connectorname', '', PARAM_TEXT);
 $id = optional_param('id', 0, PARAM_INT);
 $del = optional_param('del', 0, PARAM_INT);
@@ -42,6 +41,7 @@ $del = optional_param('del', 0, PARAM_INT);
 $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
 $tenant = \core\di::get(tenant::class);
 $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 
 if (!empty($del)) {
     if (empty($id)) {
@@ -49,7 +49,14 @@ if (!empty($del)) {
     }
 
     $instance = $factory->get_connector_instance_by_id($id);
-    \core\di::get(\local_ai_manager\local\access_manager::class)->require_tenant_manager();
+    if ($instance) {
+        $tenant = new tenant($instance->get_tenant());
+        \core\di::set(tenant::class, $tenant);
+        $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+    }
+    if (!$accessmanager->can_manage_connectorinstance($instance, $USER)) {
+        throw new moodle_exception('You must not edit this AI tool instance');
+    }
     $instance->delete();
 
     // After deleteing we have to remove all purpose assignments to this instance, if there are any.
@@ -65,7 +72,7 @@ if (!empty($del)) {
 if (!empty($id)) {
     $connectorinstance = $factory->get_connector_instance_by_id($id);
     // TODO Replace is_siteadmin() by adding and checking a capability "Configure all instances"
-    if ($connectorinstance->get_tenant() !== $tenant->get_tenantidentifier() || is_siteadmin()) {
+    if (!$accessmanager->can_manage_connectorinstance($connectorinstance, $USER)) {
         throw new moodle_exception('You must not edit this AI tool instance');
     }
     $connectorname = $connectorinstance->get_connector();

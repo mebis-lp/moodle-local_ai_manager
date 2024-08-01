@@ -111,6 +111,7 @@ if ($configmanager->is_tenant_enabled()) {
     }
     echo $PAGE->get_renderer('core')->render_from_template('local_ai_manager/instancetable',
             [
+                    'tenant' => $tenant->get_tenantidentifier(),
                     'purposesheading' => $purposesheading,
                     'instances' => $instances,
             ]

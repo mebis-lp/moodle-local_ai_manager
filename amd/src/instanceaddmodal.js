@@ -26,8 +26,9 @@ import {getAiConfig} from 'local_ai_manager/config';
 import {getStrings} from 'core/str';
 import Modal from 'core/modal';
 
-export const renderInstanceAddModal = async() => {
-    const aiConfig = await getAiConfig();
+export const renderInstanceAddModal = async(instanceTableSelector) => {
+    const instanceTable = document.querySelector(instanceTableSelector);
+    const aiConfig = await getAiConfig(instanceTable.dataset.tenant);
     const toolsContext = [];
     const pluginnameStringsToFetch = [];
     aiConfig.tools.forEach((tool) => {
