@@ -61,13 +61,13 @@
 }
 
 #page input[type="checkbox"]:checked:not([disabled]).local_ai_manager-checkbox-switch {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
+    background: #fff;
+    border-color: #000;
 }
 
 #page input[type="checkbox"]:checked.local_ai_manager-checkbox-switch::before {
     transform: translate(100%, -50%);
-    background: #fff;
+    background: #000;
 }
 
 
