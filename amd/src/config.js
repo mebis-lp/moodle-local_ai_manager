@@ -14,13 +14,10 @@ const fetchAiConfig = (tenant = null) => fetchMany([{
     },
 }])[0];
 
-const fetchPurposeOptions = (
-    purpose, tenant
-) => fetchMany([{
+const fetchPurposeOptions = (purpose) => fetchMany([{
     methodname: 'local_ai_manager_get_purpose_options',
     args: {
-        purpose,
-        tenant
+        purpose
     },
 }])[0];
 
@@ -36,6 +33,6 @@ export const getAiConfig = async(tenant = null) => {
     return aiConfig;
 };
 
-export const getPurposeOptions = async(purpose, tenant = null) => {
-    return await fetchPurposeOptions(purpose, tenant);
+export const getPurposeOptions = async(purpose) => {
+    return await fetchPurposeOptions(purpose);
 };
