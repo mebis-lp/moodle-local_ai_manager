@@ -17,10 +17,12 @@
 namespace aitool_openaitts;
 
 use local_ai_manager\base_instance;
+use local_ai_manager\local\aitool_option_azure;
+use local_ai_manager\local\aitool_option_temperature;
 use stdClass;
 
 /**
- * Instance class for the connector instance of aitool_chatgpt.
+ * Instance class for the connector instance of aitool_tts.
  *
  * @package    local_ai_manager
  * @copyright  2024 ISB Bayern
@@ -30,21 +32,38 @@ use stdClass;
 class instance extends base_instance {
 
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('text', 'temperature', get_string('temperature', 'local_ai_manager'));
-        $mform->setType('temperature', PARAM_FLOAT);
-
-        $mform->setDefault('endpoint', 'https://api.openai.com/v1/audio/speech');
-        $mform->freeze('endpoint');
+        aitool_option_azure::extend_form_definition($mform);
     }
 
     protected function get_extended_formdata(): stdClass {
         $data = new stdClass();
-        $data->temperature = floatval($this->get_customfield1());
-        $data->model = $this->get_model();
+        foreach (aitool_option_azure::add_azure_options_to_form_data($this->get_customfield2(), $this->get_customfield3(),
+                $this->get_customfield4(), $this->get_customfield5()) as $key => $value) {
+            $data->{$key} = $value;
+        }
         return $data;
     }
 
     protected function extend_store_formdata(stdClass $data): void {
-        $this->set_customfield1(strval($data->temperature));
+        [$enabled, $resourcename, $deploymentid, $apiversion] = aitool_option_azure::extract_azure_data_to_store($data);
+
+        if (!empty($enabled)) {
+            // TODO Eventually make api version an admin setting.
+            $endpoint = 'https://' . $resourcename .
+                    '.openai.azure.com/openai/deployments/'
+                    . $deploymentid . '/audio/speech?api-version=' . $apiversion;
+        } else {
+            $endpoint = 'https://api.openai.com/v1/audio/speech';
+        }
+        $this->set_endpoint($endpoint);
+
+        $this->set_customfield2($enabled);
+        $this->set_customfield3($resourcename);
+        $this->set_customfield4($deploymentid);
+        $this->set_customfield5($apiversion);
+    }
+
+    public function azure_enabled(): bool {
+        return !empty($this->get_customfield2());
     }
 }

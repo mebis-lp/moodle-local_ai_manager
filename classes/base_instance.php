@@ -62,6 +62,9 @@ class base_instance {
     /** @var ?string Fourth customfield attribute. */
     protected ?string $customfield4 = null;
 
+    /** @var ?string Fifth customfield attribute. */
+    protected ?string $customfield5 = null;
+
     public function __construct(int $id = 0) {
         $this->id = $id;
         $this->load();
@@ -87,6 +90,7 @@ class base_instance {
                 $this->customfield2,
                 $this->customfield3,
                 $this->customfield4,
+                $this->customfield5,
         ] = [
                 $record->id,
                 $record->name,
@@ -100,6 +104,7 @@ class base_instance {
                 $record->customfield2,
                 $record->customfield3,
                 $record->customfield4,
+                $record->customfield5,
         ];
     }
 
@@ -117,6 +122,7 @@ class base_instance {
         $record->customfield2 = $this->customfield2;
         $record->customfield3 = $this->customfield3;
         $record->customfield4 = $this->customfield4;
+        $record->customfield5 = $this->customfield5;
         if (is_null($this->record)) {
             $record->timecreated = time();
             $record->id = $DB->insert_record('local_ai_manager_instance', $record);
@@ -240,6 +246,14 @@ class base_instance {
 
     public function set_customfield4(?string $customfield4): void {
         $this->customfield4 = $customfield4;
+    }
+
+
+    public function get_customfield5(): ?string {
+        return $this->customfield5;
+    }
+    public function set_customfield5(?string $customfield5): void {
+        $this->customfield5 = $customfield5;
     }
 
     public function record_exists(): bool {
@@ -379,5 +393,4 @@ class base_instance {
         }
         return $purposesofcurrentmodel;
     }
-
 }

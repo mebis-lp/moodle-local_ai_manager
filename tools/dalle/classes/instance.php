@@ -37,8 +37,8 @@ class instance extends base_instance {
 
     protected function get_extended_formdata(): stdClass {
         $data = new stdClass();
-        foreach (aitool_option_azure::add_azure_options_to_form_data($this->get_customfield1(), $this->get_customfield2(),
-                $this->get_customfield3()) as $key => $value) {
+        foreach (aitool_option_azure::add_azure_options_to_form_data($this->get_customfield2(), $this->get_customfield3(),
+                $this->get_customfield4(), $this->get_customfield5()) as $key => $value) {
             $data->{$key} = $value;
         }
         return $data;
@@ -46,22 +46,22 @@ class instance extends base_instance {
 
     protected function extend_store_formdata(stdClass $data): void {
         // TODO eventually detect , or . as float separator and handle accordingly
-
-        [$enabled, $resourcename, $deploymentid] = aitool_option_azure::extract_azure_data_to_store($data);
+        [$enabled, $resourcename, $deploymentid, $apiversion] = aitool_option_azure::extract_azure_data_to_store($data);
 
         if (!empty($enabled)) {
             // TODO Eventually make api version an admin setting.
             $endpoint = 'https://' . $resourcename .
                     '.openai.azure.com/openai/deployments/'
-                    . $deploymentid . '/images/generations?api-version=2024-02-01';
+                    . $deploymentid . '/images/generations?api-version=' . $apiversion;
         } else {
             $endpoint = 'https://api.openai.com/v1/images/generations';
         }
         $this->set_endpoint($endpoint);
 
-        $this->set_customfield1($enabled);
-        $this->set_customfield2($resourcename);
-        $this->set_customfield3($deploymentid);
+        $this->set_customfield2($enabled);
+        $this->set_customfield3($resourcename);
+        $this->set_customfield4($deploymentid);
+        $this->set_customfield5($apiversion);
     }
 
     protected function extend_validation(array $data, array $files): array {
@@ -72,6 +72,6 @@ class instance extends base_instance {
     }
 
     public function azure_enabled(): bool {
-        return !empty($this->get_customfield1());
+        return !empty($this->get_customfield2());
     }
 }

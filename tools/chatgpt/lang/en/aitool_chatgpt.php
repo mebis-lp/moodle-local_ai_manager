@@ -27,6 +27,3 @@
 $string['adddescription'] = 'ChatGPT is a versatile AI model used for natural language interactions such as customer support, virtual assistants, content creation and more.';
 $string['pluginname'] = 'ChatGPT';
 $string['privacy:metadata'] = 'The local ai_manager tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
-$string['use_openai_by_azure_heading'] = 'Use OpenAI via Azure';
-$string['use_openai_by_azure_name'] = 'Azure Resource Name';
-$string['use_openai_by_azure_deploymentid'] = 'Azure Deployment Name';

@@ -29,16 +29,20 @@ use stdClass;
 class aitool_option_azure {
 
     public static function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('selectyesno', 'azure_enabled', get_string('use_openai_by_azure_heading', 'aitool_chatgpt'));
+        $mform->addElement('selectyesno', 'azure_enabled', get_string('use_openai_by_azure_heading', 'local_ai_manager'));
         $mform->setDefault('azure_enabled', false);
 
-        $mform->addElement('text', 'azure_resourcename', get_string('use_openai_by_azure_name', 'aitool_chatgpt'));
+        $mform->addElement('text', 'azure_resourcename', get_string('use_openai_by_azure_name', 'local_ai_manager'));
         $mform->setType('azure_resourcename', PARAM_TEXT);
         $mform->hideIf('azure_resourcename', 'azure_enabled', 'eq', '0');
 
-        $mform->addElement('text', 'azure_deploymentid', get_string('use_openai_by_azure_deploymentid', 'aitool_chatgpt'));
+        $mform->addElement('text', 'azure_deploymentid', get_string('use_openai_by_azure_deploymentid', 'local_ai_manager'));
         $mform->setType('azure_deploymentid', PARAM_TEXT);
         $mform->hideIf('azure_deploymentid', 'azure_enabled', 'eq', '0');
+
+        $mform->addElement('text', 'azure_apiversion', get_string('use_openai_by_azure_apiversion', 'local_ai_manager'));
+        $mform->setType('azure_apiversion', PARAM_TEXT);
+        $mform->hideIf('azure_apiversion', 'azure_enabled', 'eq', '0');
 
         // We leave the endpoint empty on creation, because it depends if azure is being used or not.
         $mform->setDefault('endpoint', '');
@@ -47,12 +51,14 @@ class aitool_option_azure {
         $mform->hideIf('model', 'azure_enabled', 'eq', 1);
     }
 
-    public static function add_azure_options_to_form_data(bool $enabled, ?string $resourcename, ?string $deploymentid): stdClass {
+    public static function add_azure_options_to_form_data(bool $enabled, ?string $resourcename, ?string $deploymentid,
+            ?string $apiversion): stdClass {
         $data = new stdClass();
         $data->azure_enabled = $enabled;
         if ($enabled) {
             $data->azure_resourcename = $resourcename;
             $data->azure_deploymentid = $deploymentid;
+            $data->azure_apiversion = $apiversion;
         }
         return $data;
     }
@@ -60,17 +66,21 @@ class aitool_option_azure {
     public static function extract_azure_data_to_store(stdClass $data): array {
         $resourcename = empty($data->azure_resourcename) ? null : $data->azure_resourcename;
         $deploymentid = empty($data->azure_deploymentid) ? null : $data->azure_deploymentid;
-        return [$data->azure_enabled, $resourcename, $deploymentid];
+        $apiversion = empty($data->azure_apiversion) ? null : $data->azure_apiversion;
+        return [$data->azure_enabled, $resourcename, $deploymentid, $apiversion];
     }
 
     public static function validate_azure_options(array $data): array {
         $errors = [];
         if (!empty($data['azure_enabled'])) {
             if (empty($data['azure_resourcename'])) {
-                $errors['azure_resourcename'] = 'Azure Resource Name is required';
+                $errors['azure_resourcename'] = get_string('formvalidation_editinstance_azureresourcename', 'local_ai_manager');
             }
             if (empty($data['azure_deploymentid'])) {
-                $errors['azure_deploymentid'] = 'Azure Deployment ID is required';
+                $errors['azure_deploymentid'] = get_string('formvalidation_editinstance_azuredeploymentid', 'local_ai_manager');
+            }
+            if (empty($data['azure_apiversion'])) {
+                $errors['azure_apiversion'] = get_string('formvalidation_editinstance_azureapiversion', 'local_ai_manager');
             }
         }
         return $errors;

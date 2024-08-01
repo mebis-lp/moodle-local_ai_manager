@@ -44,7 +44,7 @@ class instance extends base_instance {
             $data->{$key} = $value;
         }
         foreach (aitool_option_azure::add_azure_options_to_form_data($this->get_customfield2(), $this->get_customfield3(),
-                $this->get_customfield4()) as $key => $value) {
+                $this->get_customfield4(), $this->get_customfield5()) as $key => $value) {
             $data->{$key} = $value;
         }
         return $data;
@@ -55,13 +55,13 @@ class instance extends base_instance {
         $temperature = aitool_option_temperature::extract_temperature_to_store($data);
         $this->set_customfield1($temperature);
 
-        [$enabled, $resourcename, $deploymentid] = aitool_option_azure::extract_azure_data_to_store($data);
+        [$enabled, $resourcename, $deploymentid, $apiversion] = aitool_option_azure::extract_azure_data_to_store($data);
 
         if (!empty($enabled)) {
             // TODO Eventually make api version an admin setting.
             $endpoint = 'https://' . $resourcename .
                     '.openai.azure.com/openai/deployments/'
-                    . $deploymentid . '/chat/completions?api-version=2024-02-01';
+                    . $deploymentid . '/chat/completions?api-version=' . $apiversion;
         } else {
             $endpoint = 'https://api.openai.com/v1/chat/completions';
         }
@@ -70,6 +70,7 @@ class instance extends base_instance {
         $this->set_customfield2($enabled);
         $this->set_customfield3($resourcename);
         $this->set_customfield4($deploymentid);
+        $this->set_customfield5($apiversion);
     }
 
     protected function extend_validation(array $data, array $files): array {

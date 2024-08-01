@@ -25,7 +25,6 @@
 
 namespace aitool_dalle;
 
-use aitool_whisper\language_codes;
 use local_ai_manager\base_connector;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
@@ -60,12 +59,29 @@ class connector extends base_connector {
      */
     public function get_prompt_data(string $prompttext, array $requestoptions): array {
         $defaultimagesize = $this->instance->get_model() === 'dall-e-2' ? '256x256' : '1024x1024';
-        return [
-                'model' => $this->instance->get_model(),
+        $parameters = [
                 'prompt' => $prompttext,
                 'size' => empty($requestoptions['sizes'][0]) ? $defaultimagesize : $requestoptions['sizes'][0],
                 'response_format' => 'b64_json',
         ];
+        if (!$this->instance->azure_enabled()) {
+            // If azure is enabled, the model will be preconfigured in the azure resource, so we do not need to send it.
+            $parameters['model'] = $this->instance->get_model();
+        }
+        return $parameters;
+    }
+
+    protected function get_headers(): array {
+        $headers = parent::get_headers();
+        if (!$this->instance->azure_enabled()) {
+            // If azure is not enabled, we just use the default headers for the OpenAI API.
+            return $headers;
+        }
+        if (in_array('Authorization', array_keys($headers))) {
+            unset($headers['Authorization']);
+            $headers['api-key'] = $this->instance->get_apikey();
+        }
+        return $headers;
     }
 
     public function get_unit(): unit {
