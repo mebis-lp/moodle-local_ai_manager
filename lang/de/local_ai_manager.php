@@ -92,6 +92,7 @@ $string['formvalidation_editinstance_azuredeploymentid'] = 'Sie müssen die Depl
 $string['formvalidation_editinstance_azureresourcename'] = 'Sie müssen den Namen Ihrer Azure-Resource eingeben';
 $string['formvalidation_editinstance_name'] = 'Bitte vergeben Sie eine Bezeichnung für das KI-Tool';
 $string['formvalidation_editinstance_endpointnossl'] = 'Aus Sicherheits- und Datenschutzgründen sind nur HTTPS-Endpunkte erlaubt';
+$string['formvalidation_editinstance_temperaturerange'] = 'Temperature-Wert muss zwischen 0 und 1 liegen.';
 $string['general_information_heading'] = 'Allgemeine Informationen';
 $string['general_information_text'] = 'Stand jetzt stellt die BayernCloud Schule und damit auch die mebis Lernplattform kein KI-Tool zur Verfügung. Die mebis Lernplattform bietet jedoch Schnittstellen an, über die man innerhalb der mebis Lernplattform KI-Tools nutzen kann. Damit dies den Schülerinnen und Schülern sowie Lehrkräften einer Schule möglich ist, muss die Schule ein solches Tool erwerben oder bereitstellen. Der ByCS-Admin der jeweiligen Schule kann dann über eine Konfigurationsseite die Zugangsdaten hinterlegen und somit die in der mebis Lernplattform angebotenen KI-Funktionen freischalten.';
 $string['general_user_settings'] = 'Allgemeine Benutzereinstellungen';

@@ -40,9 +40,8 @@ class aitool_option_temperature {
 
         $mform->addElement('checkbox', 'temperatureusecustom', get_string('temperature_use_custom_value', 'local_ai_manager'));
         $mform->setDefault('temperatureusecustom', 0);
-        $mform->addElement('text', 'temperaturecustom', get_string('temperature_custom_value', 'local_ai_manager'));
+        $mform->addElement('float', 'temperaturecustom', get_string('temperature_custom_value', 'local_ai_manager'));
         $mform->disabledIf('temperaturecustom', 'temperatureusecustom');
-        $mform->setType('temperaturecustom', PARAM_FLOAT);
         $mform->disabledIf('temperatureprechoicearray', 'temperatureusecustom', 'checked');
     }
 
@@ -91,7 +90,7 @@ class aitool_option_temperature {
     public static function validate_temperature(array $data): array {
         $errors = [];
         if (!empty($data['temperaturecustom']) && (floatval($data['temperaturecustom']) < 0 || floatval($data['temperaturecustom']) > 1.0)) {
-            $errors['temperature'] = 'Temperature must be between 0 und 1';
+            $errors['temperaturecustom'] = get_string('formvalidation_editinstance_temperaturerange', 'local_ai_manager');
         }
         return $errors;
     }
