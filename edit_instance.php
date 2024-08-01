@@ -48,7 +48,10 @@ if (!empty($del)) {
         throw new moodle_exception('You have to specify the id of the instance to delete');
     }
 
-    $factory->get_connector_instance_by_id($id)->delete();
+    $instance = $factory->get_connector_instance_by_id($id);
+    \core\di::get(\local_ai_manager\local\access_manager::class)->require_tenant_manager();
+    $instance->delete();
+
     // After deleteing we have to remove all purpose assignments to this instance, if there are any.
     $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
     foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
@@ -56,7 +59,7 @@ if (!empty($del)) {
             $configmanager->unset_config(\local_ai_manager\base_purpose::get_purpose_tool_config_key($purpose));
         }
     }
-    redirect($returnurl, 'Instance with id ' . $id . ' deleted');
+    redirect($returnurl, get_string('aitooldeleted', 'local_ai_manager'));
 }
 
 if (!empty($id)) {

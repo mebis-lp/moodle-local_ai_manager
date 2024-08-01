@@ -56,6 +56,9 @@ class access_manager {
         if (!$this->tenant->is_tenant_allowed()) {
             throw new \moodle_exception('Tenant is not allowed.');
         }
+        if ($this->tenant->is_default_tenant() && has_capability('local/ai_manager:use', $this->tenant->get_tenant_context())) {
+            return;
+        }
         $school = new school($this->tenant->get_tenantidentifier());
         if (!$school->record_exists()) {
             throw new \moodle_exception('Invalid tenant "' . $this->tenant->get_tenantidentifier() . '"!');

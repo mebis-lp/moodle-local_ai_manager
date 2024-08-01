@@ -65,26 +65,12 @@ class rights_config_filter_form extends \moodleform {
         $school = new school($tenant->get_tenantidentifier());
         $idmgrouplist = $school->get_idmgroup_names([idmgroup::IDM_GROUP_TYPE['class'], idmgroup::IDM_GROUP_TYPE['team']]);
         $idmgroupmultiselect = $mform->createElement('select', 'idmgroupids', '', $idmgrouplist,
-        ['size' => 2, 'class' => 'local_ai_manager-idmgroupfilter_select pr-1']);
+                ['size' => 2, 'class' => 'local_ai_manager-idmgroupfilter_select pr-1']);
         $idmgroupmultiselect->setMultiple(true);
         $elementarray[] = $idmgroupmultiselect;
 
         $elementarray[] = $mform->createElement('submit', 'applyfilter', get_string('applyfilter', 'local_ai_manager'));
         $elementarray[] = $mform->createElement('cancel', 'resetfilter', get_string('resetfilter', 'local_ai_manager'));
         $mform->addGroup($elementarray, 'elementarray', get_string('filteridmgroups', 'local_ai_manager'), [' '], false);
-    }
-
-    /**
-     * Some extra validation.
-     *
-     * @param array $data array of ("fieldname"=>value) of submitted data
-     * @param array $files array of uploaded files "element_name"=>tmp_file_path
-     * @return array of "element_name"=>"error_description" if there are errors,
-     *         or an empty array if everything is OK (true allowed for backwards compatibility too).
-     */
-    public function validation($data, $files): array {
-        $errors = [];
-        // TODO validate
-        return $errors;
     }
 }
