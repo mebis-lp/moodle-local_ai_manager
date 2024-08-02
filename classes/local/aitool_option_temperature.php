@@ -30,7 +30,6 @@ use stdClass;
 class aitool_option_temperature {
 
     public static function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->addElement('static', '', get_string('temperature', 'local_ai_manager'));
         $radioarray = [];
         $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', get_string('temperature_more_creative', 'local_ai_manager'), 'selection_creative');
         $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', get_string('temperature_creative_balanced', 'local_ai_manager'), 'selection_balanced');
