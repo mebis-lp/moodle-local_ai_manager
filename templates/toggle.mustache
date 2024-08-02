@@ -28,16 +28,16 @@
     {
     }
 }}
-<label for="local_ai_manager_toggle_input-{{uniqid}}" class="local_ai_manager-checkbox-switch-label">
-    <input type="checkbox" id="local_ai_manager_toggle_input-{{uniqid}}" class="local_ai_manager-checkbox-switch"{{!
+<div id="local_ai_manager_toggle-{{uniqid}}" class="custom-control custom-switch">
+    <input type="checkbox" class="custom-control-input"{{!
                 }} {{#checked}}checked{{/checked}}{{!
                 }} data-targetwhenchecked="{{{targetwhenchecked}}}"{{!
                 }} data-targetwhennotchecked="{{{targetwhennotchecked}}}"{{!>
                 }}/>
-    {{text}}
-</label>
+    <span class="custom-control-label">{{text}}</span>
+</div>
 {{#js}}
     require(['local_ai_manager/toggle_handler'], function(ToggleHandler) {
-        ToggleHandler.init('local_ai_manager_toggle_input-{{uniqid}}');
+        ToggleHandler.init('local_ai_manager_toggle-{{uniqid}}');
     });
 {{/js}}

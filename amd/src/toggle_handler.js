@@ -23,8 +23,15 @@
  */
 
 export const init = (inputid) => {
-    const toggle = document.getElementById(inputid);
-    if (toggle) {
+    const toggleContainer = document.getElementById(inputid);
+    if (toggleContainer) {
+        const toggle = toggleContainer.querySelector('input');
+
+        toggleContainer.addEventListener('click', () => {
+            toggle.checked = !toggle.checked;
+            toggle.dispatchEvent(new Event('change'));
+        });
+
         toggle.addEventListener('change', () => {
             // New state incoming.
             if (!toggle.checked) {
