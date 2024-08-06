@@ -14,28 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Web service to submit a query and retrieve the result.
- *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_ai_manager\external;
 
-use external_api;
-use external_function_parameters;
-use external_multiple_structure;
-use external_single_structure;
-use external_value;
-
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->libdir . '/externallib.php');
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_single_structure;
+use core_external\external_value;
+use local_ai_manager\local\connector_factory;
+use stdClass;
 
 /**
- * Web service to get a state.
+ * Web service to submit a query to an AI tool.
  *
  * @package    local_ai_manager
  * @copyright  ISB Bayern, 2024
@@ -48,24 +37,23 @@ class submit_query extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function execute_parameters() {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'purpose' => new external_value(PARAM_TEXT, 'The purpose of the promt.', VALUE_REQUIRED),
+            'purpose' => new external_value(PARAM_TEXT, 'The purpose of the prompt.', VALUE_REQUIRED),
             'prompt' => new external_value(PARAM_RAW, 'The prompt', VALUE_REQUIRED),
-            'options' => new external_value(PARAM_RAW, 'Options array', VALUE_REQUIRED),
+            'options' => new external_value(PARAM_RAW, 'Options object JSON stringified', VALUE_DEFAULT, ''),
         ]);
     }
 
     /**
      * Execute the service.
      *
-     * @param string $purpose
-     * @param string $prompt
-     * @param string $options
-     * @return array
+     * @param string $purpose the purpose to use
+     * @param string $prompt the user's prompt
+     * @param string $options additional options which should be passed to the request to the AI tool
+     * @return array associative array containing the result of the request
      */
     public static function execute(string $purpose, string $prompt, string $options): array {
-
         [
             'purpose' => $purpose,
             'prompt' => $prompt,
@@ -75,35 +63,43 @@ class submit_query extends external_api {
             'prompt' => $prompt,
             'options' => $options,
         ]);
+        $context = \context_system::instance();
+        self::validate_context($context);
+        require_capability('local/ai_manager:use', $context);
+
+        $factory = \core\di::get(connector_factory::class);
+        $purposeobject = $factory->get_purpose_by_purpose_string($purpose);
 
         try {
-            $aimanager = new \local_ai_manager\manager($purpose);
-            $options = json_decode($options);
-            \local_debugger\performance\debugger::print_debug('test','submit_query execute',$options);
-            if (empty($options)) {
-                $options = new \stdClass();
+            if (!empty($options)) {
+                $options = json_decode($options, true);
             }
-            $result = $aimanager->make_request($prompt, $options);
+            $aimanager = new \local_ai_manager\manager($purpose);
 
-            if (!empty(json_decode($result, true)['error'])) {
-                $return = ['code' => 204, 'string' => 'error', 'result' => json_decode($result, true)['error']['message']];
+            $result = $aimanager->perform_request($prompt, $options);
 
+            if ($result->get_code() !== 200) {
+                $error = ['message' => $result->get_errormessage()];
+                if (debugging()) {
+                    $error['debuginfo'] = $result->get_debuginfo();
+                }
+                $return = ['code' => $result->get_code(), 'string' => 'error', 'result' => json_encode($error)];
             } else {
-                $return = ['code' => 200, 'string' => 'ok', 'result' => $result];
+                $return = ['code' => 200, 'string' => 'ok', 'result' => $purposeobject->format_output($result->get_content())];
             }
         } catch (\Exception $e) {
-
             $return = ['code' => 500, 'string' => 'error', 'result' => $e->getMessage()];
         }
+
         return $return;
     }
 
     /**
-     * Describes the return structure of the service..
+     * Describes the return structure of the service.
      *
-     * @return external_multiple_structure
+     * @return external_single_structure the return structure
      */
-    public static function execute_returns() {
+    public static function execute_returns(): external_single_structure {
         return new external_single_structure(
             [
                 'code' => new external_value(PARAM_INT, 'Return code of process.'),

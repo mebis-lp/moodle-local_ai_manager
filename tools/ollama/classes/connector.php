@@ -25,6 +25,11 @@
 
 namespace aitool_ollama;
 
+use local_ai_manager\local\prompt_response;
+use local_ai_manager\local\unit;
+use local_ai_manager\local\usage;
+use Psr\Http\Message\StreamInterface;
+
 /**
  * Connector - ollama
  *
@@ -33,92 +38,39 @@ namespace aitool_ollama;
  * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class connector extends \local_ai_manager\helper {
+class connector extends \local_ai_manager\base_connector {
 
-    const MODEL = 'mixtral';
-
-    private string $model;
-    private string $endpointurl;
-    private float $temperature;
-    private string $apikey;
-
-    /**
-     * Construct the connector class for ollama
-     *
-     * @return void
-     */
-    public function __construct() {
-        $this->model = self::MODEL;
-        $this->endpointurl = get_config('aitool_ollama', 'url');
-        $this->temperature = get_config('aitool_ollama', 'temperature', 0.5);
-        $this->apikey = get_config('aitool_ollama', 'apikey');
+    public function __construct(instance $instance) {
+        $this->instance = $instance;
     }
 
-    /**
-     * Makes a request to the specified URL with the given data and API key.
-     *
-     * @param string $url The URL to make the request to.
-     * @param array $data The data to send with the request.
-     * @return array The response from the request.
-     */
-    private function make_request($url, $data) {
-        global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
-
-        $headers = ['Content-Type: application/json;charset=utf-8'];
-
-        if (!empty($this->apikey)) {
-            $headers[] = 'Authorization: Bearer ' . $this->apikey;
-        }
-
-        $curl = new \curl();
-        $options = [
-            "CURLOPT_RETURNTRANSFER" => true,
-            "CURLOPT_HTTPHEADER" => $headers,
+    public function get_models_by_purpose(): array {
+        $textmodels = ['gemma', 'llama3', 'llama3.1', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
+                'tinyllama'];
+        return [
+                'chat' => $textmodels,
+                'feedback' => $textmodels,
+                'singleprompt' => $textmodels,
+                'translate' => $textmodels,
         ];
-        $start = microtime(true);
-
-        $response = $curl->post($url, json_encode($data), $options);
-
-        $end = microtime(true);
-        $executiontime = round($end - $start, 2);
-
-        if (json_decode($response) == null) {
-            return ['curl_error' => $response, 'execution_time' => $executiontime];
-        }
-        return ['response' => json_decode($response, true), 'execution_time' => $executiontime];
     }
 
-    /**
-     * Generates a completion for the given prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @return string|array The generated completion or null if the model is empty.
-     * @throws moodle_exception If the model is empty.
-     */
-    public function prompt_completion($prompttext) {
+    public function get_unit(): unit {
+        return unit::TOKEN;
+    }
 
-        if (empty($this->model)) {
-            throw new \moodle_exception('prompterror', 'local_ai_manager', '', null, 'Empty query model.');
-        }
+    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
 
-        $data = $this->get_prompt_data($prompttext);
-        $result = $this->make_request($this->endpointurl, $data, '');
+        $content = json_decode($result->getContents(), true);
 
-        if (!empty($result['response']['usage'])) {
-            \local_ai_manager\manager::log_request(
-                $result['response']['prompt_eval_count'],
-                0,
-                $result['response']['eval_count'],
-                $result['response']['model']
-            );
-        }
+        // On cached results there is no prompt token count in the response.
+        $prompttokencount = isset($content['prompt_eval_count']) ? $content['prompt_eval_count'] : 0.0;
+        $responsetokencount = isset($content['eval_count']) ? $content['eval_count'] : 0.0;
+        $totaltokencount = $prompttokencount + $responsetokencount;
 
-        if (!empty($result['response']['response'])) {
-            return $result['response']['response'];
-        } else {
-            return $result;
-        }
+        return prompt_response::create_from_result($content['model'],
+                new usage($totaltokencount, $prompttokencount, $prompttokencount),
+                $content['message']['content']);
     }
 
     /**
@@ -127,15 +79,38 @@ class connector extends \local_ai_manager\helper {
      * @param string $prompttext The prompt text.
      * @return array The prompt data.
      */
-    private function get_prompt_data($prompttext): array {
+    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+        $messages = [];
+        if (array_key_exists('conversationcontext', $requestoptions)) {
+            foreach ($requestoptions['conversationcontext'] as $message) {
+                switch ($message['sender']) {
+                    case 'user':
+                        $role = 'user';
+                        break;
+                    case 'ai':
+                        $role = 'assistant';
+                        break;
+                    case 'system':
+                        $role = 'system';
+                        break;
+                    default:
+                        throw new \moodle_exception('Bad message format');
+                }
+                $messages[] = [
+                        'role' => $role,
+                        'content' => $message['message'],
+                ];
+            }
+        }
+        $messages[] = ['role' => 'user', 'content' => $prompttext];
         $data = [
-            'model' => $this->model,
-            'prompt' => $prompttext,
-            'stream' => false,
-            'keep_alive' => '60m',
-            'options' => [
-                'temperature' => $this->temperature,
-            ],
+                'model' => $this->instance->get_model(),
+                'messages' => $messages,
+                'stream' => false,
+                'keep_alive' => '60m',
+                'options' => [
+                        'temperature' => $this->instance->get_temperature(),
+                ],
         ];
         return $data;
     }

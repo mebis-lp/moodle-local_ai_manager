@@ -1,20 +1,4 @@
 import {call as fetchMany} from 'core/ajax';
-import Log from 'core/log';
-
-export const init = (purpose, prompt) => {
-
-    // Nothing to do if the purpose is empty.
-    if (!purpose) {
-        return;
-    }
-
-    // Nothing to do if the prompt is empty.
-    if (!prompt) {
-        return;
-    }
-
-    return makeRequest(purpose, prompt);
-};
 
 /**
  * Call to store input value
@@ -43,9 +27,6 @@ const execMakeRequest = (
  * @param {array} options
  * @returns {mixed}
  */
-export const makeRequest = async (purpose, prompt, options = []) => {
-
-    const response = await execMakeRequest(purpose, prompt, options);
-    return response;
-
+export const makeRequest = async(purpose, prompt, options = {}) => {
+    return execMakeRequest(purpose, prompt, JSON.stringify(options));
 };

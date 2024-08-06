@@ -159,4 +159,12 @@ class aipurpose extends base {
         $adminroot->add($this->type . 'plugins', $settings);
     }
 
+    public function uninstall(\progress_trace $progress) {
+        global $DB;
+        $DB->delete_records('local_ai_manager_config', ['configkey' => 'purpose_' . $this->name . '_tool']);
+        $DB->delete_records('local_ai_manager_config', ['configkey' => $this->name . '_max_requests_basic']);
+        $DB->delete_records('local_ai_manager_config', ['configkey' => $this->name . '_max_requests_extended']);
+        return true;
+    }
+
 }

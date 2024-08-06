@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *Lang strings for aipurpose_imggen - EN.
+ * Lang strings for aipurpose_imggen - EN.
  *
  * @package    aipurpose_imggen
  * @copyright  ISB Bayern, 2024
@@ -23,5 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Purpose "Image generation"';
+$string['pluginname'] = 'Image generation';
 $string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['requestcount'] = 'image generation requests';
+$string['requestcount_shortened'] = 'image generation';

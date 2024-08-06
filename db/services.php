@@ -26,12 +26,32 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'local_ai_manager_post_query' => [
-        'classname'     => 'local_ai_manager\external\submit_query',
-        'methodname'    => 'execute',
-        'description'   => 'Send a query to a LLM.',
-        'type'          => 'read',
-        'ajax'          => true,
-        'capabilities'  => 'local/ai_manager:use_ai_manager',
-    ],
+        'local_ai_manager_post_query' => [
+                'classname' => 'local_ai_manager\external\submit_query',
+                'description' => 'Send a query to a LLM.',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
+        'local_ai_manager_get_ai_config' => [
+                'classname' => 'local_ai_manager\external\get_ai_config',
+                'description' => 'Get all information about the current ai configuration for the current user',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
+        'local_ai_manager_get_purpose_options' => [
+                'classname' => 'local_ai_manager\external\get_purpose_options',
+                'description' => 'Retrieve available options for a given purpose',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
+        'local_ai_manager_get_user_quota' => [
+                'classname' => 'local_ai_manager\external\get_user_quota',
+                'description' => 'Retrieve quota information for the current user',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
 ];

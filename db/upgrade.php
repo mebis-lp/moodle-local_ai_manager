@@ -15,15 +15,13 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Upgrade functions for local_bycsauth.
+ * Upgrade functions for local_ai_manager.
  *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   local_ai_manager
+ * @copyright 2024, ISB Bayern
+ * @author    Philipp Memmel
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
- require_once($CFG->dirroot . "/local/ai_manager/db/upgradelib.php");
 
 /**
  * Define upgrade steps to be performed to upgrade the plugin from the old version to the current one.
@@ -31,15 +29,17 @@
  * @param int $oldversion Version number the plugin is being upgraded from.
  */
 function xmldb_local_ai_manager_upgrade($oldversion) {
-
     global $DB;
     $dbman = $DB->get_manager();
-    if ($oldversion < 2023121205) {
 
-        create_local_ai_manager_request_log();
+    if ($oldversion < 2024080101) {
+        $table = new xmldb_table('local_ai_manager_instance');
+        $field = new xmldb_field('customfield5', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'customfield4');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
-        // Ai_manager savepoint reached.
-        upgrade_plugin_savepoint(true, 2023121206, 'local', 'ai_manager');
-
+        upgrade_plugin_savepoint(true, 2024080101, 'local', 'ai_manager');
     }
+    return true;
 }

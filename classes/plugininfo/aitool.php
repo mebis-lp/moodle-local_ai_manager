@@ -158,5 +158,24 @@ class aitool extends base {
 
         $adminroot->add($this->type . 'plugins', $settings);
     }
+    public function uninstall(\progress_trace $progress) {
+        global $DB;
+        $deletedinstanceids = $DB->get_fieldset('local_ai_manager_instance', 'id', ['connector' => $this->name]);
+        $DB->delete_records('local_ai_manager_instance', ['connector' => $this->name]);
+
+
+        if (empty($deletedinstanceids)) {
+            return true;
+        }
+        $sqllike = $DB->sql_like('configkey', '?');
+        $params = ['purpose_%_tool'];
+        $select = $sqllike;
+        [$insql, $inparams] = $DB->get_in_or_equal($deletedinstanceids);
+        $params = array_merge($params, $inparams);
+        $select = $select . ' AND configvalue ' . $insql;
+
+        $DB->delete_records_select('local_ai_manager_config', $select, $params);
+        return true;
+    }
 
 }

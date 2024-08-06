@@ -1,0 +1,76 @@
+.local_ai_manager-green {
+    color: #00bf00;
+}
+
+.local_ai_manager-red {
+    color: #ff0000;
+}
+
+.local_ai_manager-infobox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #60616D;
+    font-family: "Atkinson Hyperlegible";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.local_ai_manager-userquota_limitreached {
+    color: #ff0000;
+}
+
+.local_ai_manager-infobox p {
+    margin: 0;
+}
+
+.rights-table-selection_info {
+    font-weight: normal;
+}
+
+.local_ai_manager-idmgroupfilter_select {
+    min-width: 20rem;
+}
+
+#page-local-ai_manager-quota_config .mbseasytoggle {
+    display: none !important;
+}
+
+#page-local-ai_manager-purpose_config #region-main select {
+    width: 100%;
+}
+
+body.path-local-ai_manager .secondary-navigation {
+    padding-bottom: 3.5rem;
+}
+
+body.limitcontentwidth #page-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.local_ai_manager-info-warning {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Atkinson Hyperlegible";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    padding-top: 0.5rem;
+}
+
+.local_ai_manager-info-warning .local_ai_manager-info-warning-text {
+    margin: 0;
+}
+
+.local_ai_manager-info-warning .local_ai_manager-info-warning-link {
+    color: #a4a5ac;
+}
+
+.dark .local_ai_manager-info-warning .local_ai_manager-info-warning-link {
+    color: #60616d;
+}
