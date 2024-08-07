@@ -45,6 +45,7 @@ export const init = (id) => {
         checkbox.addEventListener('change', event => {
             updateSelectAllCheckboxState();
             updateUserIds(event.target);
+            updateSelectionCountInfo();
         });
     });
     table.querySelector(selectors.SELECTALLCHECKBOX).addEventListener('change', event => {
