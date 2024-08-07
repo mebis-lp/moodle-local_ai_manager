@@ -63,13 +63,13 @@ class rights_config_filter_form extends \moodleform {
 
         $elementarray = [];
 
-        $idmgroupmultiselect = $mform->createElement('select', 'filterids', '', $filteroptions,
+        $filteroptionsmultiselect = $mform->createElement('select', 'filterids', '', $filteroptions,
                 ['size' => 2, 'class' => 'local_ai_manager-filter_select pr-1']);
-        $idmgroupmultiselect->setMultiple(true);
-        $elementarray[] = $idmgroupmultiselect;
+        $filteroptionsmultiselect->setMultiple(true);
+        $elementarray[] = $filteroptionsmultiselect;
 
         $elementarray[] = $mform->createElement('submit', 'applyfilter', get_string('applyfilter', 'local_ai_manager'));
         $elementarray[] = $mform->createElement('cancel', 'resetfilter', get_string('resetfilter', 'local_ai_manager'));
-        $mform->addGroup($elementarray, 'elementarray', get_string('filteridmgroups', 'local_ai_manager'), [' '], false);
+        $mform->addGroup($elementarray, 'elementarray', get_string('filterheading', 'local_ai_manager'), [' '], false);
     }
 }

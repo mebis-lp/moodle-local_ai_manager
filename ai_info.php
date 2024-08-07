@@ -73,5 +73,9 @@ foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
     $templatepurpose['highlight'] = in_array($purpose, $purposes);
     $templatecontext['purposes'][] = $templatepurpose;
 }
+$termsofuse = get_config('local_ai_manager', 'termsofuse');
+if (!empty($termsofuse)) {
+    $templatecontext['termsofuse'] = $termsofuse;
+}
 echo $OUTPUT->render_from_template('local_ai_manager/purpose_info', $templatecontext);
 echo $OUTPUT->footer();

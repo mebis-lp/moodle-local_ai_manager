@@ -66,6 +66,9 @@ if ($confirm !== -1) {
 }
 
 echo $OUTPUT->header();
+
+$termsofuse = get_config('local_ai_manager', 'termsofuse') ?: '';
+
 echo $OUTPUT->render_from_template('local_ai_manager/confirm_ai_usage',
         [
                 'checked' => $userinfo->is_confirmed(),
@@ -77,6 +80,7 @@ echo $OUTPUT->render_from_template('local_ai_manager/confirm_ai_usage',
                         ['confirm' => 0]))->out(false),
                 'targetwhennotchecked' => (new moodle_url('/local/ai_manager/confirm_ai_usage.php',
                         ['confirm' => 1]))->out(false),
+                'termsofuse' => $termsofuse,
         ]);
 
 echo $OUTPUT->footer();

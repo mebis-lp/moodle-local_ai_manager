@@ -72,5 +72,12 @@ if ($hassiteconfig) {
                 new lang_string('requesttimeoutdesc', 'local_ai_manager'),
                 '60'
         ));
+
+        $settings->add(new admin_setting_confightmleditor(
+                'local_ai_manager/termsofuse',
+                new lang_string('termsofusesetting', 'local_ai_manager'),
+                new lang_string('termsofusesettingdesc', 'local_ai_manager'),
+                ''
+        ));
     }
 }

@@ -59,8 +59,6 @@ if ($configmanager->is_tenant_enabled()) {
 echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
     [
         'checked' => $istenantenabled,
-        'description' => $istenantenabled ? get_string('disabletenant', 'local_ai_manager') :
-                get_string('enabletenant', 'local_ai_manager'),
         'text' => $istenantenabled ? get_string('tenantenabled', 'local_ai_manager') :
                 get_string('tenantdisabled', 'local_ai_manager'),
         'targetwhenchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
