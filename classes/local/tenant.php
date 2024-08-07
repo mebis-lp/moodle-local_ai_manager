@@ -43,7 +43,8 @@ class tenant {
     public function __construct(string $identifier = '') {
         global $USER;
         if (empty($identifier)) {
-            $identifier = !empty($USER->institution) ? $USER->institution : '';
+            $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
+            $identifier = !empty($USER->{$tenantfield}) ? $USER->{$tenantfield} : '';
             if (empty($identifier)) {
                 $identifier = self::DEFAULT_IDENTIFIER;
             }

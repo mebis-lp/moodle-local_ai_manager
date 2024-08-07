@@ -69,25 +69,26 @@ class userstats_table extends table_sql {
         $this->define_headers($headers);
         $this->collapsible(false);
 
+        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         if (!empty($purpose)) {
             $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount, SUM(value) AS currentusage';
             $from =
                 '{local_ai_manager_request_log} rl LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid JOIN {user} u ON u.id = rl.userid';
-            $where = 'institution = :tenant AND purpose = :purpose GROUP BY u.id';
+            $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id';
             $params = ['tenant' => $this->tenant->get_identifier(), 'purpose' => $purpose];
             $this->set_count_sql(
                 "SELECT COUNT(DISTINCT userid) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id "
-                    . "WHERE institution = :tenant AND purpose = :purpose",
+                    . "WHERE " . $tenantfield . " = :tenant AND purpose = :purpose",
                 ['tenant' => $this->tenant->get_identifier(), 'purpose' => $purpose]
             );
         } else {
             $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount';
             $from =
                 '{user} u LEFT JOIN {local_ai_manager_request_log} rl ON u.id = rl.userid';
-            $where = 'institution = :tenant GROUP BY u.id';
+            $where = $tenantfield . ' = :tenant GROUP BY u.id';
             $params = ['tenant' => $this->tenant->get_identifier()];
             $this->set_count_sql(
-                "SELECT COUNT(DISTINCT id) FROM {user} WHERE institution = :tenant",
+                "SELECT COUNT(DISTINCT id) FROM {user} WHERE " . $tenantfield . " = :tenant",
                 ['tenant' => $this->tenant->get_identifier()]
             );
         }

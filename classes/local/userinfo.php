@@ -143,10 +143,11 @@ class userinfo {
 
     public static function get_tenant_for_user($userid): ?tenant {
         $user = \core_user::get_user($userid);
-        if (empty($user->institution)) {
+        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
+        if (empty($user->{$tenantfield})) {
             return null;
         }
-        return new tenant($user->institution);
+        return new tenant($user->{$tenantfield});
     }
 
     public static function get_role_as_string(int $role): string {

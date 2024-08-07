@@ -38,6 +38,8 @@ class reset_user_usage_test extends \advanced_testcase {
     public function test_execute(): void {
         global $DB;
         $this->resetAfterTest();
+        // Should be the default anyway, but let's be safe here.
+        set_config('tenantcolumn', 'institution');
         $tenant = new tenant(1234);
         $configmanager = new config_manager($tenant);
         $configmanager->set_config('max_requests_period', 3 * DAYSECS);

@@ -61,8 +61,9 @@ class access_manager {
             // If the context of the tenant is systemwide, we distinguish between the capabilities "manage" and "managetenants":
             // If someone has the manage capability on system context, he/she will also have to be member of the tenant to be able
             // to manage it.
+            $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
             return has_capability('local/ai_manager:manage', $tenantcontext) && $tenant->is_tenant_allowed()
-                    && $USER->institution === $tenant->get_identifier();
+                    && $USER->{$tenantfield} === $tenant->get_identifier();
         }
         return has_capability('local/ai_manager:manage', $tenantcontext) && $tenant->is_tenant_allowed();
     }
@@ -79,7 +80,8 @@ class access_manager {
         $customtenant = new custom_tenant($this->tenant);
         \core\di::get(\core\hook\manager::class)->dispatch($customtenant);
 
-        if (empty($USER->institution) || $USER->institution !== $this->tenant->get_identifier()) {
+        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
+        if (empty($USER->{$tenantfield}) || $USER->{$tenantfield} !== $this->tenant->get_identifier()) {
             throw new \moodle_exception('You must not access information for the tenant '
                     . $this->tenant->get_identifier() . '!');
         }

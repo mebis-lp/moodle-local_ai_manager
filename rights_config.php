@@ -46,10 +46,11 @@ if ($rightsconfigform->is_cancelled()) {
     $userids = explode(';', $data->userids);
     foreach ($userids as $userid) {
         $user = \core_user::get_user($userid);
+        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         if (!$user) {
             throw new moodle_exception('User with userid ' . $userid . ' does not exist!');
         }
-        if ($user->institution !== $tenant->get_identifier()) {
+        if ($user->{$tenantfield} !== $tenant->get_identifier()) {
             throw new moodle_exception('You must not change the status of the user with the id ' . $userid);
         }
         $userinfo = new userinfo($userid);

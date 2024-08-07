@@ -58,10 +58,9 @@ class reset_user_usage extends \core\task\scheduled_task {
      */
     public function execute(): void {
         global $DB;
-
-        // TODO Somehow figure out how to do this without forcing the field "institution" as tenant field
+        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         $tenants =
-                $DB->get_fieldset_sql("SELECT DISTINCT institution FROM {local_ai_manager_userusage} uu LEFT JOIN {user} u ON uu.userid = u.id");
+                $DB->get_fieldset_sql("SELECT DISTINCT " . $tenantfield . " FROM {local_ai_manager_userusage} uu LEFT JOIN {user} u ON uu.userid = u.id");
         if (empty($tenants)) {
             // Just in the rare case of an empty table.
             mtrace('No entries found. Exiting.');
@@ -72,9 +71,8 @@ class reset_user_usage extends \core\task\scheduled_task {
             // We intentionally do not use \core\di here, because we need to reset the objects for each tenant.
             $tenant = new tenant($tenantidentifier);
             $configmanager = new config_manager($tenant);
-            // TODO Somehow figure out how to do this without forcing the field "institution" as tenant field
             $sql = "SELECT uu.* FROM {local_ai_manager_userusage} uu "
-                    . "JOIN {user} u ON uu.userid = u.id WHERE institution = :tenantidentifier";
+                    . "JOIN {user} u ON uu.userid = u.id WHERE " . $tenantfield . " = :tenantidentifier";
             $rs = $DB->get_recordset_sql($sql, ['tenantidentifier' => $tenantidentifier]);
             foreach ($rs as $record) {
                 $lastreset = !empty($record->lastreset) ? $record->lastreset : 0;

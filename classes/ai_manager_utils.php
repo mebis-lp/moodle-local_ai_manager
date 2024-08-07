@@ -97,7 +97,8 @@ class ai_manager_utils {
             $tenant = \core\di::get(tenant::class);
         } else {
             $user = \core_user::get_user($userid);
-            $tenant = new tenant($user->institution);
+            $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
+            $tenant = new tenant($user->{$tenantfield});
             \core\di::set(tenant::class, $tenant);
         }
         $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);

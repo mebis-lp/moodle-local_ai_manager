@@ -291,7 +291,7 @@ class base_instance {
         $textelementparams = ['style' => 'width: 100%'];
         $mform->addElement('text', 'name', get_string('instancename', 'local_ai_manager'), $textelementparams);
         $mform->setType('name', PARAM_TEXT);
-        $mform->addElement('text', 'tenant', get_string('institution'), $textelementparams);
+        $mform->addElement('text', 'tenant', get_string('tenant', 'local_ai_manager'), $textelementparams);
         $mform->setType('tenant', PARAM_ALPHANUM);
         if (empty($this->_customdata['id'])) {
             $mform->setDefault('tenant', $customdata['tenant']);

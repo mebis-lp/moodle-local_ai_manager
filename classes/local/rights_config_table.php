@@ -52,10 +52,12 @@ class rights_config_table extends table_sql {
                 get_string('confirmed', 'local_ai_manager'),
         ];
 
+        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
+
         $fields = 'u.id as id, lastname, firstname, role, locked, ui.confirmed';
         $from =
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
-        $where = 'u.deleted != 1 AND u.suspended != 1 AND institution = :tenant';
+        $where = 'u.deleted != 1 AND u.suspended != 1 AND ' . $tenantfield . ' = :tenant';
         $params = ['tenant' => $this->tenant->get_identifier()];
 
         $usertableextend = new usertable_extend($tenant, $columns, $headers, $filterids, $fields, $from, $where, $params);
@@ -69,7 +71,7 @@ class rights_config_table extends table_sql {
         $this->collapsible(false);
 
         $this->set_count_sql(
-                "SELECT COUNT(DISTINCT id) FROM {user} WHERE institution = :tenant",
+                "SELECT COUNT(DISTINCT id) FROM {user} WHERE " . $tenantfield . " = :tenant",
                 ['tenant' => $this->tenant->get_identifier()]
         );
 
