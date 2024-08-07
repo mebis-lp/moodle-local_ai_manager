@@ -144,7 +144,6 @@ $string['role'] = 'Role';
 $string['role_basic'] = 'Student';
 $string['role_extended'] = 'Teacher';
 $string['role_unlimited'] = 'Unlimited';
-$string['schoolconfig_heading'] = 'School Configuration of the AI tools';
 $string['select_tool_for_purpose'] = 'Purpose {$a}';
 $string['selecteduserscount'] = '{$a} selected';
 $string['small'] = 'small';

@@ -144,7 +144,6 @@ $string['role'] = 'Rolle';
 $string['role_basic'] = 'Schüler';
 $string['role_extended'] = 'Lehrkraft';
 $string['role_unlimited'] = 'Unbeschränkt';
-$string['schoolconfig_heading'] = 'Schulkonfiguration der KI-Tools';
 $string['select_tool_for_purpose'] = 'Einsatzzweck "{$a}"';
 $string['selecteduserscount'] = '{$a} ausgewählt';
 $string['settingsgeneral'] = 'Allgemein';

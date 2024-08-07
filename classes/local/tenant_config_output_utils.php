@@ -47,7 +47,7 @@ class tenant_config_output_utils {
         $PAGE->set_context($tenant->get_context());
         $PAGE->set_pagelayout('admin');
 
-        $strtitle = get_string('schoolconfig_heading', 'local_ai_manager');
+        $strtitle = get_string('tenantconfig_heading', 'local_ai_manager');
         $strtitle .= ' (' . $tenant->get_identifier() . ')';
         $PAGE->set_title($strtitle);
         $PAGE->set_heading($strtitle);
