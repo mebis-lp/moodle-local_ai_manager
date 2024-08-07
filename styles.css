@@ -1,3 +1,35 @@
+@font-face {
+    font-display: swap;
+    font-family: 'Atkinson Hyperlegible';
+    font-style: normal;
+    font-weight: 700;
+    src: url('[[font:local_ai_manager|AtkinsonHyperlegible-Bold.ttf]]') format('truetype');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Atkinson Hyperlegible';
+    font-style: normal;
+    font-weight: 400;
+    src: url('[[font:local_ai_manager|AtkinsonHyperlegible-BoldItalic.ttf]]') format('truetype');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Atkinson Hyperlegible';
+    font-style: normal;
+    font-weight: 400;
+    src: url('[[font:local_ai_manager|AtkinsonHyperlegible-Italic.ttf]]') format('truetype');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Atkinson Hyperlegible';
+    font-style: normal;
+    font-weight: 400;
+    src: url('[[font:local_ai_manager|AtkinsonHyperlegible-Regular.ttf]]') format('truetype');
+}
+
 .local_ai_manager-green {
     color: #00bf00;
 }

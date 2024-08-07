@@ -74,9 +74,6 @@ class tenant {
         $customtenant = new custom_tenant($this);
         \core\di::get(\core\hook\manager::class)->dispatch($customtenant);
         return $customtenant->get_tenant_context();
-
-        /*$school = new \local_bycsauth\school($this->get_identifier());
-        return \context_coursecat::instance($school->get_school_categoryid());*/
     }
 
     public function is_tenant_allowed(): bool {
