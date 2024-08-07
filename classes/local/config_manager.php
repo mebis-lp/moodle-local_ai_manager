@@ -48,11 +48,11 @@ class config_manager {
 
     private function load_config(): void {
         global $DB;
-        if (empty($this->tenant->get_tenantidentifier())) {
+        if (empty($this->tenant->get_identifier())) {
             $this->config = [];
             return;
         }
-        $records = $DB->get_records('local_ai_manager_config', ['tenant' => $this->tenant->get_tenantidentifier()]);
+        $records = $DB->get_records('local_ai_manager_config', ['tenant' => $this->tenant->get_identifier()]);
         foreach ($records as $record) {
             $this->config[$record->configkey] = $record->configvalue;
         }
@@ -70,12 +70,12 @@ class config_manager {
 
     public function unset_config(string $configkey): void {
         global $DB;
-        if (empty($this->tenant->get_tenantidentifier())) {
+        if (empty($this->tenant->get_identifier())) {
             return;
         }
         $DB->delete_records('local_ai_manager_config',
                 [
-                        'tenant' => $this->tenant->get_tenantidentifier(),
+                        'tenant' => $this->tenant->get_identifier(),
                         'configkey' => $configkey,
                 ]
         );
@@ -97,7 +97,7 @@ class config_manager {
         global $DB;
         // TODO Eventually do a validation of which config keys are allowed
         $configrecord = $DB->get_record('local_ai_manager_config',
-                ['configkey' => $configkey, 'tenant' => $this->tenant->get_tenantidentifier()]);
+                ['configkey' => $configkey, 'tenant' => $this->tenant->get_identifier()]);
         if ($configrecord) {
             $configrecord->configvalue = $configvalue;
             $DB->update_record('local_ai_manager_config', $configrecord);
@@ -105,7 +105,7 @@ class config_manager {
             $configrecord = new \stdClass();
             $configrecord->configkey = $configkey;
             $configrecord->configvalue = $configvalue;
-            $configrecord->tenant = $this->tenant->get_tenantidentifier();
+            $configrecord->tenant = $this->tenant->get_identifier();
             $DB->insert_record('local_ai_manager_config', $configrecord);
         }
         $this->load_config();

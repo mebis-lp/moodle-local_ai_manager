@@ -46,7 +46,7 @@ $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 $accessmanager->require_tenant_member();
 
 $PAGE->set_url($url);
-$PAGE->set_context($tenant->get_tenant_context());
+$PAGE->set_context($tenant->get_context());
 $PAGE->set_pagelayout('admin');
 
 $strtitle = get_string('confirmaitoolsusage_heading', 'local_ai_manager');

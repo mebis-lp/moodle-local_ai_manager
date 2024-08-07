@@ -55,7 +55,7 @@ class purpose_config_form extends \moodleform {
         $tenant = \core\di::get(tenant::class);
         $mform = &$this->_form;
 
-        $mform->addElement('hidden', 'tenant', $tenant->get_tenantidentifier());
+        $mform->addElement('hidden', 'tenant', $tenant->get_identifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
         foreach (base_purpose::get_all_purposes() as $purpose) {

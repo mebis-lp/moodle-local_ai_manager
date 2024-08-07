@@ -56,16 +56,15 @@ class rights_config_filter_form extends \moodleform {
     public function definition() {
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $mform = &$this->_form;
+        $filteroptions = $this->_customdata['filteroptions'];
 
-        $mform->addElement('hidden', 'tenant', $tenant->get_tenantidentifier());
+        $mform->addElement('hidden', 'tenant', $tenant->get_identifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
         $elementarray = [];
 
-        $school = new school($tenant->get_tenantidentifier());
-        $idmgrouplist = $school->get_idmgroup_names([idmgroup::IDM_GROUP_TYPE['class'], idmgroup::IDM_GROUP_TYPE['team']]);
-        $idmgroupmultiselect = $mform->createElement('select', 'idmgroupids', '', $idmgrouplist,
-                ['size' => 2, 'class' => 'local_ai_manager-idmgroupfilter_select pr-1']);
+        $idmgroupmultiselect = $mform->createElement('select', 'filterids', '', $filteroptions,
+                ['size' => 2, 'class' => 'local_ai_manager-filter_select pr-1']);
         $idmgroupmultiselect->setMultiple(true);
         $elementarray[] = $idmgroupmultiselect;
 

@@ -16,9 +16,8 @@
 
 namespace local_ai_manager\local;
 
-use flexible_table;
 use html_writer;
-use local_bycsauth\idmgroup;
+use local_ai_manager\hook\usertable_extend;
 use moodle_url;
 use table_sql;
 
@@ -35,56 +34,48 @@ class rights_config_table extends table_sql {
             string $uniqid,
             private readonly tenant $tenant,
             moodle_url $baseurl,
-            $idmgroupids,
+            $filterids,
     ) {
-        global $DB;
         parent::__construct($uniqid);
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
-        $columns = ['checkbox', 'lastname', 'firstname', 'idmgroupnames', 'role', 'locked', 'confirmed'];
+        $columns = ['checkbox', 'lastname', 'firstname', 'role', 'locked', 'confirmed'];
         $checkboxheader = html_writer::div('', 'rights-table-selection_info', ['id' => 'rights-table-selection_info']);
         $checkboxheader .= html_writer::empty_tag('input', ['type' => 'checkbox', 'id' => 'rights-table-selectall_checkbox']);
         $headers = [
                 $checkboxheader,
                 get_string('lastname'),
                 get_string('firstname'),
-                get_string('department'),
                 get_string('role', 'local_ai_manager'),
                 get_string('locked', 'local_ai_manager'),
                 get_string('confirmed', 'local_ai_manager'),
         ];
 
-        $this->define_columns($columns);
+        $fields = 'u.id as id, lastname, firstname, role, locked, ui.confirmed';
+        $from =
+                '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
+        $where = 'u.deleted != 1 AND u.suspended != 1 AND institution = :tenant';
+        $params = ['tenant' => $this->tenant->get_identifier()];
+
+        $usertableextend = new usertable_extend($tenant, $columns, $headers, $filterids, $fields, $from, $where, $params);
+        \core\di::get(\core\hook\manager::class)->dispatch($usertableextend);
+
+        $this->define_columns($usertableextend->get_columns());
         // Define the titles of columns to show in header.
-        $this->define_headers($headers);
+        $this->define_headers($usertableextend->get_headers());
 
         $this->no_sorting('checkbox');
         $this->collapsible(false);
-        // TODO make filter upstream compatible
-        if (empty($idmgroupids)) {
-            $filtersql = '';
-            $filtersqlparams = [];
-        } else {
-            [$filtersql, $filtersqlparams] = $DB->get_in_or_equal($idmgroupids, SQL_PARAMS_NAMED);
-            $filtersql = 'AND bag.id ' . $filtersql;
-        }
 
-        $sqlgroupconcat = $DB->sql_group_concat('name', ', ', 'name ASC');
-        $fields = 'u.id as id, lastname, firstname, ' . $sqlgroupconcat . ' AS idmgroupnames, role, locked, ui.confirmed';
-        $from =
-                '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid'
-                    . ' LEFT JOIN {local_bycsauth_membership} bam ON u.id = bam.userid'
-                    . ' LEFT JOIN {local_bycsauth_idmgroup} bag ON bam.idmgroupid = bag.id';
-        $where = 'u.deleted != 1 AND u.suspended != 1 AND institution = :tenant AND (bag.idmgrouptype = :idmgrouptype OR bag.idmgrouptype IS NULL) ' . $filtersql . ' GROUP BY u.id';
-        $params = ['tenant' => $this->tenant->get_tenantidentifier(), 'idmgrouptype' => idmgroup::IDM_GROUP_TYPE['class']];
-        $params = array_merge($params, $filtersqlparams);
         $this->set_count_sql(
                 "SELECT COUNT(DISTINCT id) FROM {user} WHERE institution = :tenant",
-                ['tenant' => $this->tenant->get_tenantidentifier()]
+                ['tenant' => $this->tenant->get_identifier()]
         );
 
-        $this->set_sql($fields, $from, $where, $params);
+        $this->set_sql($usertableextend->get_fields(), $usertableextend->get_from(),
+                $usertableextend->get_where() . ' GROUP BY u.id',
+                $usertableextend->get_params());
         parent::setup();
     }
 
@@ -92,11 +83,12 @@ class rights_config_table extends table_sql {
      * Convert the role identifier to a display name.
      */
     function col_role($value) {
-
-        if (!empty($value->role)) {
-            return get_string(userinfo::get_role_as_string($value->role), 'local_ai_manager');
+        $role = $value->role;
+        if (empty($role)) {
+            $userinfo = new userinfo($value->id);
+            $role = $userinfo->get_default_role();
         }
-        return $value->role;
+        return get_string(userinfo::get_role_as_string($role), 'local_ai_manager');
     }
 
     /**

@@ -41,10 +41,10 @@ $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 $accessmanager->require_tenant_member();
 
-$url = new moodle_url('/local/ai_manager/ai_info.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$url = new moodle_url('/local/ai_manager/ai_info.php', ['tenant' => $tenant->get_identifier()]);
 $PAGE->set_url($url);
-$PAGE->set_context($tenant->get_tenant_context());
-$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$PAGE->set_context($tenant->get_context());
+$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_identifier()]);
 
 $strtitle = get_string('aiinfotitle', 'local_ai_manager');
 $PAGE->set_title($strtitle);

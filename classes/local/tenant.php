@@ -16,6 +16,7 @@
 
 namespace local_ai_manager\local;
 
+use local_ai_manager\hook\custom_tenant;
 use moodle_exception;
 use stdClass;
 
@@ -29,25 +30,25 @@ use stdClass;
  */
 class tenant {
 
-    public const DEFAULT_TENANTIDENTIFIER = 'default';
+    public const DEFAULT_IDENTIFIER = 'default';
 
-    private string $tenantidentifier;
+    private string $identifier;
 
     /**
      * Tenant class constructor.
      *
-     * @param string $tenantidentifier
+     * @param string $identifier
      * @return void
      */
-    public function __construct(string $tenantidentifier = '') {
+    public function __construct(string $identifier = '') {
         global $USER;
-        if (empty($tenantidentifier)) {
-            $tenantidentifier = !empty($USER->institution) ? $USER->institution : '';
-            if (empty($tenantidentifier)) {
-                $tenantidentifier = self::DEFAULT_TENANTIDENTIFIER;
+        if (empty($identifier)) {
+            $identifier = !empty($USER->institution) ? $USER->institution : '';
+            if (empty($identifier)) {
+                $identifier = self::DEFAULT_IDENTIFIER;
             }
         }
-        $this->tenantidentifier = $tenantidentifier;
+        $this->identifier = $identifier;
     }
 
     /**
@@ -55,25 +56,26 @@ class tenant {
      *
      * @return string
      */
-    public function get_tenantidentifier(): string {
-        return $this->tenantidentifier;
+    public function get_identifier(): string {
+        return $this->identifier;
     }
 
     public function is_default_tenant(): bool {
-        return $this->tenantidentifier === self::DEFAULT_TENANTIDENTIFIER;
+        return $this->identifier === self::DEFAULT_IDENTIFIER;
     }
 
     /**
      * Get the tenant context.
      *
-     * @return context
+     * @return \context the context the tenant is associated with
      */
-    public function get_tenant_context(): \context {
-        if ($this->get_tenantidentifier() === self::DEFAULT_TENANTIDENTIFIER) {
-            return \context_system::instance();
-        }
-        $school = new \local_bycsauth\school($this->get_tenantidentifier());
-        return \context_coursecat::instance($school->get_school_categoryid());
+    public function get_context(): \context {
+        $customtenant = new custom_tenant($this);
+        \core\di::get(\core\hook\manager::class)->dispatch($customtenant);
+        return $customtenant->get_tenant_context();
+
+        /*$school = new \local_bycsauth\school($this->get_identifier());
+        return \context_coursecat::instance($school->get_school_categoryid());*/
     }
 
     public function is_tenant_allowed(): bool {
@@ -84,7 +86,7 @@ class tenant {
         $allowedtenantsconfig = get_config('local_ai_manager', 'allowedtenants');
         $allowedtenantsconfig = explode(PHP_EOL, $allowedtenantsconfig);
         foreach ($allowedtenantsconfig as $tenant) {
-            if ($this->get_tenantidentifier() === trim($tenant)) {
+            if ($this->get_identifier() === trim($tenant)) {
                 return true;
             }
         }
@@ -92,10 +94,18 @@ class tenant {
     }
 
     public function get_fullname(): string {
-        if ($this->get_tenantidentifier() === self::DEFAULT_TENANTIDENTIFIER) {
-            return get_string('defaulttenantname', 'local_ai_manager');
-        }
-        $school = new \local_bycsauth\school($this->get_tenantidentifier());
-        return $school->get_name();
+        $customtenant = new custom_tenant($this);
+        \core\di::get(\core\hook\manager::class)->dispatch($customtenant);
+        return $customtenant->get_fullname();
+    }
+
+    public function get_defaultcontext(): \context {
+        return \context_system::instance();
+    }
+
+    public function get_defaultfullname(): string {
+        return $this->identifier === self::DEFAULT_IDENTIFIER
+                ? get_string('defaulttenantname', 'local_ai_manager')
+                : $this->identifier;
     }
 }

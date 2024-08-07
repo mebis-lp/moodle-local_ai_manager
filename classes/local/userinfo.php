@@ -16,6 +16,7 @@
 
 namespace local_ai_manager\local;
 
+use local_ai_manager\hook\userinfo_extend;
 use local_bycsauth\school;
 use stdClass;
 
@@ -62,19 +63,22 @@ class userinfo {
         global $DB;
         // TODO Extract this into a hook.
         // TODO Make this more performant
-        $user = \core_user::get_user($this->userid);
         $accessmanager = \core\di::get(access_manager::class);
         if (\core\di::get(tenant::class)->is_default_tenant()) {
             return $accessmanager->is_tenant_manager() ? self::ROLE_UNLIMITED : self::ROLE_BASIC;
         }
-        $idmteacherrole = $DB->get_record('role', ['shortname' => 'idmteacher']);
-        $coordinatorrole = $DB->get_record('role', ['shortname' => 'schulkoordinator']);
-        $school = new school($user->institution);
-        if (user_has_role_assignment($this->userid, $coordinatorrole->id,
-                \context_coursecat::instance($school->get_school_categoryid())->id)) {
+
+        $userinfoextend = new userinfo_extend($this->userid);
+        \core\di::get(\core\hook\manager::class)->dispatch($userinfoextend);
+
+        $hookdefaultrole = $userinfoextend->get_default_role();
+        if (!is_null($hookdefaultrole)) {
+            return $hookdefaultrole;
+        }
+        $tenant = \core\di::get(tenant::class);
+        if (has_capability('local/ai_manager:manage', $tenant->get_context(), $this->userid)
+            || has_capability('local/ai_manager:managetenants', \context_system::instance(), $this->userid)) {
             return self::ROLE_UNLIMITED;
-        } else if (user_has_role_assignment($this->userid, $idmteacherrole->id, \context_system::instance()->id)) {
-            return self::ROLE_EXTENDED;
         } else {
             return self::ROLE_BASIC;
         }

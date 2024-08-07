@@ -133,9 +133,9 @@ class ai_manager_utils {
             $tool['name'] = $toolname;
             $addurl = new moodle_url('/local/ai_manager/edit_instance.php',
                     [
-                            'tenant' => $tenant->get_tenantidentifier(),
+                            'tenant' => $tenant->get_identifier(),
                             'returnurl' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                                    ['tenant' => $tenant->get_tenantidentifier()]))->out(),
+                                    ['tenant' => $tenant->get_identifier()]))->out(),
                             'connectorname' => $toolname
                     ]);
             $tool['addurl'] = $addurl->out(false);

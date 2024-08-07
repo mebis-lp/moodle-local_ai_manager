@@ -146,7 +146,7 @@ class base_instance {
 
         $params = [];
         if (!$allinstances) {
-            $params['tenant'] = \core\di::get(tenant::class)->get_tenantidentifier();
+            $params['tenant'] = \core\di::get(tenant::class)->get_identifier();
         }
         $records = $DB->get_records('local_ai_manager_instance', $params, '', 'id');
         $instances = [];

@@ -64,9 +64,9 @@ echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
         'text' => $istenantenabled ? get_string('tenantenabled', 'local_ai_manager') :
                 get_string('tenantdisabled', 'local_ai_manager'),
         'targetwhenchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 0]))->out(false),
+                ['tenant' => $tenant->get_identifier(), 'enabletenant' => 0]))->out(false),
         'targetwhennotchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 1]))->out(false),
+                ['tenant' => $tenant->get_identifier(), 'enabletenant' => 1]))->out(false),
         'tenantfullname' => $tenant->get_fullname(),
         'rightsconfiglink' => $rightsconfiglink,
     ]);
@@ -95,7 +95,7 @@ if ($configmanager->is_tenant_enabled()) {
             }
         }
         $linkedname = html_writer::link(new moodle_url('/local/ai_manager/edit_instance.php',
-                ['id' => $instance->get_id(), 'tenant' => $tenant->get_tenantidentifier()]), $instance->get_name());
+                ['id' => $instance->get_id(), 'tenant' => $tenant->get_identifier()]), $instance->get_name());
 
         $instances[] = [
                 'name' => $linkedname,
@@ -105,13 +105,13 @@ if ($configmanager->is_tenant_enabled()) {
                         : $instance->get_model(),
                 'purposes' => $purposes,
                 'nopurposeslink' => html_writer::link(new moodle_url('/local/ai_manager/purpose_config.php',
-                        ['tenant' => $tenant->get_tenantidentifier()]),
+                        ['tenant' => $tenant->get_identifier()]),
                         '<i class="fa fa-arrow-right"></i> ' . get_string('assignpurposes', 'local_ai_manager')),
         ];
     }
     echo $PAGE->get_renderer('core')->render_from_template('local_ai_manager/instancetable',
             [
-                    'tenant' => $tenant->get_tenantidentifier(),
+                    'tenant' => $tenant->get_identifier(),
                     'purposesheading' => $purposesheading,
                     'instances' => $instances,
             ]

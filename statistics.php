@@ -40,7 +40,7 @@ echo $OUTPUT->header();
 $tenantnavbar = new tenantnavbar('statistics.php');
 echo $OUTPUT->render($tenantnavbar);
 
-$baseurl = new moodle_url('/local/ai_manager/statistics.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$baseurl = new moodle_url('/local/ai_manager/statistics.php', ['tenant' => $tenant->get_identifier()]);
 
 echo $OUTPUT->heading(get_string('statisticsoverview', 'local_ai_manager'), 2, 'text-center');
 $baseurl = new moodle_url('/local/ai_manager/statistics.php');

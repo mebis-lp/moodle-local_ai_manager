@@ -42,13 +42,13 @@ class tenant_config_output_utils {
         $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
         $accessmanager->require_tenant_manager();
 
-        $url->param('tenant', $tenant->get_tenantidentifier());
+        $url->param('tenant', $tenant->get_identifier());
         $PAGE->set_url($url);
-        $PAGE->set_context($tenant->get_tenant_context());
+        $PAGE->set_context($tenant->get_context());
         $PAGE->set_pagelayout('admin');
 
         $strtitle = get_string('schoolconfig_heading', 'local_ai_manager');
-        $strtitle .= ' (' . $tenant->get_tenantidentifier() . ')';
+        $strtitle .= ' (' . $tenant->get_identifier() . ')';
         $PAGE->set_title($strtitle);
         $PAGE->set_heading($strtitle);
         $PAGE->navbar->add($strtitle);

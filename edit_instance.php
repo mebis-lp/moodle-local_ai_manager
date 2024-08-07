@@ -40,7 +40,7 @@ $del = optional_param('del', 0, PARAM_INT);
 
 $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
 $tenant = \core\di::get(tenant::class);
-$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_identifier()]);
 $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 
 if (!empty($del)) {
@@ -52,9 +52,9 @@ if (!empty($del)) {
     if ($instance) {
         $tenant = new tenant($instance->get_tenant());
         \core\di::set(tenant::class, $tenant);
-        $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+        $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_identifier()]);
     }
-    if (!$accessmanager->can_manage_connectorinstance($instance, $USER)) {
+    if (!$accessmanager->can_manage_connectorinstance($instance)) {
         throw new moodle_exception('You must not edit this AI tool instance');
     }
     $instance->delete();
@@ -71,8 +71,7 @@ if (!empty($del)) {
 
 if (!empty($id)) {
     $connectorinstance = $factory->get_connector_instance_by_id($id);
-    // TODO Replace is_siteadmin() by adding and checking a capability "Configure all instances"
-    if (!$accessmanager->can_manage_connectorinstance($connectorinstance, $USER)) {
+    if (!$accessmanager->can_manage_connectorinstance($connectorinstance)) {
         throw new moodle_exception('You must not edit this AI tool instance');
     }
     $connectorname = $connectorinstance->get_connector();
@@ -85,14 +84,14 @@ if (!empty($id)) {
 
 $editinstanceform = new \local_ai_manager\form\edit_instance_form(new moodle_url('/local/ai_manager/edit_instance.php',
         ['id' => $id, 'connectorname' => $connectorname]),
-        ['id' => $id, 'tenant' => $tenant->get_tenantidentifier(), 'connector' => $connectorname]);
+        ['id' => $id, 'tenant' => $tenant->get_identifier(), 'connector' => $connectorname]);
 
 // Standard form processing if statement.
 if ($editinstanceform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $editinstanceform->get_data()) {
     $connectorinstance->store_formdata($data);
-    redirect(new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]),
+    redirect(new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_identifier()]),
             get_string('aitoolsaved', 'local_ai_manager'), '');
 } else {
     echo $OUTPUT->header();

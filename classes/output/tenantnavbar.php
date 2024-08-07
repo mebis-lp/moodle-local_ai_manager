@@ -43,7 +43,7 @@ class tenantnavbar implements renderable, \templatable {
     public function export_for_template(renderer_base $output): stdClass {
         $data = new stdClass();
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-        $data->tenantidentifier = $tenant->get_tenantidentifier();
+        $data->tenantidentifier = $tenant->get_identifier();
 
         $data->homeactive = $this->relativeactiveurl === 'tenant_config.php';
         $data->purposeconfigactive = $this->relativeactiveurl === 'purpose_config.php';
@@ -51,8 +51,8 @@ class tenantnavbar implements renderable, \templatable {
         $data->rightsconfigactive = $this->relativeactiveurl === 'rights_config.php';
         $data->statisticsoverviewactive = $this->relativeactiveurl === 'statistics.php';
 
-        $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_tenant_context());
-        $data->showuserstatistics = has_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context());
+        $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_context());
+        $data->showuserstatistics = has_capability('local/ai_manager:viewuserstatistics', $tenant->get_context());
         $statisticspurposes = [];
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $statisticspurposes[] = [

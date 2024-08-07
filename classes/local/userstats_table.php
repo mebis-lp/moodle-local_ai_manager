@@ -47,7 +47,7 @@ class userstats_table extends table_sql {
             get_string('lastname'),
             get_string('firstname'),
         ];
-        if (has_capability('local/ai_manager:viewusage', $tenant->get_tenant_context())) {
+        if (has_capability('local/ai_manager:viewusage', $tenant->get_context())) {
             $columns[] = 'requestcount';
             $headers[] = get_string('request_count', 'local_ai_manager');
             if (!empty($purpose)) {
@@ -74,27 +74,27 @@ class userstats_table extends table_sql {
             $from =
                 '{local_ai_manager_request_log} rl LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid JOIN {user} u ON u.id = rl.userid';
             $where = 'institution = :tenant AND purpose = :purpose GROUP BY u.id';
-            $params = ['tenant' => $this->tenant->get_tenantidentifier(), 'purpose' => $purpose];
+            $params = ['tenant' => $this->tenant->get_identifier(), 'purpose' => $purpose];
             $this->set_count_sql(
                 "SELECT COUNT(DISTINCT userid) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id "
                     . "WHERE institution = :tenant AND purpose = :purpose",
-                ['tenant' => $this->tenant->get_tenantidentifier(), 'purpose' => $purpose]
+                ['tenant' => $this->tenant->get_identifier(), 'purpose' => $purpose]
             );
         } else {
             $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount';
             $from =
                 '{user} u LEFT JOIN {local_ai_manager_request_log} rl ON u.id = rl.userid';
             $where = 'institution = :tenant GROUP BY u.id';
-            $params = ['tenant' => $this->tenant->get_tenantidentifier()];
+            $params = ['tenant' => $this->tenant->get_identifier()];
             $this->set_count_sql(
                 "SELECT COUNT(DISTINCT id) FROM {user} WHERE institution = :tenant",
-                ['tenant' => $this->tenant->get_tenantidentifier()]
+                ['tenant' => $this->tenant->get_identifier()]
             );
         }
         $this->set_sql($fields, $from, $where, $params);
         parent::setup();
 
-        $this->shownames = has_capability('local/ai_manager:viewusernames', $tenant->get_tenant_context());
+        $this->shownames = has_capability('local/ai_manager:viewusernames', $tenant->get_context());
     }
 
     function col_lastname($value) {
