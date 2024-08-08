@@ -17,8 +17,6 @@
 namespace local_ai_manager\local;
 
 use local_ai_manager\hook\custom_tenant;
-use moodle_exception;
-use stdClass;
 
 /**
  * Data object class for handling usage information when using an AI tool.
