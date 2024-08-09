@@ -18,7 +18,7 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,6 +28,7 @@ use local_ai_manager\local\tenant_config_output_utils;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 

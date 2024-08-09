@@ -19,20 +19,25 @@ namespace local_ai_manager\local;
 use moodle_url;
 
 /**
- * Configuration page for tenants.
+ * Utils class for aggregating code to avoid duplication.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tenant_config_output_utils {
+
+    /**
+     * Helper function which is being called from every tenant config (sub)page.
+     *
+     * Important to control access and set important basic settings which are identical for all the pages.
+     *
+     * @param moodle_url $url the moodle url object of the current page
+     */
     public static function setup_tenant_config_page(moodle_url $url): void {
         global $PAGE;
         $tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
-
-        // Check permissions.
-        require_login();
 
         if (!empty($tenantid)) {
             $tenant = new \local_ai_manager\local\tenant($tenantid);

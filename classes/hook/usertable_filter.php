@@ -28,28 +28,50 @@ use local_ai_manager\local\tenant;
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\attribute\label('Allows plugins to provide a list of options for the filter of the user rights management table in the tenant config.')]
+#[\core\attribute\label(
+        'Allows plugins to provide a list of options for the filter of the user rights management table in the tenant config.')]
 #[\core\attribute\tags('local_ai_manager')]
 class usertable_filter {
 
+    /** @var array associative array for providing filter options to the filter component of the rights config table */
     private array $filteroptions = [];
 
     /**
      * Constructor for the hook.
+     * @param tenant $tenant the tenant for which the user table is being shown
      */
-    public function __construct(private tenant $tenant) {
+    public function __construct(
+            /** @var tenant $tenant the tenant for which the user table is being shown */
+            private tenant $tenant
+    ) {
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return tenant the tenant for which the table is being shown
+     */
     public function get_tenant(): tenant {
         return $this->tenant;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return array filter options array
+     */
     public function get_filter_options(): array {
         return $this->filteroptions;
     }
 
+    /**
+     * Standard setter to allow the hook callbacks to store the filter options.
+     *
+     * @param array $filteroptions associative array with the filter options of the form ['key' => 'displayname', ...] where 'key'
+     *  is the key which is being submitted when submitting the filter form, 'displayname' is the (localized) name to show in the
+     *  filter
+     */
     public function set_filter_options(array $filteroptions): void {
         $this->filteroptions = $filteroptions;
     }
-
 }

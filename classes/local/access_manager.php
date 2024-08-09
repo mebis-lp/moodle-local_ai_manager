@@ -18,30 +18,50 @@ namespace local_ai_manager\local;
 
 use local_ai_manager\base_instance;
 use local_ai_manager\hook\custom_tenant;
-use local_bycsauth\school;
-use stdClass;
 
 /**
  * Class for managing the configuration of tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class access_manager {
 
-    public function __construct(private readonly tenant $tenant) {
+    /**
+     * Creates the access_manager object.
+     *
+     * @param tenant $tenant the tenant the access manager should use
+     */
+    public function __construct(
+            /** @var tenant $tenant the tenant the access manager should use */
+            private readonly tenant $tenant
+    ) {
     }
 
+    /**
+     * Requires the current user to be a manager of the current tenant.
+     *
+     * @throws \moodle_exception in case of the current user does not have sufficient permissions for managing the current tenant
+     */
     public function require_tenant_manager(): void {
         if (!$this->is_tenant_manager()) {
-            // TODO Make a clean require_capability_exception out of this
-            throw new \moodle_exception('You do not have the rights to manage the AI tools or the tenant is not allowed to use them');
+            // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
+            // TODO Make a clean require_capability_exception out of this.
+            // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
+            throw new \moodle_exception('You do not have the rights to manage the AI tools or the tenant is not allowed'
+                    . ' to use them');
         }
     }
 
-    public function is_tenant_manager(tenant $tenant = null): bool {
+    /**
+     * Determines if the current user is a tenant manager.
+     *
+     * @param ?tenant $tenant the tenant to use, if not passed or null the currently used tenant is being used
+     * @return bool true if the current user is a tenant manager
+     */
+    public function is_tenant_manager(?tenant $tenant = null): bool {
         global $USER;
         if (has_capability('local/ai_manager:managetenants', \context_system::instance())) {
             return true;
@@ -68,6 +88,11 @@ class access_manager {
         return has_capability('local/ai_manager:manage', $tenantcontext) && $tenant->is_tenant_allowed();
     }
 
+    /**
+     * Requires the current user to be a member of the currently set tenant.
+     *
+     * @throws \moodle_exception if the tenant is not allowed or the user must not use this tenant
+     */
     public function require_tenant_member(): void {
         global $USER;
         if (!$this->tenant->is_tenant_allowed()) {
@@ -87,6 +112,12 @@ class access_manager {
         }
     }
 
+    /**
+     * Helper function to determine if the current user has the capability to manage a connector instance.
+     *
+     * @param base_instance $instance The connector instance the capability should be checked for
+     * @return bool true if the current user is allowed to manage the instance
+     */
     public function can_manage_connectorinstance(base_instance $instance) {
         if (has_capability('local/ai_manager:managetenants', \context_system::instance())) {
             return true;

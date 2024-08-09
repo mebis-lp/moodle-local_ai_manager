@@ -19,6 +19,7 @@ namespace local_ai_manager\local;
 use html_writer;
 use local_ai_manager\hook\usertable_extend;
 use moodle_url;
+use stdClass;
 use table_sql;
 
 defined('MOODLE_INTERNAL') || die();
@@ -26,15 +27,28 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/tablelib.php');
 
+/**
+ * Table class representing the table for configuring the rights and roles of users in the AI manager.
+ *
+ * @package    local_ai_manager
+ * @copyright  2024 ISB Bayern
+ * @author     Philipp Memmel
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class rights_config_table extends table_sql {
     /**
      * Constructor.
+     *
+     * @param string $uniqid a unique id to use for the table
+     * @param tenant $tenant the tenant to display the table for
+     * @param moodle_url $baseurl the current base url on which the table is being displayed
+     * @param array $filterids list of ids to filter
      */
     public function __construct(
             string $uniqid,
-            private readonly tenant $tenant,
+            tenant $tenant,
             moodle_url $baseurl,
-            $filterids,
+            array $filterids,
     ) {
         parent::__construct($uniqid);
         $this->set_attribute('id', $uniqid);
@@ -58,7 +72,7 @@ class rights_config_table extends table_sql {
         $from =
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
         $where = 'u.deleted != 1 AND u.suspended != 1 AND ' . $tenantfield . ' = :tenant';
-        $params = ['tenant' => $this->tenant->get_identifier()];
+        $params = ['tenant' => $tenant->get_identifier()];
 
         $usertableextend = new usertable_extend($tenant, $columns, $headers, $filterids, $fields, $from, $where, $params);
         \core\di::get(\core\hook\manager::class)->dispatch($usertableextend);
@@ -72,7 +86,7 @@ class rights_config_table extends table_sql {
 
         $this->set_count_sql(
                 "SELECT COUNT(DISTINCT id) FROM {user} WHERE " . $tenantfield . " = :tenant",
-                ['tenant' => $this->tenant->get_identifier()]
+                ['tenant' => $tenant->get_identifier()]
         );
 
         $this->set_sql($usertableextend->get_fields(), $usertableextend->get_from(),
@@ -83,8 +97,11 @@ class rights_config_table extends table_sql {
 
     /**
      * Convert the role identifier to a display name.
+     *
+     * @param stdClass $value the object containing the information of the current row
+     * @return string the resulting string for the role column
      */
-    function col_role($value) {
+    public function col_role(stdClass $value): string {
         $role = $value->role;
         if (empty($role)) {
             $userinfo = new userinfo($value->id);
@@ -96,10 +113,10 @@ class rights_config_table extends table_sql {
     /**
      * Get the icon representing the lockes state.
      *
-     * @param mixed $value
-     * @return string
+     * @param stdClass $value the object containing the information of the current row
+     * @return string the resulting string for the locked column
      */
-    function col_locked($value) {
+    public function col_locked(stdClass $value) {
         if (empty($value->locked)) {
             return '<i class="fa fa-unlock local_ai_manager-green"></i>';
         } else {
@@ -110,10 +127,10 @@ class rights_config_table extends table_sql {
     /**
      * Get the icon representing the user confirmed state.
      *
-     * @param mixed $value
-     * @return string
+     * @param stdClass $value the object containing the information of the current row
+     * @return string the resulting string for the confirmed column
      */
-    function col_confirmed($value) {
+    public function col_confirmed($value) {
         if (!empty($value->confirmed)) {
             return '<i class="fa fa-unlock local_ai_manager-green"></i>';
         } else {
@@ -121,18 +138,19 @@ class rights_config_table extends table_sql {
         }
     }
 
-    function other_cols($column, $row) {
+    #[\Override]
+    public function other_cols($column, $row) {
         if ($column === 'checkbox') {
             return '<input type="checkbox" data-userid="' . $row->id . '"/>';
         }
         return null;
     }
 
-    function show_hide_link($column, $index) {
+    #[\Override]
+    public function show_hide_link($column, $index) {
         if ($column === 'checkbox') {
             return '';
         }
         return parent::show_hide_link($column, $index);
     }
-
 }

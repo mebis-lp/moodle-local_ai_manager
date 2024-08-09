@@ -34,12 +34,22 @@ class tenantnavbar implements renderable, \templatable {
     /**
      * Constructor.
      *
-     * @param string $relativeactiveurl the base url (without parameters) relative to '/local/ai_manager/' which should be shown as
-     *  active, for example 'tenant_config.php' or 'purpose_config.php' or 'statistics.php?purpose=chat'
+     * @param string $relativeactiveurl the base url (without parameters) relative to '/local/ai_manager/'
+     *   which should be shown as active, for example 'tenant_config.php' or 'purpose_config.php'
+     *   or 'statistics.php?purpose=chat'
+     *
      */
-    public function __construct(private string $relativeactiveurl) {
+    public function __construct(
+            /**
+             * @var string $relativeactiveurl the base url (without parameters) relative to '/local/ai_manager/'
+             *    which should be shown as active, for example 'tenant_config.php' or 'purpose_config.php'
+             *    or 'statistics.php?purpose=chat'
+             */
+            private string $relativeactiveurl
+    ) {
     }
 
+    #[\Override]
     public function export_for_template(renderer_base $output): stdClass {
         $data = new stdClass();
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
@@ -64,7 +74,8 @@ class tenantnavbar implements renderable, \templatable {
         $data->statisticspurposes = $statisticspurposes;
 
         $data->userconfigactive = $data->quotaconfigactive || $data->rightsconfigactive;
-        $data->statisticsactive = $data->statisticsoverviewactive || array_reduce($statisticspurposes, fn($current, $node) => $current || $node['active'], false);
+        $data->statisticsactive = $data->statisticsoverviewactive
+                || array_reduce($statisticspurposes, fn($current, $node) => $current || $node['active'], false);
 
         return $data;
     }

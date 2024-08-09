@@ -22,21 +22,22 @@ use local_ai_manager\hook\custom_tenant;
  * Data object class for handling usage information when using an AI tool.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tenant {
 
+    /** @var string identifier of the default tenant */
     public const DEFAULT_IDENTIFIER = 'default';
 
+    /** @var string The identifier of the current tenant */
     private string $identifier;
 
     /**
      * Tenant class constructor.
      *
-     * @param string $identifier
-     * @return void
+     * @param string $identifier the tenant identifier; if left empty, the default tenant is being used
      */
     public function __construct(string $identifier = '') {
         global $USER;
@@ -53,12 +54,17 @@ class tenant {
     /**
      * Get the tenant identifier.
      *
-     * @return string
+     * @return string the tenant identifier
      */
     public function get_identifier(): string {
         return $this->identifier;
     }
 
+    /**
+     * Returns if the current tenant of this object is the default tenant.
+     *
+     * @return bool true if this tenant is the default tenant
+     */
     public function is_default_tenant(): bool {
         return $this->identifier === self::DEFAULT_IDENTIFIER;
     }
@@ -74,6 +80,13 @@ class tenant {
         return $customtenant->get_tenant_context();
     }
 
+    /**
+     * Returns if the tenant is allowed.
+     *
+     * In this context "allowed" means that the tenant is not being restricted by an admin setting.
+     *
+     * @return bool true if the tenant is allowed
+     */
     public function is_tenant_allowed(): bool {
         $restricttenants = !empty(get_config('local_ai_manager', 'restricttenants'));
         if (!$restricttenants) {
@@ -89,16 +102,30 @@ class tenant {
         return false;
     }
 
+    /**
+     * Getter for retrieving/calculating the display name of the tenant.
+     *
+     * @return string the display name of this tenant
+     */
     public function get_fullname(): string {
         $customtenant = new custom_tenant($this);
         \core\di::get(\core\hook\manager::class)->dispatch($customtenant);
         return $customtenant->get_fullname();
     }
 
+    /**
+     * Returns the default context for a tenant which is the system context.
+     *
+     * @return \context the default context of a tenant
+     */
     public function get_defaultcontext(): \context {
         return \context_system::instance();
     }
 
+    /**
+     * Returns the default fullname for a tenant if not customized.
+     * @return string the default tenant fullname
+     */
     public function get_defaultfullname(): string {
         return $this->identifier === self::DEFAULT_IDENTIFIER
                 ? get_string('defaulttenantname', 'local_ai_manager')

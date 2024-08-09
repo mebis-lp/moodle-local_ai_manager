@@ -20,7 +20,7 @@
  * This form handles the locking and unlocking of users on the statistics overview pages.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -33,26 +33,55 @@ use Psr\Http\Message\StreamInterface;
  */
 class base_purpose {
 
-    public const PLACEHOLDER = 'placeholder';
+    /** @var string Constant for defining that a purpose option is an array */
     const PARAM_ARRAY = 'array';
 
+    /**
+     * Getter for the request options.
+     *
+     * @param array $options the current options which can be filtered/manipulated etc.
+     * @return array the eventually manipulated options array
+     */
     public function get_request_options(array $options): array {
         return $options;
     }
 
+    /**
+     * Returns all enabled purpose subplugins.
+     *
+     * @return array array of purpose subplugin names
+     */
     public static function get_all_purposes(): array {
         return core_plugin_manager::instance()->get_enabled_plugins('aipurpose');
     }
 
+    /**
+     * Returns the name of the config key for storing the configured tool for a given purpose.
+     *
+     * @param string $purpose the purpose name
+     * @return string the config key for storing the config setting for accessing the config via the config manager
+     */
     public static function get_purpose_tool_config_key(string $purpose): string {
         return 'purpose_' . $purpose . '_tool';
     }
 
-    public final function get_plugin_name(): string {
+    /**
+     * Helper function for determining the plugin name based on this object.
+     *
+     * @return string the plugin name
+     */
+    final public function get_plugin_name(): string {
         return preg_replace('/^aipurpose_(.*)\\\\.*/', '$1', get_class($this));
     }
 
-    public final function get_available_purpose_options(): array {
+    /**
+     * Get the options defined by this purpose.
+     *
+     * @return array associative array defining the options
+     * @throws \coding_exception in case that a subclass tries to define an option which is already being defined in the
+     *  parent class
+     */
+    final public function get_available_purpose_options(): array {
         $options = [];
         $options['component'] = PARAM_TEXT;
         $options['contextid'] = PARAM_INT;
@@ -68,6 +97,13 @@ class base_purpose {
         return $options + $additionalpurposeoptions;
     }
 
+    /**
+     * Function to define purpose options.
+     *
+     * Should be overwritten of subclasses if they want to add options.
+     *
+     * @return array the options array
+     */
     public function get_additional_purpose_options(): array {
         return [];
     }
@@ -84,5 +120,4 @@ class base_purpose {
     public function format_output(string $output): string {
         return format_text($output, FORMAT_MARKDOWN, ['filter' => false]);
     }
-
 }

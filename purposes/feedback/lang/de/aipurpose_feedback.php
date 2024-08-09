@@ -24,6 +24,6 @@
  */
 
 $string['pluginname'] = 'Feedback';
-$string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
+$string['privacy:metadata'] = 'Das Zweck-Subplugin "Feedback" speichert keine persönlichen Daten.';
 $string['requestcount'] = 'Feedback-Anfragen';
 $string['requestcount_shortened'] = 'Feedback-';

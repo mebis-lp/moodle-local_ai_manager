@@ -18,17 +18,15 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_mbsnewcourse\local\mbsnewcourse;
-use block_mbsnewcourse\form\mbs_restore_form;
-use core\output\notification;
 use local_ai_manager\local\tenant;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $PAGE, $OUTPUT, $USER;
 

@@ -31,7 +31,19 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ai_manager_utils {
-    public static function get_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0, bool $includedeleted = true): array {
+
+    /**
+     * API function to retrieve entries from the ai_manager logging table.
+     *
+     * @param string $component the component which has logged the records
+     * @param int $contextid the contextid
+     * @param int $userid the userid of the user, optional
+     * @param int $itemid the itemid, optional
+     * @param bool $includedeleted if log entries which are marked as deleted, should be included in the result
+     * @return array array of records of the log table
+     */
+    public static function get_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0,
+            bool $includedeleted = true): array {
         global $DB;
         $params = [
                 'component' => $component,
@@ -51,6 +63,15 @@ class ai_manager_utils {
         return !empty($records) ? $records : [];
     }
 
+    /**
+     * API function to mark log entries as deleted.
+     *
+     * @param string $component the component which has logged the records
+     * @param int $contextid the contextid
+     * @param int $userid the userid of the user, optional
+     * @param int $itemid the itemid, optional
+     * @return void
+     */
     public static function mark_log_entries_as_deleted(string $component, int $contextid, int $userid = 0, int $itemid = 0): void {
         global $DB;
         $params = [
@@ -73,6 +94,14 @@ class ai_manager_utils {
         $rs->close();
     }
 
+    /**
+     * API function to check, if an itemid already exists.
+     *
+     * @param string $component the component to check
+     * @param int $contextid the contextid to check
+     * @param int $itemid the itemid that should be checked for existence
+     * @return bool if the passed itemid in the context of the component and contextid already exists
+     */
     public static function itemid_exists(string $component, int $contextid, int $itemid): bool {
         global $DB;
         return $DB->record_exists('local_ai_manager_request_log',
@@ -83,6 +112,13 @@ class ai_manager_utils {
                 ]);
     }
 
+    /**
+     * API function to get the next unused itemid.
+     *
+     * @param string $component the component to retrieve the itemid for
+     * @param int $contextid the contextid of the context to retrieve the itemid for
+     * @return int the unused itemid
+     */
     public static function get_next_free_itemid(string $component, int $contextid): int {
         global $DB;
         $sql = "SELECT MAX(itemid) as maxitemid FROM {local_ai_manager_request_log} "
@@ -92,7 +128,14 @@ class ai_manager_utils {
         return empty($max) ? 1 : $max + 1;
     }
 
-    public static function get_connector_instance_by_purpose(string $purpose, int $userid = null): base_instance {
+    /**
+     * API helper function to get the connector instance of a purpose
+     *
+     * @param string $purpose the purpose to get the connector instance for
+     * @param ?int $userid the userid of the user to determine the correct tenant
+     * @return base_instance the connector instance object
+     */
+    public static function get_connector_instance_by_purpose(string $purpose, ?int $userid = null): base_instance {
         if (is_null($userid)) {
             $tenant = \core\di::get(tenant::class);
         } else {
@@ -105,7 +148,14 @@ class ai_manager_utils {
         return $factory->get_connector_instance_by_purpose($purpose);
     }
 
-    public static function get_ai_config(stdClass $user, string $tenant = null): array {
+    /**
+     * API function to get all needed information about the AI configuration for a user.
+     *
+     * @param stdClass $user the user to retrieve the information for
+     * @param ?string $tenant the tenant to retrieve the information for. If null, the current tenant will be used
+     * @return array complex associative array containing all the needed configurations
+     */
+    public static function get_ai_config(stdClass $user, ?string $tenant = null): array {
         if (!is_null($tenant)) {
             $tenant = new tenant($tenant);
             \core\di::set(tenant::class, $tenant);
@@ -137,7 +187,7 @@ class ai_manager_utils {
                             'tenant' => $tenant->get_identifier(),
                             'returnurl' => (new moodle_url('/local/ai_manager/tenant_config.php',
                                     ['tenant' => $tenant->get_identifier()]))->out(),
-                            'connectorname' => $toolname
+                            'connectorname' => $toolname,
                     ]);
             $tool['addurl'] = $addurl->out(false);
             $tools[] = $tool;

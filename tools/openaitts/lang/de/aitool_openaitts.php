@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// TODO add description
 $string['adddescription'] = 'TTS ist ein von OpenAI entwickeltes Modell zur Sprachausgabe von Texten.';
 $string['pluginname'] = 'OpenAI TTS';
-$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';
+$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "OpenAI TTS" speichert keine personenbezogenen Daten.';

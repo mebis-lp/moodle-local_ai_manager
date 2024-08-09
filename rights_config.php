@@ -18,17 +18,17 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_ai_manager\hook\usertable_extend;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\output\tenantnavbar;
 use local_bycsauth\idmgroup;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
@@ -87,7 +87,9 @@ if ($rightsconfigform->is_cancelled()) {
             $filterids = [];
             if (!empty($filterform->get_data())) {
                 $filterids = $filterform->get_data()->filterids;
-                // TODO: Evtl. add validation possibility in usertable_filter
+                // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
+                // TODO: Evtl. add validation possibility in usertable_filter.
+                // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
             }
         }
         $filterform->display();

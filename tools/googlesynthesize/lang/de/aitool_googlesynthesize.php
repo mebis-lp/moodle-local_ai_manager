@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// TODO add description
 $string['adddescription'] = 'Google Synthesize, oft im Kontext von “Google Text-to-Speech”, ist ein Werkzeug zur Umwandlung von Text in gesprochene Sprache.';
 $string['pluginname'] = 'Google Synthesize';
-$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';
+$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "Google Synthesize" speichert keine personenbezogenen Daten.';

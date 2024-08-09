@@ -24,6 +24,6 @@
  */
 
 $string['pluginname'] = 'Sprachgenerierung';
-$string['privacy:metadata'] = 'The local ai_managers purpose subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['privacy:metadata'] = 'The local ai_managers purpose subplugin "Sprachgenerierung" does not store any personal data.';
 $string['requestcount'] = 'Sprachgenerierungsanfragen';
 $string['requestcount_shortened'] = 'Sprachgenerierungs-';

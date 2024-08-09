@@ -16,7 +16,6 @@
 
 namespace local_ai_manager\local;
 
-
 use stdClass;
 
 /**
@@ -29,12 +28,21 @@ use stdClass;
  */
 class aitool_option_temperature {
 
+    /**
+     * Extends the form definition of the edit instance form by adding the temperature option.
+     *
+     * @param \MoodleQuickForm $mform the mform object
+     */
     public static function extend_form_definition(\MoodleQuickForm $mform): void {
         $radioarray = [];
-        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', get_string('temperature_more_creative', 'local_ai_manager'), 'selection_creative');
-        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', get_string('temperature_creative_balanced', 'local_ai_manager'), 'selection_balanced');
-        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '', get_string('temperature_more_precise', 'local_ai_manager'), 'selection_precise');
-        $mform->addGroup($radioarray, 'temperatureprechoicearray', get_string('temperature_defaultsetting', 'local_ai_manager'), ['<br/>'], false);
+        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '',
+                get_string('temperature_more_creative', 'local_ai_manager'), 'selection_creative');
+        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '',
+                get_string('temperature_creative_balanced', 'local_ai_manager'), 'selection_balanced');
+        $radioarray[] = $mform->createElement('radio', 'temperatureprechoice', '',
+                get_string('temperature_more_precise', 'local_ai_manager'), 'selection_precise');
+        $mform->addGroup($radioarray, 'temperatureprechoicearray', get_string('temperature_defaultsetting', 'local_ai_manager'),
+                ['<br/>'], false);
         $mform->setDefault('temperatureprechoice', 'selection_balanced');
 
         $mform->addElement('checkbox', 'temperatureusecustom', get_string('temperature_use_custom_value', 'local_ai_manager'));
@@ -44,6 +52,12 @@ class aitool_option_temperature {
         $mform->disabledIf('temperatureprechoicearray', 'temperatureusecustom', 'checked');
     }
 
+    /**
+     * Adds the temperature data to the form data to be passed to the form when loading.
+     *
+     * @param string $temperature the current temperature as read from the database
+     * @return stdClass the object to pass to the form when loading
+     */
     public static function add_temperature_to_form_data(string $temperature): stdClass {
         $temperature = floatval($temperature);
         $data = new stdClass();
@@ -65,8 +79,13 @@ class aitool_option_temperature {
         return $data;
     }
 
+    /**
+     * Extract the temperature from the form data submitted by the form.
+     *
+     * @param stdClass $data the form data after submission
+     * @return string the temperature value in string representation
+     */
     public static function extract_temperature_to_store(stdClass $data): string {
-        // TODO Handle float vs. string somehow
         $temperature = null;
         if (empty($data->temperatureusecustom)) {
             switch ($data->temperatureprechoice) {
@@ -86,12 +105,18 @@ class aitool_option_temperature {
         return $temperature;
     }
 
+    /**
+     * Validation function for the temperature option when form is being submitted.
+     *
+     * @param array $data the data being submitted by the form
+     * @return array associative array ['mformelementname' => 'error string'] if there are validation errors, otherwise empty array
+     */
     public static function validate_temperature(array $data): array {
         $errors = [];
-        if (!empty($data['temperaturecustom']) && (floatval($data['temperaturecustom']) < 0 || floatval($data['temperaturecustom']) > 1.0)) {
+        if (!empty($data['temperaturecustom']) &&
+                (floatval($data['temperaturecustom']) < 0 || floatval($data['temperaturecustom']) > 1.0)) {
             $errors['temperaturecustom'] = get_string('formvalidation_editinstance_temperaturerange', 'local_ai_manager');
         }
         return $errors;
     }
-
 }

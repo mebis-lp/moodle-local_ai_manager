@@ -40,6 +40,9 @@ class reset_user_usage extends \core\task\scheduled_task {
      */
     private \core\clock $clock;
 
+    /**
+     * Create the task object.
+     */
     public function __construct() {
         $this->clock = \core\di::get(\core\clock::class);
     }
@@ -59,8 +62,8 @@ class reset_user_usage extends \core\task\scheduled_task {
     public function execute(): void {
         global $DB;
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
-        $tenants =
-                $DB->get_fieldset_sql("SELECT DISTINCT " . $tenantfield . " FROM {local_ai_manager_userusage} uu LEFT JOIN {user} u ON uu.userid = u.id");
+        $tenants = $DB->get_fieldset_sql("SELECT DISTINCT " . $tenantfield
+                . " FROM {local_ai_manager_userusage} uu LEFT JOIN {user} u ON uu.userid = u.id");
         if (empty($tenants)) {
             // Just in the rare case of an empty table.
             mtrace('No entries found. Exiting.');

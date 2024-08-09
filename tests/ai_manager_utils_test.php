@@ -22,11 +22,11 @@ use stdClass;
  * Test class for the ai_manager_utils functions.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class ai_manager_utils_test extends \advanced_testcase {
+final class ai_manager_utils_test extends \advanced_testcase {
 
     /**
      * Tests the method get_next_free_itemid.

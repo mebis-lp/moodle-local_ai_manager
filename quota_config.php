@@ -18,7 +18,7 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,6 +33,7 @@ use local_ai_manager\local\userusage;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
@@ -82,12 +83,8 @@ if ($quotaconfigform->is_cancelled()) {
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {
         $purposeobject = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_purpose_by_purpose_string($purpose);
-        //if ($configmanager->get_max_requests_raw($purposeobject, userinfo::ROLE_BASIC) !== false) {
-            $data->{$purpose . '_max_requests_basic'} = $configmanager->get_max_requests($purposeobject, userinfo::ROLE_BASIC);
-        //}
-        //if ($configmanager->get_max_requests_raw($purposeobject, userinfo::ROLE_EXTENDED) !== false) {
-            $data->{$purpose . '_max_requests_extended'} = $configmanager->get_max_requests($purposeobject, userinfo::ROLE_EXTENDED);
-        //}
+        $data->{$purpose . '_max_requests_basic'} = $configmanager->get_max_requests($purposeobject, userinfo::ROLE_BASIC);
+        $data->{$purpose . '_max_requests_extended'} = $configmanager->get_max_requests($purposeobject, userinfo::ROLE_EXTENDED);
     }
     if ($configmanager->get_max_requests_period()) {
         $data->max_requests_period = $configmanager->get_max_requests_period();
