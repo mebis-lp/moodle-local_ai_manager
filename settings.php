@@ -38,6 +38,17 @@ if ($hassiteconfig) {
                         get_string('basicsettings', 'local_ai_manager'),
                         get_string('basicsettingsdesc', 'local_ai_manager')));
 
+        $settings->add(new admin_setting_configselect('local_ai_manager/tenantcolumn',
+                new lang_string('tenantcolumn', 'local_ai_manager'),
+                new lang_string('tenantcolumndesc', 'local_ai_manager'),
+                'institution',
+                [
+                        'institution' => 'institution',
+                        'department' => 'department',
+                        'city' => 'city',
+                ]
+        ));
+
         $settings->add(new admin_setting_configcheckbox(
                 'local_ai_manager/addnavigationentry',
                 new lang_string('addnavigationentry', 'local_ai_manager'),
@@ -71,6 +82,13 @@ if ($hassiteconfig) {
                 new lang_string('requesttimeout', 'local_ai_manager'),
                 new lang_string('requesttimeoutdesc', 'local_ai_manager'),
                 '60'
+        ));
+
+        $settings->add(new admin_setting_confightmleditor(
+                'local_ai_manager/termsofuse',
+                new lang_string('termsofusesetting', 'local_ai_manager'),
+                new lang_string('termsofusesettingdesc', 'local_ai_manager'),
+                ''
         ));
     }
 }

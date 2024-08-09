@@ -18,25 +18,26 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core\output\notification;
 use local_ai_manager\base_purpose;
 use local_ai_manager\form\purpose_config_form;
+use local_ai_manager\local\tenant_config_output_utils;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 $PAGE->add_body_class('limitcontentwidth');
 
-\local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/purpose_config.php'));
+tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/purpose_config.php'));
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_identifier()]);
 $purposeconfigform = new purpose_config_form(null, ['returnurl' => $PAGE->url]);
 // Will return the config manager for the current user.
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
@@ -46,7 +47,8 @@ if ($purposeconfigform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $purposeconfigform->get_data()) {
     foreach (base_purpose::get_all_purposes() as $purpose) {
-        if (property_exists($data, base_purpose::get_purpose_tool_config_key($purpose)) && intval($data->{base_purpose::get_purpose_tool_config_key($purpose)}) === 0) {
+        if (property_exists($data, base_purpose::get_purpose_tool_config_key($purpose))
+                && intval($data->{base_purpose::get_purpose_tool_config_key($purpose)}) === 0) {
             $configmanager->unset_config(base_purpose::get_purpose_tool_config_key($purpose));
         }
         if (!empty($data->{base_purpose::get_purpose_tool_config_key($purpose)})) {

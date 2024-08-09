@@ -14,19 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * block_mbsnewcourse course restore form
- *
- * This form gathers information for a quick and fast course restore into a new course.
- *
- * @package    block_mbsnewcourse
- * @copyright  2021, ISB Bayern
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_ai_manager\form;
-
 
 use local_ai_manager\base_instance;
 use local_ai_manager\local\connector_factory;
@@ -37,17 +25,19 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * A form for a user to restore a course instantly into a new one.
+ * Form for editing a connector instance.
  *
- * @copyright  2021, ISB Bayern
+ * @package    local_ai_manager
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_instance_form extends \moodleform {
 
+    /** @var base_instance the connector instance to edit */
     private base_instance $connectorinstance;
 
-   /**
+    /**
      * Form definition.
      */
     public function definition() {

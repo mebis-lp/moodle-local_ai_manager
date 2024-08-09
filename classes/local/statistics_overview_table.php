@@ -25,14 +25,24 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/tablelib.php');
 
+/**
+ * Table class for showing user statistics.
+ *
+ * @package    local_ai_manager
+ * @copyright  2024 ISB Bayern
+ * @author     Philipp Memmel
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class statistics_overview_table extends table_sql {
 
     /**
      * Constructor.
+     *
+     * @param string $uniqid a uniqid for this table
+     * @param moodle_url $baseurl the base url where this table is being rendered
      */
     public function __construct(
             string $uniqid,
-            private readonly tenant $tenant,
             moodle_url $baseurl
     ) {
         parent::__construct($uniqid);
@@ -63,9 +73,9 @@ class statistics_overview_table extends table_sql {
      * Get the icon representing the lockes state.
      *
      * @param stdClass $row the data object of the current row
-     * @return string the string representation
+     * @return string the string representation of the userusage column
      */
-    function col_userusage(stdClass $row): string {
+    public function col_userusage(stdClass $row): string {
         $connector = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_connector_by_model($row->model);
         if ($connector === null) {
             // This should only be in case we have disabled or removed a connector plugin. In this case we cannot provide a unit.
@@ -75,12 +85,12 @@ class statistics_overview_table extends table_sql {
         return intval($row->userusage) . " " . $connector->get_unit()->to_string();
     }
 
-    function other_cols($column, $row) {
+    #[\Override]
+    public function other_cols($column, $row): ?string {
         if ($column === 'checkbox') {
             return '<input type="checkbox" data-userid="' . $row->id . '"/>';
         }
+        return null;
     }
-
-
 
 }

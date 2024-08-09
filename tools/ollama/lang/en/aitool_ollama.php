@@ -26,4 +26,4 @@
 $string['adddescription'] = 'Ollama is a platform or service that focuses on the use of language AI and generative AI.';
 $string['formvalidation_noendpoint'] = 'You must specify a valid endpoint to your ollama instance';
 $string['pluginname'] = 'Ollama';
-$string['privacy:metadata'] = 'The local ai_managers tool subplugin aitool_ollama does not store any personal data.';
+$string['privacy:metadata'] = 'The local ai_manager tool subplugin "Ollama" does not store any personal data.';

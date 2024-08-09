@@ -18,7 +18,7 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,6 +27,7 @@ use local_ai_manager\local\userinfo;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
@@ -40,11 +41,11 @@ echo $OUTPUT->header();
 $tenantnavbar = new tenantnavbar('statistics.php');
 echo $OUTPUT->render($tenantnavbar);
 
-$baseurl = new moodle_url('/local/ai_manager/statistics.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$baseurl = new moodle_url('/local/ai_manager/statistics.php', ['tenant' => $tenant->get_identifier()]);
 
 echo $OUTPUT->heading(get_string('statisticsoverview', 'local_ai_manager'), 2, 'text-center');
 $baseurl = new moodle_url('/local/ai_manager/statistics.php');
-$overviewtable = new \local_ai_manager\local\statistics_overview_table('statistics-overview-table', $tenant, $baseurl);
+$overviewtable = new \local_ai_manager\local\statistics_overview_table('statistics-overview-table', $baseurl);
 $overviewtable->out(100, false);
 echo html_writer::empty_tag('hr', ['class' => 'mb-3']);
 

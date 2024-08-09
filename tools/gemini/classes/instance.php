@@ -23,13 +23,14 @@ use stdClass;
 /**
  * Instance class for the connector instance of aitool_gemini.
  *
- * @package    local_ai_manager
+ * @package    aitool_gemini
  * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class instance extends base_instance {
 
+    #[\Override]
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
         $mform->setDefault('endpoint', 'https://generativelanguage.googleapis.com/v1beta/models');
         $mform->freeze('endpoint');
@@ -37,6 +38,7 @@ class instance extends base_instance {
         aitool_option_temperature::extend_form_definition($mform);
     }
 
+    #[\Override]
     protected function get_extended_formdata(): stdClass {
         $temperature = $this->get_customfield1();
         $data = new stdClass();
@@ -47,20 +49,27 @@ class instance extends base_instance {
         return $data;
     }
 
+    #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
-        // TODO eventually detect , or . as float separator and handle accordingly
         $temperature = aitool_option_temperature::extract_temperature_to_store($data);
         $this->set_customfield1($temperature);
     }
 
+    #[\Override]
     protected function extend_validation(array $data, array $files): array {
         return aitool_option_temperature::validate_temperature($data);
     }
 
+    /**
+     * Return the current temperature value as float.
+     *
+     * @return float the current temperature value
+     */
     public function get_temperature(): float {
         return floatval($this->get_customfield1());
     }
 
+    #[\Override]
     public function get_endpoint(): string {
         return parent::get_endpoint() . '/' . $this->get_model() . ':generateContent';
     }

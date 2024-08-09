@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// TODO add description
-$string['adddescription'] = 'DALL-E ist ein KI-Modell von OpenAI, das darauf spezialisiert ist, aus Textbeschreibungen Bilder zu generieren.';
+$string['adddescription'] = 'Dall-E ist ein KI-Modell von OpenAI, das darauf spezialisiert ist, aus Textbeschreibungen Bilder zu generieren.';
 $string['pluginname'] = 'Dall-E';
-$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "' . $string['pluginname'] . '" speichert keine personenbezogenen Daten.';
+$string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "Dall-E" speichert keine personenbezogenen Daten.';

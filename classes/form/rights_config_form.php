@@ -14,17 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * User config config form.
- *
- * This form handles the locking and unlocking of users on the statistics overview pages.
- *
- * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_ai_manager\form;
 
 use core_plugin_manager;
@@ -40,9 +29,12 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * A form for enabling and disablin.
+ * Rights config form.
  *
- * @copyright  2021, ISB Bayern
+ * This form handles the user locking/unlocking, assigning of roles etc. on the rights config page.
+ *
+ * @package    local_ai_manager
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -55,7 +47,7 @@ class rights_config_form extends \moodleform {
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $mform = &$this->_form;
 
-        $mform->addElement('hidden', 'tenant', $tenant->get_tenantidentifier());
+        $mform->addElement('hidden', 'tenant', $tenant->get_identifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
         $mform->addElement('hidden', 'userids', '', ['id' => 'rights-table-userids']);
@@ -77,19 +69,5 @@ class rights_config_form extends \moodleform {
         $buttonarray[] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
-    }
-
-    /**
-     * Some extra validation.
-     *
-     * @param array $data array of ("fieldname"=>value) of submitted data
-     * @param array $files array of uploaded files "element_name"=>tmp_file_path
-     * @return array of "element_name"=>"error_description" if there are errors,
-     *         or an empty array if everything is OK (true allowed for backwards compatibility too).
-     */
-    public function validation($data, $files): array {
-        $errors = [];
-        // TODO validate
-        return $errors;
     }
 }

@@ -17,7 +17,7 @@
  * Toggle handler.
  *
  * @module      local_ai_manager/toggle_handler
- * @copyright   2024, ISB Bayern
+ * @copyright   2024 ISB Bayern
  * @author      Philipp Memmel
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

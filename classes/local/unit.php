@@ -16,18 +16,27 @@
 
 namespace local_ai_manager\local;
 
+// phpcs:disable moodle.Commenting.InlineComment.DocBlock
+// In case of an enum this phpcs rule triggers wrongly.
 /**
  * Enum for defining different units in which the AI tool costs are being calculated.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 enum unit {
+    // phpcs:enable moodle.Commenting.InlineComment.DocBlock
+
     case TOKEN;
     case COUNT;
 
+    /**
+     * Helper function to get a string representation of the enum constants.
+     *
+     * @return string localized string representation of the enum constants
+     */
     public function to_string(): string {
         return get_string('unit_' . strtolower($this->name), 'local_ai_manager');
     }

@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Connector - ollama
- *
- * @package    aitool_ollama
- * @copyright  ISB Bayern, 2024
- * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace aitool_ollama;
 
 use local_ai_manager\local\prompt_response;
@@ -31,7 +22,7 @@ use local_ai_manager\local\usage;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Connector - ollama
+ * Connector for Ollama.
  *
  * @package    aitool_ollama
  * @copyright  ISB Bayern, 2024
@@ -40,10 +31,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends \local_ai_manager\base_connector {
 
-    public function __construct(instance $instance) {
-        $this->instance = $instance;
-    }
-
+    #[\Override]
     public function get_models_by_purpose(): array {
         $textmodels = ['gemma', 'llama3', 'llama3.1', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
                 'tinyllama'];
@@ -55,10 +43,12 @@ class connector extends \local_ai_manager\base_connector {
         ];
     }
 
+    #[\Override]
     public function get_unit(): unit {
         return unit::TOKEN;
     }
 
+    #[\Override]
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
 
         $content = json_decode($result->getContents(), true);
@@ -73,12 +63,7 @@ class connector extends \local_ai_manager\base_connector {
                 $content['message']['content']);
     }
 
-    /**
-     * Retrieves the data for the prompt based on the prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @return array The prompt data.
-     */
+    #[\Override]
     public function get_prompt_data(string $prompttext, array $requestoptions): array {
         $messages = [];
         if (array_key_exists('conversationcontext', $requestoptions)) {

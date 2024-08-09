@@ -18,7 +18,7 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,10 +41,10 @@ $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 $accessmanager->require_tenant_member();
 
-$url = new moodle_url('/local/ai_manager/ai_info.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$url = new moodle_url('/local/ai_manager/ai_info.php', ['tenant' => $tenant->get_identifier()]);
 $PAGE->set_url($url);
-$PAGE->set_context($tenant->get_tenant_context());
-$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
+$PAGE->set_context($tenant->get_context());
+$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_identifier()]);
 
 $strtitle = get_string('aiinfotitle', 'local_ai_manager');
 $PAGE->set_title($strtitle);
@@ -72,6 +72,10 @@ foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
     $templatepurpose['infolink'] = $instance->get_infolink();
     $templatepurpose['highlight'] = in_array($purpose, $purposes);
     $templatecontext['purposes'][] = $templatepurpose;
+}
+$termsofuse = get_config('local_ai_manager', 'termsofuse');
+if (!empty($termsofuse)) {
+    $templatecontext['termsofuse'] = $termsofuse;
 }
 echo $OUTPUT->render_from_template('local_ai_manager/purpose_info', $templatecontext);
 echo $OUTPUT->footer();

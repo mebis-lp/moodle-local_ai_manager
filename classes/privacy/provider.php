@@ -34,14 +34,17 @@ namespace local_ai_manager\privacy;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {
-// TODO Das darf kein null_provider sein!
+
+    // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
+    // TODO Das darf kein null_provider sein!
+    // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
     /**
      * Get the language string identifier with the component's language
      * file to explain why this plugin stores no data.
      *
      * @return  string
      */
-    public static function get_reason() : string {
+    public static function get_reason(): string {
         return 'privacy:metadata';
     }
 }

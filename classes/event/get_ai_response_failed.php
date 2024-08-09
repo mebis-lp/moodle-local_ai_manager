@@ -61,7 +61,8 @@ class get_ai_response_failed extends \core\event\base {
      * @param prompt_response $promptresponse The object containing the information about the prompt response
      * @param float $duration The duration of the request
      */
-    public static function create_from_prompt_response(array $promptdata, prompt_response $promptresponse, float $duration): \core\event\base {
+    public static function create_from_prompt_response(array $promptdata, prompt_response $promptresponse,
+            float $duration): \core\event\base {
         $data = [
                 'contextid' => \context_system::instance()->id,
                 'other' => [

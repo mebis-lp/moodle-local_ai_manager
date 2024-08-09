@@ -28,6 +28,11 @@ use stdClass;
  */
 class aitool_option_azure {
 
+    /**
+     * Extends the form definition of the edit instance form by adding azure options.
+     *
+     * @param \MoodleQuickForm $mform the mform object
+     */
     public static function extend_form_definition(\MoodleQuickForm $mform): void {
         $mform->addElement('selectyesno', 'azure_enabled', get_string('use_openai_by_azure_heading', 'local_ai_manager'));
         $mform->setDefault('azure_enabled', false);
@@ -51,6 +56,15 @@ class aitool_option_azure {
         $mform->hideIf('model', 'azure_enabled', 'eq', 1);
     }
 
+    /**
+     * Helper function to convert the given azure data to an object which then can be passed to the form when loading.
+     *
+     * @param bool $enabled if azure is enabled for this instance
+     * @param ?string $resourcename the azure resource name
+     * @param ?string $deploymentid the azure deployment id
+     * @param ?string $apiversion the api version of the azure resource
+     * @return stdClass the stdClass which then can be passed to the form for loading
+     */
     public static function add_azure_options_to_form_data(bool $enabled, ?string $resourcename, ?string $deploymentid,
             ?string $apiversion): stdClass {
         $data = new stdClass();
@@ -63,6 +77,12 @@ class aitool_option_azure {
         return $data;
     }
 
+    /**
+     * Helper function to extract the azure data from the data being submitted by the form.
+     *
+     * @param stdClass $data the data being submitted by the form
+     * @return array array with the extracted azure information
+     */
     public static function extract_azure_data_to_store(stdClass $data): array {
         $resourcename = empty($data->azure_resourcename) ? null : $data->azure_resourcename;
         $deploymentid = empty($data->azure_deploymentid) ? null : $data->azure_deploymentid;
@@ -70,6 +90,12 @@ class aitool_option_azure {
         return [$data->azure_enabled, $resourcename, $deploymentid, $apiversion];
     }
 
+    /**
+     * Validation function for the azure options in the mform.
+     *
+     * @param array $data the data being submitted by the form
+     * @return array associative array ['mformelementname' => 'error string'] if there are validation errors, otherwise empty array
+     */
     public static function validate_azure_options(array $data): array {
         $errors = [];
         if (!empty($data['azure_enabled'])) {
@@ -85,5 +111,4 @@ class aitool_option_azure {
         }
         return $errors;
     }
-
 }

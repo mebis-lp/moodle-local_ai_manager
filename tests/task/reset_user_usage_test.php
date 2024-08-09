@@ -24,11 +24,11 @@ use stdClass;
  * Test class for reset user usage task.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class reset_user_usage_test extends \advanced_testcase {
+final class reset_user_usage_test extends \advanced_testcase {
 
     /**
      * Tests the task.
@@ -38,6 +38,8 @@ class reset_user_usage_test extends \advanced_testcase {
     public function test_execute(): void {
         global $DB;
         $this->resetAfterTest();
+        // Should be the default anyway, but let's be safe here.
+        set_config('tenantcolumn', 'institution');
         $tenant = new tenant(1234);
         $configmanager = new config_manager($tenant);
         $configmanager->set_config('max_requests_period', 3 * DAYSECS);
@@ -67,8 +69,8 @@ class reset_user_usage_test extends \advanced_testcase {
             $DB->insert_record('local_ai_manager_userusage', $record);
         }
         $this->assertCount(512, $DB->get_records_select('local_ai_manager_userusage', "currentusage != 0"));
-        $this->assertCount(512, $DB->get_records_select('local_ai_manager_userusage', "lastreset = :currenttime", ['currenttime' => $currenttime]));
-
+        $this->assertCount(512,
+                $DB->get_records_select('local_ai_manager_userusage', "lastreset = :currenttime", ['currenttime' => $currenttime]));
 
         // Set clock to 2 days which is below the configured value of 3 days.
         $clock = $this->mock_clock_with_frozen($currenttime + 2 * DAYSECS);
@@ -79,7 +81,8 @@ class reset_user_usage_test extends \advanced_testcase {
         ob_end_clean();
         // Nothing should have happened, because last reset time is below the configured value for both tenants.
         $this->assertCount(512, $DB->get_records_select('local_ai_manager_userusage', "currentusage != 0"));
-        $this->assertCount(512, $DB->get_records_select('local_ai_manager_userusage', "lastreset = :currenttime", ['currenttime' => $currenttime]));
+        $this->assertCount(512,
+                $DB->get_records_select('local_ai_manager_userusage', "lastreset = :currenttime", ['currenttime' => $currenttime]));
 
         $clock = $this->mock_clock_with_frozen($currenttime + 3 * DAYSECS + 1);
         \core\di::set('clock', $clock);

@@ -24,6 +24,6 @@
  */
 
 $string['pluginname'] = 'Einzelner Prompt';
-$string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
+$string['privacy:metadata'] = 'Das Zweck-Subplugin "Einzelner Prompt" speichert keine persönlichen Daten.';
 $string['requestcount'] = 'Textanfragen';
 $string['requestcount_shortened'] = 'Text-';

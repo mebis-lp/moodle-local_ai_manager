@@ -14,27 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Connector - chatgpt.
- *
- * @package    aitool_gemini
- * @copyright  ISB Bayern, 2024
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace aitool_gemini;
 
-use core\http_client;
 use local_ai_manager\local\prompt_response;
-use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Connector - chatgpt
+ * Connector for Gemini.
  *
  * @package    aitool_gemini
  * @copyright  ISB Bayern, 2024
@@ -43,10 +31,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends \local_ai_manager\base_connector {
 
-    public function __construct(instance $instance) {
-        $this->instance = $instance;
-    }
-
+    #[\Override]
     public function get_models_by_purpose(): array {
         $textmodels = ['gemini-1.0-pro-latest', 'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
         return [
@@ -57,13 +42,18 @@ class connector extends \local_ai_manager\base_connector {
         ];
     }
 
+    #[\Override]
     public function get_unit(): unit {
         return unit::TOKEN;
     }
 
+    #[\Override]
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
-        // TODO error handling: check if answer contains "stop", then the LLM will have successfully done something.
-        //  If not, we need to do some error handling and return prompt_response::create_from_error(...
+        // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
+        /* TODO error handling: check if answer contains "stop", then the LLM will have successfully done something.
+            If not, we need to do some error handling and return prompt_response::create_from_error(...
+        */
+        // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
         $content = json_decode($result->getContents(), true);
 
         $textanswer = '';
@@ -80,6 +70,7 @@ class connector extends \local_ai_manager\base_connector {
         );
     }
 
+    #[\Override]
     public function get_prompt_data(string $prompttext, array $requestoptions): array {
         $messages = [];
         if (array_key_exists('conversationcontext', $requestoptions)) {
@@ -102,7 +93,7 @@ class connector extends \local_ai_manager\base_connector {
                         'role' => $role,
                         'parts' => [
                                 ['text' => $message['message']],
-                        ]
+                        ],
                 ];
             }
         }
@@ -110,24 +101,27 @@ class connector extends \local_ai_manager\base_connector {
                 'role' => 'user',
                 'parts' => [
                         ['text' => $prompttext],
-                ]
+                ],
         ];
         return [
                 'contents' => $messages,
                 'generationConfig' => [
                         'temperature' => $this->instance->get_temperature(),
-                ]
+                ],
         ];
     }
 
+    #[\Override]
     public function has_customvalue1(): bool {
         return true;
     }
 
+    #[\Override]
     public function has_customvalue2(): bool {
         return true;
     }
 
+    #[\Override]
     protected function get_headers(): array {
         $headers = parent::get_headers();
         if (in_array('Authorization', array_keys($headers))) {
@@ -136,5 +130,4 @@ class connector extends \local_ai_manager\base_connector {
         }
         return $headers;
     }
-
 }

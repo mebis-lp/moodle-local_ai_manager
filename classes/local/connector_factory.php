@@ -19,27 +19,43 @@ namespace local_ai_manager\local;
 use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
 use local_ai_manager\base_instance;
-use mod_unilabel\factory;
 
 /**
- * Class for managing the configuration of tenants.
+ * Class for creating/retrieving some important objects.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class connector_factory {
 
+    /** @var base_purpose $purpose the purpose object */
     private base_purpose $purpose;
 
+    /** @var base_instance the connector instance object */
     private base_instance $connectorinstance;
 
+    /** @var base_connector the connector object */
     private base_connector $connector;
 
-    public function __construct(private readonly config_manager $configmanager) {
+    /**
+     * Constructs the connector factory object.
+     *
+     * @param config_manager $configmanager the config manager of the currently used tenant
+     */
+    public function __construct(
+            /** @var config_manager $configmanager the config manager of the currently used tenant */
+            private readonly config_manager $configmanager
+    ) {
     }
 
+    /**
+     * Returns the connector instance object for a given connector instance id.
+     *
+     * @param int $id the connector instance id (of the database record)
+     * @return base_instance the instance object
+     */
     public function get_connector_instance_by_id(int $id): base_instance {
         global $DB;
         if (!empty($this->connectorinstance) && $this->connectorinstance->get_id() === $id) {
@@ -51,6 +67,12 @@ class connector_factory {
         return $this->connectorinstance;
     }
 
+    /**
+     * Returns the connector instance object defined for the given purpose.
+     *
+     * @param string $purpose the purpose name
+     * @return ?base_instance the instance object or null if no instance has been configured for the given purpose
+     */
     public function get_connector_instance_by_purpose(string $purpose): ?base_instance {
         $instanceid = $this->configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose));
         if (empty($instanceid)) {
@@ -59,13 +81,12 @@ class connector_factory {
         return $this->get_connector_instance_by_id($instanceid);
     }
 
-    public function get_connector_by_instanceid(int $id): base_connector {
-        $instance = $this->get_connector_instance_by_id($id);
-        $connectorclassname = '\\aitool_' . $instance->get_connector() . '\\connector';
-        $this->connector = new $connectorclassname($instance);
-        return $this->connector;
-    }
-
+    /**
+     * Returns a new connector instance object for a given connector.
+     *
+     * @param string $connectorname the name of the connector
+     * @return base_instance a new connector instance object
+     */
     public function get_new_instance(string $connectorname): base_instance {
         $instanceclassname = '\\aitool_' . $connectorname . '\\instance';
         $this->connectorinstance = new $instanceclassname();
@@ -73,6 +94,12 @@ class connector_factory {
         return $this->connectorinstance;
     }
 
+    /**
+     * Converts the name of a connector to a connector object.
+     *
+     * @param string $connectorname the connector name
+     * @return base_connector the corresponding connector object
+     */
     public function get_connector_by_connectorname(string $connectorname): base_connector {
         $connectorclassname = '\\aitool_' . $connectorname . '\\connector';
         $instance = $this->get_new_instance($connectorname);
@@ -80,6 +107,13 @@ class connector_factory {
         return $this->connector;
     }
 
+    /**
+     * Retrieve the connector object based on the purpose.
+     *
+     * @param string $purpose the purpose name
+     * @return ?base_connector the connector object or null if no connector instance for the purpose has been configured for this
+     *  tenant
+     */
     public function get_connector_by_purpose(string $purpose): ?base_connector {
         $instance = $this->get_connector_instance_by_purpose($purpose);
         if ($instance === null) {
@@ -90,6 +124,15 @@ class connector_factory {
         return $this->connector;
     }
 
+    /**
+     * Returns the connector object for a given model.
+     *
+     * The function searches through all the connector classes and looks if the given model name is in the available models of the
+     * connector class. First match will be returned.
+     *
+     * @param string $model the model name
+     * @return ?base_connector the corresponding connector object
+     */
     public function get_connector_by_model(string $model): ?base_connector {
         foreach (base_connector::get_all_connectors() as $connectorname) {
             $connector = $this->get_connector_by_connectorname($connectorname);
@@ -100,11 +143,24 @@ class connector_factory {
         return null;
     }
 
+    /**
+     * Helper function to determine if an instance already exists.
+     *
+     * @param int $id the id of the instance to check
+     * @return bool true if the instance exists
+     */
     public function instance_exists(int $id): bool {
         global $DB;
         return $DB->record_exists('local_ai_manager_instance', ['id' => $id]);
     }
 
+    /**
+     * Returns the purpose object for the given purpose name.
+     *
+     * @param string $purpose the purpose name
+     * @return base_purpose the corresponding purpose object
+     * @throws \coding_exception if there is no purpose with this name or the purpose subplugin is not enabled
+     */
     public function get_purpose_by_purpose_string(string $purpose): base_purpose {
         if (empty($purpose) || !in_array($purpose, \local_ai_manager\plugininfo\aipurpose::get_enabled_plugins())) {
             throw new \coding_exception('Purpose ' . $purpose . ' does not exist or is not enabled');
@@ -114,6 +170,12 @@ class connector_factory {
         return $this->purpose;
     }
 
+    /**
+     * Retrieves all connector instances for a given purpose.
+     *
+     * @param string $purpose the purpose
+     * @return array list of all possible connector instances available for this purpose
+     */
     public static function get_connector_instances_for_purpose(string $purpose): array {
         $instances = [];
         foreach (base_instance::get_all_instances() as $instance) {
@@ -123,5 +185,4 @@ class connector_factory {
         }
         return $instances;
     }
-
 }

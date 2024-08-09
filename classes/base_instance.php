@@ -30,24 +30,34 @@ use stdClass;
  */
 class base_instance {
 
+    /** @var string the string representing that a model cannot be chosen, but is preconfigured by the external AI service */
     public const PRECONFIGURED_MODEL = 'preconfigured';
 
+    /** @var ?stdClass The database record */
     protected ?stdClass $record = null;
 
+    /** @var int The record id */
     protected int $id = 0;
 
+    /** @var ?string The name of the instance  */
     protected ?string $name = null;
 
+    /** @var ?string The tenant the instance belongs to */
     protected ?string $tenant = null;
 
+    /** @var ?string The connector to which the instance belongs */
     protected ?string $connector = null;
 
+    /** @var ?string The endpoint of the instance */
     protected ?string $endpoint = null;
 
+    /** @var ?string The API key of the instance */
     protected ?string $apikey = null;
 
+    /** @var ?string The model which is configured for this instance */
     protected ?string $model = null;
 
+    /** @var ?string The info link */
     protected ?string $infolink = null;
 
     /** @var ?string First customfield attribute. */
@@ -65,12 +75,20 @@ class base_instance {
     /** @var ?string Fifth customfield attribute. */
     protected ?string $customfield5 = null;
 
+    /**
+     * Create an object for this connector instance and - if the instance already exists - load all data from database.
+     *
+     * @param int $id the (record) id of the instance, pass 0 if you want to create a new instance
+     */
     public function __construct(int $id = 0) {
         $this->id = $id;
         $this->load();
     }
 
-    public final function load(): void {
+    /**
+     * Loads the instance data from database, if exists, and stores it into the class variables.
+     */
+    final public function load(): void {
         global $DB;
         $record = $DB->get_record('local_ai_manager_instance', ['id' => $this->id]);
         if (!$record) {
@@ -108,7 +126,10 @@ class base_instance {
         ];
     }
 
-    public final function store(): void {
+    /**
+     * Persists the object data to the database.
+     */
+    final public function store(): void {
         global $DB;
         $record = new stdClass();
         $record->name = $this->name;
@@ -136,17 +157,18 @@ class base_instance {
     }
 
     /**
+     * Returns all instance objects.
+     *
      * @param bool $allinstances true if all instances should be returned, by default only the instances of the current tenant are
      *  returned
-     * @return array
-     * @throws \dml_exception
+     * @return array array of instance objects
      */
     public static function get_all_instances(bool $allinstances = false): array {
         global $DB;
 
         $params = [];
         if (!$allinstances) {
-            $params['tenant'] = \core\di::get(tenant::class)->get_tenantidentifier();
+            $params['tenant'] = \core\di::get(tenant::class)->get_identifier();
         }
         $records = $DB->get_records('local_ai_manager_instance', $params, '', 'id');
         $instances = [];
@@ -156,106 +178,236 @@ class base_instance {
         return $instances;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return int the id of the instance
+     */
     public function get_id(): int {
         return $this->id;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return string the name of the instance
+     */
     public function get_name(): string {
         return $this->name;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param string $name the name of the instance
+     */
     public function set_name(string $name): void {
         $this->name = $name;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return string the tenant identifier
+     */
     public function get_tenant(): string {
         return $this->tenant;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param string $tenant the identifier of the tenant the instance belongs to
+     */
     public function set_tenant(string $tenant): void {
         $this->tenant = $tenant;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return ?string the connector identifier
+     */
     public function get_connector(): ?string {
         return $this->connector;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param string $connector the connector name
+     */
     public function set_connector(string $connector): void {
         $this->connector = $connector;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return string the endpoint of this instance
+     */
     public function get_endpoint(): string {
         return $this->endpoint;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param string $endpoint the endpoint of this instance
+     */
     public function set_endpoint(string $endpoint): void {
         $this->endpoint = $endpoint;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return ?string the apikey, can be null if not set
+     */
     public function get_apikey(): ?string {
         return $this->apikey;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param ?string $apikey The API key of this instance
+     */
     public function set_apikey(?string $apikey): void {
         $this->apikey = $apikey;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return string name of the model
+     */
     public function get_model(): string {
         return $this->model;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param string $model the name of the model
+     */
     public function set_model(string $model): void {
         $this->model = $model;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return ?string the info link, can be null
+     */
     public function get_infolink(): ?string {
         return $this->infolink;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param ?string $infolink the info link
+     */
     public function set_infolink(?string $infolink): void {
         $this->infolink = $infolink;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return ?string the content of the first customfield, null if not set
+     */
     public function get_customfield1(): ?string {
         return $this->customfield1;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param ?string $customfield1 the value of the first customfield
+     */
     public function set_customfield1(?string $customfield1): void {
         $this->customfield1 = $customfield1;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return ?string the content of the second customfield, null if not set
+     */
     public function get_customfield2(): ?string {
         return $this->customfield2;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param ?string $customfield2 the value of the second customfield
+     */
     public function set_customfield2(?string $customfield2): void {
         $this->customfield2 = $customfield2;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return ?string the content of the third customfield, null if not set
+     */
     public function get_customfield3(): ?string {
         return $this->customfield3;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param ?string $customfield3 the value of the third customfield
+     */
     public function set_customfield3(?string $customfield3): void {
         $this->customfield3 = $customfield3;
     }
 
+    /**
+     * Standard getter.
+     *
+     * @return ?string the content of the fourth customfield, null if not set
+     */
     public function get_customfield4(): ?string {
         return $this->customfield4;
     }
 
+    /**
+     * Standard setter.
+     *
+     * @param ?string $customfield4 the value of the fourth customfield
+     */
     public function set_customfield4(?string $customfield4): void {
         $this->customfield4 = $customfield4;
     }
 
-
+    /**
+     * Standard getter.
+     *
+     * @return ?string the content of the fifth customfield, null if not set
+     */
     public function get_customfield5(): ?string {
         return $this->customfield5;
     }
+
+    /**
+     * Standard setter.
+     *
+     * @param ?string $customfield5 the value of the fifth customfield
+     */
     public function set_customfield5(?string $customfield5): void {
         $this->customfield5 = $customfield5;
     }
 
+    /**
+     * Returns if we have already a database record for this object.
+     *
+     * @return bool true if there is a database record
+     */
     public function record_exists(): bool {
         if (!is_null($this->record)) {
             return true;
@@ -265,7 +417,12 @@ class base_instance {
         }
     }
 
-    public final function get_formdata(): stdClass {
+    /**
+     * Passes the data of the object to a stdClass object which can be passed into a form to represent the initial values.
+     *
+     * @return stdClass the object containing the data for loading the form
+     */
+    final public function get_formdata(): stdClass {
         $this->load();
         $data = new stdClass();
         if (is_null($this->record)) {
@@ -283,15 +440,36 @@ class base_instance {
         return $data;
     }
 
+    /**
+     * Function to extend the form definition for subclasses.
+     *
+     * @param \MoodleQuickForm $mform the mform object which can be modified by the subclass
+     */
+    protected function extend_form_definition(\MoodleQuickForm $mform): void {
+    }
+
+    /**
+     * Function to extend the form data stdClass.
+     *
+     * Should be overwritten by subclasses to pass additional data to the configuration form when the form is loaded.
+     *
+     * @return stdClass the form data to pass to the form for loading
+     */
     protected function get_extended_formdata(): stdClass {
         return new stdClass();
     }
 
-    public final function edit_form_definition(\MoodleQuickForm $mform, array $customdata): void {
+    /**
+     * Function to add form definitions to the edit form.
+     *
+     * @param \MoodleQuickForm $mform the mform object
+     * @param array $customdata the customdata which has been passed to the form when created
+     */
+    final public function edit_form_definition(\MoodleQuickForm $mform, array $customdata): void {
         $textelementparams = ['style' => 'width: 100%'];
         $mform->addElement('text', 'name', get_string('instancename', 'local_ai_manager'), $textelementparams);
         $mform->setType('name', PARAM_TEXT);
-        $mform->addElement('text', 'tenant', get_string('institution'), $textelementparams);
+        $mform->addElement('text', 'tenant', get_string('tenant', 'local_ai_manager'), $textelementparams);
         $mform->setType('tenant', PARAM_ALPHANUM);
         if (empty($this->_customdata['id'])) {
             $mform->setDefault('tenant', $customdata['tenant']);
@@ -307,7 +485,6 @@ class base_instance {
         $mform->setDefault('connector', $connector);
         $mform->freeze('connector');
 
-
         $mform->addElement('text', 'endpoint', get_string('endpoint', 'local_ai_manager'), $textelementparams);
         $mform->setType('endpoint', PARAM_URL);
 
@@ -318,8 +495,9 @@ class base_instance {
         $connectorobject = \core\di::get($classname);
         $availablemodels = [];
         foreach ($connectorobject->get_models() as $modelname) {
-            // TODO maybe add lang strings for models, so we have
-            //  $availablemodels[$modelname] = get_string($modelname); or sth similar
+            // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
+            // TODO maybe add lang strings, so we have $availablemodels[$modelname] = get_string($modelname); or sth similar.
+            // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
             $availablemodels[$modelname] = $modelname;
         }
         $mform->addElement('select', 'model', get_string('model', 'local_ai_manager'), $availablemodels, $textelementparams);
@@ -330,7 +508,12 @@ class base_instance {
         $this->extend_form_definition($mform);
     }
 
-    public final function store_formdata($data): void {
+    /**
+     * Stores the form data after form has been submitted.
+     *
+     * @param stdClass $data the form data
+     */
+    final public function store_formdata(stdClass $data): void {
         $this->set_name(trim($data->name));
         $this->set_endpoint(trim($data->endpoint));
         $this->set_apikey(trim($data->apikey));
@@ -345,10 +528,25 @@ class base_instance {
         $this->store();
     }
 
+    /**
+     * Function to store additional form data.
+     *
+     * Should be overwritten by subclasses to store subclass specific form data.
+     *
+     * @param stdClass $data the form data after the form has been submitted
+     */
     protected function extend_store_formdata(stdClass $data): void {
     }
 
-    public final function validation(array $data, array $files): array {
+    /**
+     * Validates the form data after submission.
+     *
+     * @param array $data the form data
+     * @param array $files the form data files
+     * @return array associative array of the form ['nameofmformelement' => 'error if there is one'], should be empty if
+     *  validation was successful
+     */
+    final public function validation(array $data, array $files): array {
         $errors = [];
         if (empty($data['name'])) {
             $errors['name'] = get_string('formvalidation_editinstance_name', 'local_ai_manager');
@@ -359,10 +557,25 @@ class base_instance {
         return $errors + $this->extend_validation($data, $files);
     }
 
+    /**
+     * Function to do some extra validation.
+     *
+     * Should be overwritten by subclasses to validate the subclass specific mform fields.
+     *
+     * @param array $data the form data
+     * @param array $files the form data files
+     * @return array associative array of the form ['nameofmformelement' => 'error if there is one'], should be empty if
+     *   validation was successful
+     */
     protected function extend_validation(array $data, array $files): array {
         return [];
     }
 
+    /**
+     * Deletes the record related to this object from database.
+     *
+     * @throws \moodle_exception if the record does not exist (anymore)
+     */
     public function delete(): void {
         global $DB;
         if (empty($this->id)) {
@@ -374,7 +587,12 @@ class base_instance {
         $DB->delete_records('local_ai_manager_instance', ['id' => $this->id]);
     }
 
-    public final function supported_purposes(): array {
+    /**
+     * Function which determines the supported purposes based on the definitions of available models in the connector class.
+     *
+     * @return array list of purpose names
+     */
+    final public function supported_purposes(): array {
         if (empty($this->get_model())) {
             return [];
         }

@@ -23,17 +23,19 @@ use stdClass;
 /**
  * Instance class for the connector instance of aitool_chatgpt.
  *
- * @package    local_ai_manager
+ * @package    aitool_ollama
  * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class instance extends base_instance {
 
+    #[\Override]
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
         aitool_option_temperature::extend_form_definition($mform);
     }
 
+    #[\Override]
     protected function get_extended_formdata(): stdClass {
         $data = new stdClass();
         $temperaturedata = aitool_option_temperature::add_temperature_to_form_data($this->get_temperature());
@@ -43,6 +45,7 @@ class instance extends base_instance {
         return $data;
     }
 
+    #[\Override]
     protected function extend_validation(array $data, array $files): array {
         $errors = [];
         aitool_option_temperature::validate_temperature($data);
@@ -52,11 +55,17 @@ class instance extends base_instance {
         return $errors;
     }
 
+    #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
         $temperature = aitool_option_temperature::extract_temperature_to_store($data);
         $this->set_customfield1($temperature);
     }
 
+    /**
+     * Return the current temperature value as float.
+     *
+     * @return float the current temperature value
+     */
     public function get_temperature(): float {
         return floatval($this->get_customfield1());
     }

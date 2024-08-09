@@ -17,8 +17,8 @@
 /**
  * Cache definitions.
  *
- * @package   local_bycsauth
- * @copyright 2023 ISB Bayern
+ * @package   local_ai_manager
+ * @copyright 2024 ISB Bayern
  * @author    Philipp Memmel
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -19,7 +19,7 @@
  *
  * @package    aipurpose_singleprompt
  * @copyright  ISB Bayern, 2024
-* @author     Philipp Memmel
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ namespace aipurpose_singleprompt\privacy;
  *
  * @package    aipurpose_singleprompt
  * @copyright  ISB Bayern, 2024
-* @author     Philipp Memmel
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {

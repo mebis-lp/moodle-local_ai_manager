@@ -34,16 +34,26 @@ class tenantnavbar implements renderable, \templatable {
     /**
      * Constructor.
      *
-     * @param string $relativeactiveurl the base url (without parameters) relative to '/local/ai_manager/' which should be shown as
-     *  active, for example 'tenant_config.php' or 'purpose_config.php' or 'statistics.php?purpose=chat'
+     * @param string $relativeactiveurl the base url (without parameters) relative to '/local/ai_manager/'
+     *   which should be shown as active, for example 'tenant_config.php' or 'purpose_config.php'
+     *   or 'statistics.php?purpose=chat'
+     *
      */
-    public function __construct(private string $relativeactiveurl) {
+    public function __construct(
+            /**
+             * @var string $relativeactiveurl the base url (without parameters) relative to '/local/ai_manager/'
+             *    which should be shown as active, for example 'tenant_config.php' or 'purpose_config.php'
+             *    or 'statistics.php?purpose=chat'
+             */
+            private string $relativeactiveurl
+    ) {
     }
 
+    #[\Override]
     public function export_for_template(renderer_base $output): stdClass {
         $data = new stdClass();
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-        $data->tenantidentifier = $tenant->get_tenantidentifier();
+        $data->tenantidentifier = $tenant->get_identifier();
 
         $data->homeactive = $this->relativeactiveurl === 'tenant_config.php';
         $data->purposeconfigactive = $this->relativeactiveurl === 'purpose_config.php';
@@ -51,8 +61,8 @@ class tenantnavbar implements renderable, \templatable {
         $data->rightsconfigactive = $this->relativeactiveurl === 'rights_config.php';
         $data->statisticsoverviewactive = $this->relativeactiveurl === 'statistics.php';
 
-        $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_tenant_context());
-        $data->showuserstatistics = has_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context());
+        $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_context());
+        $data->showuserstatistics = has_capability('local/ai_manager:viewuserstatistics', $tenant->get_context());
         $statisticspurposes = [];
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $statisticspurposes[] = [
@@ -64,7 +74,8 @@ class tenantnavbar implements renderable, \templatable {
         $data->statisticspurposes = $statisticspurposes;
 
         $data->userconfigactive = $data->quotaconfigactive || $data->rightsconfigactive;
-        $data->statisticsactive = $data->statisticsoverviewactive || array_reduce($statisticspurposes, fn($current, $node) => $current || $node['active'], false);
+        $data->statisticsactive = $data->statisticsoverviewactive
+                || array_reduce($statisticspurposes, fn($current, $node) => $current || $node['active'], false);
 
         return $data;
     }

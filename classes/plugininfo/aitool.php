@@ -19,7 +19,7 @@
  *
  * @package     local_ai_manager
  * @category    string
- * @copyright   2024, ISB Bayern
+ * @copyright   2024 ISB Bayern
  * @author      Dr. Peter Mayer
  * @author      Dr. Peter Mayer
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -37,7 +37,7 @@ use dml_exception;
  *
  * @package     local_ai_manager
  * @category    string
- * @copyright   2024, ISB Bayern
+ * @copyright   2024 ISB Bayern
  * @author      Dr. Peter Mayer
  * @author      Dr. Peter Mayer
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -158,11 +158,12 @@ class aitool extends base {
 
         $adminroot->add($this->type . 'plugins', $settings);
     }
+
+    #[\Override]
     public function uninstall(\progress_trace $progress) {
         global $DB;
         $deletedinstanceids = $DB->get_fieldset('local_ai_manager_instance', 'id', ['connector' => $this->name]);
         $DB->delete_records('local_ai_manager_instance', ['connector' => $this->name]);
-
 
         if (empty($deletedinstanceids)) {
             return true;
@@ -177,5 +178,4 @@ class aitool extends base {
         $DB->delete_records_select('local_ai_manager_config', $select, $params);
         return true;
     }
-
 }

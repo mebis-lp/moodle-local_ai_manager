@@ -38,6 +38,8 @@ use local_ai_manager\local\connector_factory;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class purpose extends base_purpose {
+
+    #[\Override]
     public function get_additional_purpose_options(): array {
         $factory = \core\di::get(connector_factory::class);
         $connector = $factory->get_connector_by_purpose($this->get_plugin_name());
@@ -65,10 +67,10 @@ class purpose extends base_purpose {
         return $returnoptions;
     }
 
+    #[\Override]
     public function format_output(string $output): string {
         // We do not want any formatting.
         // The clean_param is only to be extra safe, there shouldn't be any tags in the output anyway.
         return clean_param($output, PARAM_NOTAGS);
     }
-
 }

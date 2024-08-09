@@ -29,6 +29,12 @@ use navigation_node;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class hook_callbacks {
+
+    /**
+     * Hook callback function to extend the primary navigation.
+     *
+     * @param primary_extend $hook the primary_extend hook object
+     */
     public static function extend_primary_navigation(primary_extend $hook): void {
         if (empty(get_config('local_ai_manager', 'addnavigationentry'))) {
             return;

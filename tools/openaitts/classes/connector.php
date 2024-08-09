@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Connector - whisper
- *
- * @package    aitool_openaitts
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace aitool_openaitts;
 
 use local_ai_manager\local\prompt_response;
@@ -31,7 +22,7 @@ use local_ai_manager\local\usage;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Connector - whisper
+ * Connector for OpenAI TTS.
  *
  * @package    aitool_openaitts
  * @copyright  ISB Bayern, 2024
@@ -40,22 +31,14 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends \local_ai_manager\base_connector {
 
-    public function __construct(instance $instance) {
-        $this->instance = $instance;
-    }
-
+    #[\Override]
     public function get_models_by_purpose(): array {
         return [
                 'tts' => ['tts-1'],
         ];
     }
 
-    /**
-     * Retrieves the data for the prompt based on the prompt text.
-     *
-     * @param string $prompttext The prompt text.
-     * @return array The prompt data.
-     */
+    #[\Override]
     public function get_prompt_data(string $prompttext, array $requestoptions): array {
         $data = [
                 'input' => $prompttext,
@@ -69,6 +52,7 @@ class connector extends \local_ai_manager\base_connector {
         return $data;
     }
 
+    #[\Override]
     protected function get_headers(): array {
         $headers = parent::get_headers();
         if (!$this->instance->azure_enabled()) {
@@ -82,11 +66,12 @@ class connector extends \local_ai_manager\base_connector {
         return $headers;
     }
 
+    #[\Override]
     public function get_unit(): unit {
-        // TODO Think about this again.
         return unit::COUNT;
     }
 
+    #[\Override]
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
         global $USER;
         $fs = get_file_storage();
@@ -109,6 +94,7 @@ class connector extends \local_ai_manager\base_connector {
         return prompt_response::create_from_result($this->instance->get_model(), new usage(1.0), $filepath);
     }
 
+    #[\Override]
     public function get_available_options(): array {
         return [
                 'voices' => [
@@ -121,5 +107,4 @@ class connector extends \local_ai_manager\base_connector {
                 ],
         ];
     }
-
 }

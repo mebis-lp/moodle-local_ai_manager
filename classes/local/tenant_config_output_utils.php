@@ -19,20 +19,25 @@ namespace local_ai_manager\local;
 use moodle_url;
 
 /**
- * Configuration page for tenants.
+ * Utils class for aggregating code to avoid duplication.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tenant_config_output_utils {
+
+    /**
+     * Helper function which is being called from every tenant config (sub)page.
+     *
+     * Important to control access and set important basic settings which are identical for all the pages.
+     *
+     * @param moodle_url $url the moodle url object of the current page
+     */
     public static function setup_tenant_config_page(moodle_url $url): void {
         global $PAGE;
         $tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
-
-        // Check permissions.
-        require_login();
 
         if (!empty($tenantid)) {
             $tenant = new \local_ai_manager\local\tenant($tenantid);
@@ -42,13 +47,13 @@ class tenant_config_output_utils {
         $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
         $accessmanager->require_tenant_manager();
 
-        $url->param('tenant', $tenant->get_tenantidentifier());
+        $url->param('tenant', $tenant->get_identifier());
         $PAGE->set_url($url);
-        $PAGE->set_context($tenant->get_tenant_context());
+        $PAGE->set_context($tenant->get_context());
         $PAGE->set_pagelayout('admin');
 
-        $strtitle = get_string('schoolconfig_heading', 'local_ai_manager');
-        $strtitle .= ' (' . $tenant->get_tenantidentifier() . ')';
+        $strtitle = get_string('tenantconfig_heading', 'local_ai_manager');
+        $strtitle .= ' (' . $tenant->get_identifier() . ')';
         $PAGE->set_title($strtitle);
         $PAGE->set_heading($strtitle);
         $PAGE->navbar->add($strtitle);

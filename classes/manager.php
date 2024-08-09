@@ -30,13 +30,14 @@ use dml_exception;
 use local_ai_manager\event\get_ai_response_failed;
 use local_ai_manager\event\get_ai_response_succeeded;
 use local_ai_manager\local\config_manager;
+use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
 use stdClass;
 
 /**
- * Helper
+ * Main class for handling requests to external AI tools.
  *
  * @package    local_ai_manager
  * @copyright  ISB Bayern, 2024
@@ -45,39 +46,41 @@ use stdClass;
  */
 class manager {
 
+    /** @var base_purpose The purpose which is being used for this request */
     private base_purpose $purpose;
 
-    /** @var base_connector $toolconnector The tool connector object. */
-    private base_connector $toolconnector;
-    /**
-     * @var local\connector_factory|mixed
-     */
-    private \local_ai_manager\local\connector_factory $factory;
-    /**
-     * @var local\config_manager|mixed
-     */
+    /** @var base_connector $connector The tool connector object. */
+    private base_connector $connector;
+
+    /** @var local\connector_factory the connector factory for retrieving necessary objects */
+    private connector_factory $factory;
+
+    /** @var config_manager the config manager object */
     private config_manager $configmanager;
 
     /**
-     * Constructor of manager class.
+     * Create the manager for a specific purpose.
      *
-     * @param string $purpose
-     * @param string $tooltouse
-     * @return string|void
-     * @throws dml_exception
+     * @param string $purpose the purpose name of the purpose to use
      */
     public function __construct(string $purpose) {
-        $this->factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+        $this->factory = \core\di::get(connector_factory::class);
         $this->purpose = $this->factory->get_purpose_by_purpose_string($purpose);
         $toolconnector = $this->factory->get_connector_by_purpose($purpose);
         if (!empty($toolconnector)) {
-            $this->toolconnector = $toolconnector;
+            $this->connector = $toolconnector;
         } else {
             throw new \moodle_exception('error_noaitoolassignedforpurpose', 'local_ai_manager', '', $purpose);
         }
         $this->configmanager = \core\di::get(config_manager::class);
     }
 
+    /**
+     * Helper function to determine the available tool plugins for a given purpose.
+     *
+     * @param string $purpose the name of the purpose
+     * @return array list of connector plugin display names
+     */
     public static function get_tools_for_purpose(string $purpose): array {
         $tools = [];
         foreach (core_plugin_manager::instance()->get_enabled_plugins('aitool') as $tool) {
@@ -149,10 +152,10 @@ class manager {
         }
 
         $requestoptions = $this->purpose->get_request_options($options);
-        $promptdata = $this->toolconnector->get_prompt_data($prompttext, $requestoptions);
+        $promptdata = $this->connector->get_prompt_data($prompttext, $requestoptions);
         $starttime = microtime(true);
         try {
-            $requestresult = $this->toolconnector->make_request($promptdata);
+            $requestresult = $this->connector->make_request($promptdata);
         } catch (\Exception $exception) {
             // This hopefully very rarely happens, because we catch exceptions already inside the make_request method.
             // So we do not do any more beautifying of exceptions here.
@@ -170,7 +173,7 @@ class manager {
             get_ai_response_failed::create_from_prompt_response($promptdata, $promptresponse, $duration)->trigger();
             return $promptresponse;
         }
-        $promptcompletion = $this->toolconnector->execute_prompt_completion($requestresult->get_response(), $options);
+        $promptcompletion = $this->connector->execute_prompt_completion($requestresult->get_response(), $options);
         if (!empty($options['forcenewitemid']) && !empty($options['component']) &&
                 !empty($options['contextid'] && !empty($options['itemid']))) {
             if ($DB->record_exists('local_ai_manager_request_log',
@@ -191,24 +194,37 @@ class manager {
         return $promptcompletion;
     }
 
+    /**
+     * Log the request to the request_log table.
+     *
+     * @param string $prompttext the prompt text which has been sent to the external AI tool
+     * @param prompt_response $promptcompletion The prompt response object from which information will be extracted and stored
+     *  in the log table
+     * @param float $executiontime the duration that the request has taken
+     * @param array $requestoptions complete options of the whole request
+     * @param array $options part of $requestoptions, contains the options directly passed to the manager
+     * @return int the record id of the log record which has been stored to the database
+     */
     public function log_request(string $prompttext, prompt_response $promptcompletion, float $executiontime,
             array $requestoptions = [],
             array $options = []): int {
         global $DB, $USER;
 
+        // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
         // TODO Move this handling to a data class "log_entry".
+        // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
 
         $data = new stdClass();
         $data->userid = $USER->id;
         $data->value = $promptcompletion->get_usage()->value;
-        if ($this->toolconnector->has_customvalue1()) {
+        if ($this->connector->has_customvalue1()) {
             $data->customvalue1 = $promptcompletion->get_usage()->customvalue1;
         }
-        if ($this->toolconnector->has_customvalue2()) {
+        if ($this->connector->has_customvalue2()) {
             $data->customvalue2 = $promptcompletion->get_usage()->customvalue2;
         }
         $data->purpose = $this->purpose->get_plugin_name();
-        $data->model = $this->toolconnector->get_instance()->get_model();
+        $data->model = $this->connector->get_instance()->get_model();
         $data->modelinfo = $promptcompletion->get_modelinfo();
         $data->prompttext = $prompttext;
         $data->promptcompletion = $promptcompletion->get_content();
@@ -240,6 +256,13 @@ class manager {
         return $recordid;
     }
 
+    /**
+     * Helper function that sanitizes the options sent to the manager against the options defined in the purpose class.
+     *
+     * @param array $options the options which are being sent to the manager
+     * @return array the sanitized options
+     * @throws \coding_exception if validation is failing
+     */
     private function sanitize_options(array $options): array {
         foreach ($options as $key => $value) {
             if (!array_key_exists($key, $this->purpose->get_available_purpose_options())) {
