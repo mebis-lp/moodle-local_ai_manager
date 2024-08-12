@@ -30,22 +30,22 @@ use stdClass;
 class userusage {
 
     /** @var int Constant for defining what means if a user can do unlimited requests */
-    public const int UNLIMITED_REQUESTS_PER_USER = 999999;
+    public const UNLIMITED_REQUESTS_PER_USER = 999999;
 
     /** @var int Constant for defining the default period until the requests of the users are being reset */
-    public const int MAX_REQUESTS_DEFAULT_PERIOD = DAYSECS;
+    public const MAX_REQUESTS_DEFAULT_PERIOD = DAYSECS;
 
     /**
      * @var int Constant for defining the minimum period the tenant manager can select until
      * the user usage information is being reset.
      */
-    public const int MAX_REQUESTS_MIN_PERIOD = HOURSECS;
+    public const MAX_REQUESTS_MIN_PERIOD = HOURSECS;
 
     /** @var int The default value for the max requests for the basic role */
-    public const int MAX_REQUESTS_DEFAULT_ROLE_BASE = 10;
+    public const MAX_REQUESTS_DEFAULT_ROLE_BASE = 10;
 
     /** @var int The default value for the max requests for the extended role */
-    public const int MAX_REQUESTS_DEFAULT_ROLE_EXTENDED = 50;
+    public const MAX_REQUESTS_DEFAULT_ROLE_EXTENDED = 50;
 
     /** @var false|stdClass The database record or false if none exists (yet) */
     private false|stdClass $record;

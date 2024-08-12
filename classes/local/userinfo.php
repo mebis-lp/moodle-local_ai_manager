@@ -31,16 +31,16 @@ use stdClass;
 class userinfo {
 
     /** @var int Constant identifying the basic role */
-    public const int ROLE_BASIC = 1;
+    public const ROLE_BASIC = 1;
 
     /** @var int Constant identifying the extended role */
-    public const int ROLE_EXTENDED = 2;
+    public const ROLE_EXTENDED = 2;
 
     /** @var int Constant identifying the unlimited role */
-    public const int ROLE_UNLIMITED = 3;
+    public const ROLE_UNLIMITED = 3;
 
     /** @var int This is not really a role, but is being used to signal that the default role for a user should be assigned. */
-    public const int ROLE_DEFAULT = -1;
+    public const ROLE_DEFAULT = -1;
 
     /** @var false|stdClass The database record or false if there is none (yet) */
     private false|stdClass $record;
