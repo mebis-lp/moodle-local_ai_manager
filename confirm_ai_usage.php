@@ -18,16 +18,13 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_ai_manager\base_instance;
-use local_ai_manager\local\tenant_config_output_utils;
-use local_ai_manager\output\tenantnavbar;
-
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
@@ -37,16 +34,13 @@ $confirm = optional_param('confirm', -1, PARAM_INT);
 
 $url = new moodle_url('/local/ai_manager/confirm_ai_usage.php');
 
-// Check permissions.
-require_login();
-
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 
 $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 $accessmanager->require_tenant_member();
 
 $PAGE->set_url($url);
-$PAGE->set_context($tenant->get_tenant_context());
+$PAGE->set_context($tenant->get_context());
 $PAGE->set_pagelayout('admin');
 
 $strtitle = get_string('confirmaitoolsusage_heading', 'local_ai_manager');
@@ -66,6 +60,9 @@ if ($confirm !== -1) {
 }
 
 echo $OUTPUT->header();
+
+$termsofuse = get_config('local_ai_manager', 'termsofuse') ?: '';
+
 echo $OUTPUT->render_from_template('local_ai_manager/confirm_ai_usage',
         [
                 'checked' => $userinfo->is_confirmed(),
@@ -77,6 +74,7 @@ echo $OUTPUT->render_from_template('local_ai_manager/confirm_ai_usage',
                         ['confirm' => 0]))->out(false),
                 'targetwhennotchecked' => (new moodle_url('/local/ai_manager/confirm_ai_usage.php',
                         ['confirm' => 1]))->out(false),
+                'termsofuse' => $termsofuse,
         ]);
 
 echo $OUTPUT->footer();

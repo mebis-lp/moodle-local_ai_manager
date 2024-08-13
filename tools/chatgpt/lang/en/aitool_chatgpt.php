@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// TODO add description
 $string['adddescription'] = 'ChatGPT is a versatile AI model used for natural language interactions such as customer support, virtual assistants, content creation and more.';
 $string['pluginname'] = 'ChatGPT';
-$string['privacy:metadata'] = 'The local ai_manager tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['privacy:metadata'] = 'The local ai_manager tool subplugin "ChatGPT" does not store any personal data.';

@@ -20,7 +20,7 @@
  * This form handles the locking and unlocking of users on the statistics overview pages.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -56,21 +56,20 @@ class rights_config_filter_form extends \moodleform {
     public function definition() {
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $mform = &$this->_form;
+        $filteroptions = $this->_customdata['filteroptions'];
 
-        $mform->addElement('hidden', 'tenant', $tenant->get_tenantidentifier());
+        $mform->addElement('hidden', 'tenant', $tenant->get_identifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
         $elementarray = [];
 
-        $school = new school($tenant->get_tenantidentifier());
-        $idmgrouplist = $school->get_idmgroup_names([idmgroup::IDM_GROUP_TYPE['class'], idmgroup::IDM_GROUP_TYPE['team']]);
-        $idmgroupmultiselect = $mform->createElement('select', 'idmgroupids', '', $idmgrouplist,
-                ['size' => 2, 'class' => 'local_ai_manager-idmgroupfilter_select pr-1']);
-        $idmgroupmultiselect->setMultiple(true);
-        $elementarray[] = $idmgroupmultiselect;
+        $filteroptionsmultiselect = $mform->createElement('select', 'filterids', '', $filteroptions,
+                ['size' => 2, 'class' => 'local_ai_manager-filter_select pr-1']);
+        $filteroptionsmultiselect->setMultiple(true);
+        $elementarray[] = $filteroptionsmultiselect;
 
         $elementarray[] = $mform->createElement('submit', 'applyfilter', get_string('applyfilter', 'local_ai_manager'));
         $elementarray[] = $mform->createElement('cancel', 'resetfilter', get_string('resetfilter', 'local_ai_manager'));
-        $mform->addGroup($elementarray, 'elementarray', get_string('filteridmgroups', 'local_ai_manager'), [' '], false);
+        $mform->addGroup($elementarray, 'elementarray', get_string('filterheading', 'local_ai_manager'), [' '], false);
     }
 }

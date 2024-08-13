@@ -41,7 +41,9 @@ class get_ai_config extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
                 'tenant' => new external_value(PARAM_TEXT,
-                        'The tenant identifier, only useful to add if the user has access to multiple tenants', VALUE_DEFAULT, null),
+                        'The tenant identifier, only useful to add if the user has access to multiple tenants',
+                        VALUE_DEFAULT,
+                        null),
         ]);
     }
 

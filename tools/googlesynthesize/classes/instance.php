@@ -21,13 +21,14 @@ use local_ai_manager\base_instance;
 /**
  * Instance class for the connector instance of aitool_googlesynthesize.
  *
- * @package    local_ai_manager
+ * @package    aitool_googlesynthesize
  * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class instance extends base_instance {
 
+    #[\Override]
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
         $mform->setDefault('endpoint', 'https://texttospeech.googleapis.com/v1/text:synthesize');
         $mform->freeze('endpoint');

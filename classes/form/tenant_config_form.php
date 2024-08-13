@@ -16,13 +16,6 @@
 
 namespace local_ai_manager\form;
 
-use core_plugin_manager;
-use local_ai_manager\base_connector;
-use local_ai_manager\base_purpose;
-use local_ai_manager\local\userinfo;
-use local_ai_manager\local\userusage;
-use local_ai_manager\manager;
-
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
@@ -31,6 +24,7 @@ require_once($CFG->libdir . '/formslib.php');
 /**
  * A form for configuring tenant configurations.
  *
+ * @package    local_ai_manager
  * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -41,9 +35,7 @@ class tenant_config_form extends \moodleform {
      * Form definition.
      */
     public function definition() {
-        // global $USER;
         $tenant = $this->_customdata['tenant'];
-        // $returnurl = $this->_customdata['returnurl'];
 
         $mform = &$this->_form;
 
@@ -52,22 +44,6 @@ class tenant_config_form extends \moodleform {
 
         $mform->addElement('selectyesno', 'tenantenabled', get_string('enable_ai_integration', 'local_ai_manager'));
 
-
         $this->add_action_buttons();
     }
-
-    /**
-     * Some extra validation.
-     *
-     * @param array $data array of ("fieldname"=>value) of submitted data
-     * @param array $files array of uploaded files "element_name"=>tmp_file_path
-     * @return array of "element_name"=>"error_description" if there are errors,
-     *         or an empty array if everything is OK (true allowed for backwards compatibility too).
-     */
-    public function validation($data, $files): array {
-        $errors = [];
-        // TODO validate
-        return $errors;
-    }
-
 }

@@ -24,17 +24,19 @@ use stdClass;
 /**
  * Instance class for the connector instance of aitool_dalle.
  *
- * @package    local_ai_manager
+ * @package    aitool_dalle
  * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class instance extends base_instance {
 
+    #[\Override]
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
         aitool_option_azure::extend_form_definition($mform);
     }
 
+    #[\Override]
     protected function get_extended_formdata(): stdClass {
         $data = new stdClass();
         foreach (aitool_option_azure::add_azure_options_to_form_data($this->get_customfield2(), $this->get_customfield3(),
@@ -44,12 +46,11 @@ class instance extends base_instance {
         return $data;
     }
 
+    #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
-        // TODO eventually detect , or . as float separator and handle accordingly
         [$enabled, $resourcename, $deploymentid, $apiversion] = aitool_option_azure::extract_azure_data_to_store($data);
 
         if (!empty($enabled)) {
-            // TODO Eventually make api version an admin setting.
             $endpoint = 'https://' . $resourcename .
                     '.openai.azure.com/openai/deployments/'
                     . $deploymentid . '/images/generations?api-version=' . $apiversion;
@@ -64,6 +65,7 @@ class instance extends base_instance {
         $this->set_customfield5($apiversion);
     }
 
+    #[\Override]
     protected function extend_validation(array $data, array $files): array {
         $errors = [];
         $errors = array_merge($errors, aitool_option_temperature::validate_temperature($data));
@@ -71,6 +73,11 @@ class instance extends base_instance {
         return $errors;
     }
 
+    /**
+     * Return if azure is enabled.
+     *
+     * @return bool true if azure is enabled
+     */
     public function azure_enabled(): bool {
         return !empty($this->get_customfield2());
     }

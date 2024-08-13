@@ -18,7 +18,7 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,6 +28,7 @@ use local_ai_manager\local\tenant_config_output_utils;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
@@ -59,14 +60,12 @@ if ($configmanager->is_tenant_enabled()) {
 echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
     [
         'checked' => $istenantenabled,
-        'description' => $istenantenabled ? get_string('disabletenant', 'local_ai_manager') :
-                get_string('enabletenant', 'local_ai_manager'),
         'text' => $istenantenabled ? get_string('tenantenabled', 'local_ai_manager') :
                 get_string('tenantdisabled', 'local_ai_manager'),
         'targetwhenchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 0]))->out(false),
+                ['tenant' => $tenant->get_identifier(), 'enabletenant' => 0]))->out(false),
         'targetwhennotchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                ['tenant' => $tenant->get_tenantidentifier(), 'enabletenant' => 1]))->out(false),
+                ['tenant' => $tenant->get_identifier(), 'enabletenant' => 1]))->out(false),
         'tenantfullname' => $tenant->get_fullname(),
         'rightsconfiglink' => $rightsconfiglink,
     ]);
@@ -95,7 +94,7 @@ if ($configmanager->is_tenant_enabled()) {
             }
         }
         $linkedname = html_writer::link(new moodle_url('/local/ai_manager/edit_instance.php',
-                ['id' => $instance->get_id(), 'tenant' => $tenant->get_tenantidentifier()]), $instance->get_name());
+                ['id' => $instance->get_id(), 'tenant' => $tenant->get_identifier()]), $instance->get_name());
 
         $instances[] = [
                 'name' => $linkedname,
@@ -105,13 +104,13 @@ if ($configmanager->is_tenant_enabled()) {
                         : $instance->get_model(),
                 'purposes' => $purposes,
                 'nopurposeslink' => html_writer::link(new moodle_url('/local/ai_manager/purpose_config.php',
-                        ['tenant' => $tenant->get_tenantidentifier()]),
+                        ['tenant' => $tenant->get_identifier()]),
                         '<i class="fa fa-arrow-right"></i> ' . get_string('assignpurposes', 'local_ai_manager')),
         ];
     }
     echo $PAGE->get_renderer('core')->render_from_template('local_ai_manager/instancetable',
             [
-                    'tenant' => $tenant->get_tenantidentifier(),
+                    'tenant' => $tenant->get_identifier(),
                     'purposesheading' => $purposesheading,
                     'instances' => $instances,
             ]

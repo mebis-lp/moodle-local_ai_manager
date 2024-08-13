@@ -19,7 +19,7 @@
  *
  * @package    aipurpose_singleprompt
  * @copyright  ISB Bayern, 2024
-* @author     Philipp Memmel
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,15 +32,16 @@ use local_ai_manager\base_purpose;
  *
  * @package    aipurpose_singleprompt
  * @copyright  ISB Bayern, 2024
-* @author     Philipp Memmel
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class purpose extends base_purpose {
+
+    #[\Override]
     public function get_request_options(array $options): array {
         if (array_key_exists('conversationcontext', $options)) {
             return ['conversationcontext' => $options['conversationcontext']];
         }
         return [];
     }
-
 }

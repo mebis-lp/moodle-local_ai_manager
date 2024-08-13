@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// TODO add description
 $string['adddescription'] = 'Gemini, Google DeepMind\'s AI model, combines advanced language models (LLMs) with tools and multimodal capabilities.';
 $string['pluginname'] = 'Gemini';
-$string['privacy:metadata'] = 'The local ai_managers tool subplugin "' . $string['pluginname'] . '" does not store any personal data.';
+$string['privacy:metadata'] = 'The local ai_manager tool subplugin "Gemini" does not store any personal data.';

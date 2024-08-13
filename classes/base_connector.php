@@ -16,6 +16,7 @@
 
 namespace local_ai_manager;
 
+use aitool_chatgpt\instance;
 use core\http_client;
 use core_plugin_manager;
 use local_ai_manager\local\prompt_response;
@@ -34,16 +35,31 @@ use Psr\Http\Message\StreamInterface;
  */
 abstract class base_connector {
 
+    /** @var base_instance the connector instance the connector is using */
     protected base_instance $instance;
+
+    /**
+     * Create the connector object with a given instance object.
+     *
+     * @param base_instance $instance the connector instance to use
+     */
+    public function __construct(base_instance $instance) {
+        $this->instance = $instance;
+    }
 
     /**
      * Define available models.
      *
      * @return array names of the available models
      */
-    public abstract function get_models_by_purpose(): array;
+    abstract public function get_models_by_purpose(): array;
 
-    public final function get_models(): array {
+    /**
+     * Get the available models as plain array.
+     *
+     * @return array array of strings of model identifiers
+     */
+    final public function get_models(): array {
         $models = [];
         foreach ($this->get_models_by_purpose() as $modelarray) {
             $models = array_merge($models, $modelarray);
@@ -51,12 +67,27 @@ abstract class base_connector {
         return array_unique($models);
     }
 
-    public abstract function get_unit(): unit;
+    /**
+     * Returns the unit which this connector is using.
+     *
+     * @return unit the unit enum
+     */
+    abstract public function get_unit(): unit;
 
+    /**
+     * Getter for the endpoint url.
+     *
+     * @return string the endpoint url
+     */
     protected function get_endpoint_url(): string {
         return $this->instance->get_endpoint();
     }
 
+    /**
+     * Getter for the api key.
+     *
+     * @return string the api key
+     */
     protected function get_api_key(): string {
         return $this->instance->get_apikey();
     }
@@ -64,25 +95,55 @@ abstract class base_connector {
     /**
      * Retrieves the data for the prompt based on the prompt text.
      *
-     * @param string $prompttext The prompt text.
-     * @return array The prompt data.
+     * @param string $prompttext the prompt text
+     * @param array $requestoptions the options of the request
+     * @return array the prompt data
      */
-    public abstract function get_prompt_data(string $prompttext, array $requestoptions): array;
+    abstract public function get_prompt_data(string $prompttext, array $requestoptions): array;
 
-    public abstract function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response;
+    /**
+     * Function to handle the result after the request has been made.
+     *
+     * This function extracts the data from the request result and puts it into a prompt_response object.
+     *
+     * @param StreamInterface $result the result of the request
+     * @param array $options the request options
+     * @return prompt_response the prompt response object containing the extracted data
+     */
+    abstract public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response;
 
+    /**
+     * Defines if the connector uses the first customvalue attribute.
+     *
+     * @return bool if customvalue1 attribute is being used
+     */
     public function has_customvalue1(): bool {
         return false;
     }
 
+    /**
+     * Defines if the connector uses the second customvalue attribute.
+     *
+     * @return bool if customvalue2 attribute is being used
+     */
     public function has_customvalue2(): bool {
         return false;
     }
 
+    /**
+     * Getter for the connector instance being used by this connector.
+     *
+     * @return base_instance the connector instance
+     */
     public function get_instance(): base_instance {
         return $this->instance;
     }
 
+    /**
+     * Function for declaring options this connector is supporting.
+     *
+     * @return array array of options
+     */
     public function get_available_options(): array {
         return [];
     }
@@ -114,20 +175,30 @@ abstract class base_connector {
         if ($response->getStatusCode() === 200) {
             $return = request_response::create_from_result($response->getBody());
         } else {
-            // TODO localize
             $return = request_response::create_from_error(
                     $response->getStatusCode(),
-                    'Sending request to tool api endpoint failed',
+                    get_string('error_sendingrequestfailed', 'local_ai_manager'),
                     $response->getBody(),
             );
         }
         return $return;
     }
 
-    public static final function get_all_connectors(): array {
+    /**
+     * Helper function to retrieve all enabled connector plugins.
+     *
+     * @return array array of strings of enabled connector plugin names
+     */
+    final public static function get_all_connectors(): array {
         return core_plugin_manager::instance()->get_enabled_plugins('aitool');
     }
 
+    /**
+     * Helper function to create a request_response object if the request throws an exception.
+     *
+     * @param ClientExceptionInterface $exception the exception which has been thrown
+     * @return request_response a request_response object containing the necessary information in a standardized way
+     */
     protected function create_error_response_from_exception(ClientExceptionInterface $exception): request_response {
         $message = '';
         // This is actually pretty bad, but it does not seem possible to get to these kind of errors through some kind of
@@ -160,6 +231,11 @@ abstract class base_connector {
         return request_response::create_from_error($exception->getCode(), $message, $debuginfo);
     }
 
+    /**
+     * Function to determine the headers for the request.
+     *
+     * @return array associative array defining header key and value for the request
+     */
     protected function get_headers(): array {
         return [
                 'Authorization' => 'Bearer ' . $this->get_api_key(),

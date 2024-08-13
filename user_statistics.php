@@ -18,21 +18,23 @@
  * User usage statistics page.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\local\tenant_config_output_utils;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
-\local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/user_statistics.php'));
+tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/user_statistics.php'));
 
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-require_capability('local/ai_manager:viewuserstatistics', $tenant->get_tenant_context());
+require_capability('local/ai_manager:viewuserstatistics', $tenant->get_context());
 
 echo $OUTPUT->header();
 $tenantnavbar = new tenantnavbar('user_statistics.php');
@@ -45,15 +47,16 @@ if (!empty($purpose)) {
             . get_string('pluginname', 'aipurpose_' . $purpose), 4, 'text-center');
 }
 
+$tenantfield = get_config('local_ai_manager', 'tenantcolumn');
 $recordscount =
         $DB->count_records_sql("SELECT COUNT(*) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id"
-                . " WHERE u.institution = :institution",
-                ['institution' => $tenant->get_tenantidentifier()]);
+                . " WHERE u." . $tenantfield . " = :tenant",
+                ['tenant' => $tenant->get_identifier()]);
 
 if ($recordscount !== 0) {
     $uniqid = 'statistics-table-users-all-purposes';
 
-    $baseurl = new moodle_url('/local/ai_manager/user_statistics.php', ['tenant' => $tenant->get_tenantidentifier()]);
+    $baseurl = new moodle_url('/local/ai_manager/user_statistics.php', ['tenant' => $tenant->get_identifier()]);
     $table = new \local_ai_manager\local\userstats_table($uniqid, '', $tenant, $baseurl);
     $table->out(5, false);
 } else {

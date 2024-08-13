@@ -18,7 +18,7 @@
  * Upgrade functions for local_ai_manager.
  *
  * @package   local_ai_manager
- * @copyright 2024, ISB Bayern
+ * @copyright 2024 ISB Bayern
  * @author    Philipp Memmel
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,6 +40,19 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2024080101, 'local', 'ai_manager');
+    }
+
+    if ($oldversion < 2024080900) {
+
+        // Changing precision of field duration on table local_ai_manager_request_log to (20, 3).
+        $table = new xmldb_table('local_ai_manager_request_log');
+        $field = new xmldb_field('duration', XMLDB_TYPE_NUMBER, '20, 3', null, null, null, null, 'modelinfo');
+
+        // Launch change of precision for field duration.
+        $dbman->change_field_precision($table, $field);
+
+        // Ai_manager savepoint reached.
+        upgrade_plugin_savepoint(true, 2024080900, 'local', 'ai_manager');
     }
     return true;
 }

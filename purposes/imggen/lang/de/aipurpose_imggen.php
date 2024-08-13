@@ -24,6 +24,6 @@
  */
 
 $string['pluginname'] = 'Bild-Generierung';
-$string['privacy:metadata'] = 'Das Zweck-Subplugin "' . $string['pluginname'] . '" speichert keine persönlichen Daten.';
+$string['privacy:metadata'] = 'Das Zweck-Subplugin "Bild-Generierung" speichert keine persönlichen Daten.';
 $string['requestcount'] = 'Bildgenerierungsanfragen';
 $string['requestcount_shortened'] = 'Bildgenerierungs-';

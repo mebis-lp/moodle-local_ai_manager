@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Connector - chatgpt.
- *
- * @package    aitool_googlesynthesize
- * @copyright  ISB Bayern, 2024
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace aitool_googlesynthesize;
 
 use core\http_client;
@@ -34,7 +25,7 @@ use Locale;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Connector - chatgpt
+ * Connector for Google Synthesize.
  *
  * @package    aitool_googlesynthesize
  * @copyright  ISB Bayern, 2024
@@ -43,20 +34,19 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends \local_ai_manager\base_connector {
 
-    public function __construct(instance $instance) {
-        $this->instance = $instance;
-    }
-
+    #[\Override]
     public function get_models_by_purpose(): array {
         return [
                 'tts' => ['googletts'],
         ];
     }
 
+    #[\Override]
     public function get_unit(): unit {
         return unit::COUNT;
     }
 
+    #[\Override]
     public function make_request(array $data): request_response {
         $client = new http_client([
                 'timeout' => get_config('local_ai_manager', 'requesttimeout'),
@@ -72,16 +62,15 @@ class connector extends \local_ai_manager\base_connector {
         if ($response->getStatusCode() === 200) {
             $return = request_response::create_from_result($response->getBody());
         } else {
-            // TODO localize
-            $return = request_response::create_from_error(
-                    'Sending request to tool api endpoint failed with code ' . $response->getStatusCode(),
-                    $response->getBody(),
-                    ''
+            $return = request_response::create_from_error($response->getStatusCode(),
+                    get_string('error_sendingrequestfailed', 'local_ai_manager'),
+                    $response->getBody()
             );
         }
         return $return;
     }
 
+    #[\Override]
     public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
         global $USER;
 
@@ -107,6 +96,7 @@ class connector extends \local_ai_manager\base_connector {
         return prompt_response::create_from_result($this->instance->get_model(), new usage(1.0), $filepath);
     }
 
+    #[\Override]
     public function get_prompt_data(string $prompttext, array $requestoptions): array {
         return [
                 'input' => [
@@ -122,16 +112,18 @@ class connector extends \local_ai_manager\base_connector {
         ];
     }
 
+    #[\Override]
     public function has_customvalue1(): bool {
         return true;
     }
 
+    #[\Override]
     public function has_customvalue2(): bool {
         return true;
     }
 
+    #[\Override]
     public function get_available_options(): array {
-        // TODO We need to filter this huge list of voices. No idea yet how.
         $voices = $this->retrieve_available_voices();
         $languagekeys = [];
         foreach ($voices as $voice) {
@@ -142,7 +134,13 @@ class connector extends \local_ai_manager\base_connector {
             }
         }
         // The call array_values(...) is needed to re-index the array for later merging.
-        $languages = array_values(array_map(fn($languagecode) => ['key' => $languagecode, 'displayname' => Locale::getDisplayLanguage($languagecode, current_language()) . ' (' . $languagecode . ')'], $languagekeys));
+        $languages = array_values(array_map(
+                fn($languagecode) => [
+                        'key' => $languagecode,
+                        'displayname' => Locale::getDisplayLanguage($languagecode, current_language()) . ' (' . $languagecode . ')',
+                ],
+                $languagekeys
+        ));
         usort($languages, fn($a, $b) => strcmp($a['displayname'], $b['displayname']));
         return [
                 'gender' => [
@@ -153,6 +151,14 @@ class connector extends \local_ai_manager\base_connector {
         ];
     }
 
+    /**
+     * Function to retrieve all available voices.
+     *
+     * Fetches all available voices from the Google API.
+     * The result will be cached and refreshed if the last result is older than 24 hours.
+     *
+     * @return array list of available voices
+     */
     public function retrieve_available_voices(): array {
         $clock = \core\di::get(\core\clock::class);
         $cache = \cache::make('local_ai_manager', 'googlesynthesizevoices');
@@ -189,5 +195,4 @@ class connector extends \local_ai_manager\base_connector {
         $cache->set('lastfetched', $clock->time());
         return $voices;
     }
-
 }

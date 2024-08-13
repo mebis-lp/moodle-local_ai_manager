@@ -18,7 +18,7 @@
  * Configuration page for tenants.
  *
  * @package    local_ai_manager
- * @copyright  2024, ISB Bayern
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,18 +28,16 @@ use local_ai_manager\output\tenantnavbar;
 use local_bycsauth\idmgroup;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_login();
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 
 \local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/rights_config.php'));
 
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_tenantidentifier()]);
-
-
+$returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_identifier()]);
 
 $rightsconfigform = new \local_ai_manager\form\rights_config_form(null, ['tenant' => $tenant]);
-
 
 // Standard form processing if statement.
 if ($rightsconfigform->is_cancelled()) {
@@ -48,10 +46,11 @@ if ($rightsconfigform->is_cancelled()) {
     $userids = explode(';', $data->userids);
     foreach ($userids as $userid) {
         $user = \core_user::get_user($userid);
+        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         if (!$user) {
             throw new moodle_exception('User with userid ' . $userid . ' does not exist!');
         }
-        if ($user->institution !== $tenant->get_tenantidentifier()) {
+        if ($user->{$tenantfield} !== $tenant->get_identifier()) {
             throw new moodle_exception('You must not change the status of the user with the id ' . $userid);
         }
         $userinfo = new userinfo($userid);
@@ -74,28 +73,30 @@ if ($rightsconfigform->is_cancelled()) {
 
     echo $OUTPUT->heading(get_string('rightsconfig', 'local_ai_manager'), 2, 'text-center');
 
-    $filterform = new \local_ai_manager\form\rights_config_filter_form(null, ['tenant' => $tenant]);
+    $usertablefilter = new \local_ai_manager\hook\usertable_filter($tenant);
+    \core\di::get(\core\hook\manager::class)->dispatch($usertablefilter);
 
-    if ($filterform->is_cancelled() || empty($filterform->get_data())) {
-        $idmgroupstofilter = [];
-    } else  {
-        $idmgroupstofilter = [];
-        if (!empty($filterform->get_data())) {
-            $idmgroupstofilter = $filterform->get_data()->idmgroupids;
-            foreach ($idmgroupstofilter as $idmgroupid) {
-                // Just create the group, will throw an exception if it does not exist which is fine enough, because it means,
-                // someone manipulated the url.
-                $idmgroup = idmgroup::create_from_id($idmgroupid);
-                if ($idmgroup->get_schoolid() !== $tenant->get_tenantidentifier()) {
-                    throw new \moodle_exception('You can only filter IDM groups which belong to the current school');
-                }
+    $filterform =
+            new \local_ai_manager\form\rights_config_filter_form(null, ['filteroptions' => $usertablefilter->get_filter_options()]);
+
+    $filterids = [];
+    if (!empty($usertablefilter->get_filter_options())) {
+        if ($filterform->is_cancelled() || empty($filterform->get_data())) {
+            $filterids = [];
+        } else {
+            $filterids = [];
+            if (!empty($filterform->get_data())) {
+                $filterids = $filterform->get_data()->filterids;
+                // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
+                // TODO: Evtl. add validation possibility in usertable_filter.
+                // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
             }
         }
+        $filterform->display();
     }
-    $filterform->display();
 
     $uniqid = 'rights-config-table-' . uniqid();
-    $rightstable = new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $idmgroupstofilter);
+    $rightstable = new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $filterids);
     $rightstable->out(100, false);
     $rightsconfigform->display();
     $PAGE->requires->js_call_amd('local_ai_manager/rights_config_table', 'init', ['id' => $uniqid]);

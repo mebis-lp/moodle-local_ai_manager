@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $capabilities = [
         'local/ai_manager:use' => [
                 'captype' => 'read',
@@ -34,7 +36,7 @@ $capabilities = [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW,
-                ]
+                ],
         ],
         'local/ai_manager:manage' => [
                 'captype' => 'write',
@@ -46,7 +48,7 @@ $capabilities = [
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_PREVENT,
                         'manager' => CAP_ALLOW,
-                ]
+                ],
         ],
         'local/ai_manager:managetenants' => [
                 'captype' => 'write',
@@ -58,7 +60,7 @@ $capabilities = [
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_PREVENT,
                         'manager' => CAP_PREVENT,
-                ]
+                ],
         ],
         'local/ai_manager:viewstatistics' => [
                 'captype' => 'write',
@@ -70,7 +72,7 @@ $capabilities = [
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_PREVENT,
                         'manager' => CAP_ALLOW,
-                ]
+                ],
         ],
         'local/ai_manager:viewuserstatistics' => [
                 'captype' => 'read',
@@ -82,7 +84,7 @@ $capabilities = [
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_PREVENT,
                         'manager' => CAP_ALLOW,
-                ]
+                ],
         ],
         'local/ai_manager:viewusernames' => [
                 'captype' => 'read',
@@ -94,7 +96,7 @@ $capabilities = [
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_PREVENT,
                         'manager' => CAP_ALLOW,
-                ]
+                ],
         ],
         'local/ai_manager:viewusage' => [
                 'captype' => 'read',
@@ -106,7 +108,7 @@ $capabilities = [
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_PREVENT,
                         'manager' => CAP_ALLOW,
-                ]
+                ],
         ],
 
 ];
