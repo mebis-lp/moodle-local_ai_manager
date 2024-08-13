@@ -84,7 +84,7 @@ if ($hassiteconfig) {
                 '60'
         ));
 
-        $settings->add(new admin_setting_confightmleditor(
+        $settings->add(new admin_setting_configtextarea(
                 'local_ai_manager/termsofuse',
                 new lang_string('termsofusesetting', 'local_ai_manager'),
                 new lang_string('termsofusesettingdesc', 'local_ai_manager'),
