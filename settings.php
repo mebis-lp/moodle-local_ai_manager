@@ -90,5 +90,12 @@ if ($hassiteconfig) {
                 new lang_string('termsofusesettingdesc', 'local_ai_manager'),
                 ''
         ));
+
+        $settings->add(new admin_setting_configtext(
+                'local_ai_manager/aiwarningurl',
+                new lang_string('aiwarningurl', 'local_ai_manager'),
+                new lang_string('aiwarningurldesc', 'local_ai_manager'),
+                ''
+        ));
     }
 }

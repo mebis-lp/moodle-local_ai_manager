@@ -40,7 +40,8 @@ class hook_callbacks {
             return;
         }
         $accessmanager = \core\di::get(access_manager::class);
-        if (!$accessmanager->is_tenant_manager()) {
+        $tenant = \core\di::get(tenant::class);
+        if (!$accessmanager->is_tenant_manager() || !$tenant->is_tenant_allowed()) {
             return;
         }
         $node = navigation_node::create(get_string('aiadministrationlink', 'local_ai_manager'),

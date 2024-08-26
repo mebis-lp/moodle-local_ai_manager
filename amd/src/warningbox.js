@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import {getAiConfig} from 'local_ai_manager/config';
 import Templates from 'core/templates';
 
 
@@ -30,8 +31,13 @@ import Templates from 'core/templates';
  *
  * @param {string} selector the selector where the warning box should be rendered into
  */
-export const renderWarningBox = async (selector) => {
+export const renderWarningBox = async(selector) => {
+    const aiConfig = await getAiConfig();
+    const showAiWarningLink = aiConfig.aiwarningurl.length > 0;
     const targetElement = document.querySelector(selector);
-    const {html, js} = await Templates.renderForPromise('local_ai_manager/ai_info_warning', {});
+    const {html, js} = await Templates.renderForPromise('local_ai_manager/ai_info_warning', {
+        showaiwarninglink: showAiWarningLink,
+        aiwarningurl: aiConfig.aiwarningurl
+    });
     Templates.appendNodeContents(targetElement, html, js);
 };

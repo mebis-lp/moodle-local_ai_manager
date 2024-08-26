@@ -15,17 +15,15 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_ai_manager/tenantnavbar
+    @template local_ai_manager/tenantenable
 
-    Admin text setting template.
-
-    Context variables required for this template:
-    * label - form element name
-        * href - element id
-    * forceltr - always display as ltr
+    Template for enabling/disabling the tenant.
 
     Example context (json):
     {
+        "tenantfullname": "My own tenant",
+        "checked": true,
+        "rightsconfiglink": "https://mymoodle.com/linktotherightsconfigtable.php"
     }
 }}
 <div class="local_ai_manager-tenantenable mt-0 mb-5">

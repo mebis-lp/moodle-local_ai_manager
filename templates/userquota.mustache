@@ -17,15 +17,30 @@
 {{!
     @template local_ai_manager/userquota
 
-    Admin text setting template.
-
-    Context variables required for this template:
-    * label - form element name
-    * href - element id
-    * forceltr - always display as ltr
+    Template for rendering the user quota info box.
 
     Example context (json):
     {
+        "purposes": [
+            {
+                "currentusage": "5",
+                "showmaxusage": true,
+                "maxusage": "10",
+                "querycounttext": "Chat requests",
+                "limitreached": false,
+                "islastelement": false
+            },
+            {
+                "currentusage": "3",
+                "showmaxusage": true,
+                "maxusage": "15",
+                "querycounttext": "Image Generation requests",
+                "limitreached": false,
+                "islastelement": true
+            }
+        ],
+        "unlimited": false,
+        "period": "per day"
     }
 }}
 <span class="local_ai_manager_userquota_infobox" data-content="local_ai_manager_userquota">

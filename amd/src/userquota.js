@@ -32,17 +32,17 @@ const constants = {
 
 const queryCountStrings = {
     chat: 'chat requests',
-    chat_shortened: 'chat',
+    chatShortened: 'chat',
     feedback: 'feedback requests',
-    feedback_shortened: 'feedback',
+    feedbackShortened: 'feedback',
     imggen: 'image generation generation requests',
-    imggen_shortened: 'image generation generation',
+    imggenShortened: 'image generation generation',
     singleprompt: 'text requests',
-    singleprompt_shortened: 'text',
+    singlepromptShortened: 'text',
     translate: 'translation requests',
-    translate_shortened: 'translation',
+    translateShortened: 'translation',
     tts: 'audio requests',
-    tts_shortened: 'audio'
+    ttsShortened: 'audio'
 };
 
 const fetchUserquotaData = () => fetchMany([{
@@ -56,7 +56,7 @@ const fetchUserquotaData = () => fetchMany([{
  * @param {string} selector the id of the element to insert the infobox
  * @param {string[]} purposes the purposes to show user quota for
  */
-export const renderUserQuota = async (selector, purposes) => {
+export const renderUserQuota = async(selector, purposes) => {
     await localizeQueryCountTexts();
 
     const targetElement = document.querySelector(selector);
@@ -69,14 +69,14 @@ export const renderUserQuota = async (selector, purposes) => {
                 purpose,
                 'currentusage': userquotaData.usage[purpose].currentusage,
                 maxusage: userquotaData.usage[purpose].maxusage,
-                'querycounttext': queryCountStrings[purpose + '_shortened'],
+                'querycounttext': queryCountStrings[purpose + 'Shortened'],
                 showmaxusage: userquotaData.usage[purpose].maxusage !== constants.MAXUSAGE_UNLIMITED,
                 limitreached: userquotaData.usage[purpose].currentusage === userquotaData.usage[purpose].maxusage,
                 islastelement: false
             });
     });
     purposeInfo[purposeInfo.length - 1].islastelement = true;
-    purposeInfo[purposeInfo.length - 1].querycounttext = queryCountStrings[purposeInfo[purposeInfo.length - 1]['purpose']];
+    purposeInfo[purposeInfo.length - 1].querycounttext = queryCountStrings[purposeInfo[purposeInfo.length - 1].purpose];
 
     const userquotaContentTemplateContext = {
         purposes: purposeInfo,
@@ -87,9 +87,9 @@ export const renderUserQuota = async (selector, purposes) => {
     Templates.appendNodeContents(targetElement, html, js);
 };
 
-const localizeQueryCountTexts = async () => {
+const localizeQueryCountTexts = async() => {
     const stringsToFetch = [];
-    Object.keys(queryCountStrings).filter(key => !key.endsWith('_shortened')).forEach((key) => {
+    Object.keys(queryCountStrings).filter(key => !key.endsWith('Shortened')).forEach((key) => {
         stringsToFetch.push({key: 'requestcount', component: 'aipurpose_' + key});
         stringsToFetch.push({key: 'requestcount_shortened', component: 'aipurpose_' + key});
     });

@@ -17,18 +17,39 @@
 {{!
     @template local_ai_manager/instancetable
 
-    Admin text setting template.
-
-    Context variables required for this template:
-    * label - form element name
-    * href - element id
-    * forceltr - always display as ltr
+    Template for the table that shows the current instances.
 
     Example context (json):
     {
-        "label": "button label",
-        "href": "http://google.com",
-        "forceltr": false
+        "tenant": "sometenantname",
+        "purposesheading": "Purposes (3 of 6 configured)",
+        "instances": [
+            {
+                "name": "my first instance",
+                "toolname": "chatgpt",
+                "model": "chatgpt4o",
+                "purposes": [
+                    {
+                        "fullname": "Chat"
+                    },
+                    {
+                        "fullname": "Translate"
+                    }
+                ],
+                "nopurposeslink": "<a href=\"...\">Not assigned to any purposes</a>"
+            },
+            {
+                "name": "my second instance",
+                "toolname": "dalle",
+                "model": "dalle-3",
+                "purposes": [
+                    {
+                        "fullname": "Image generation"
+                    }
+                ],
+                "nopurposeslink": "<a href=\"...\">Not assigned to any purposes</a>"
+            }
+        ]
     }
 }}
 <hr>
