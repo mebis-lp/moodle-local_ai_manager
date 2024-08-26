@@ -17,15 +17,27 @@
 {{!
     @template local_ai_manager/purpose_info
 
-    Admin text setting template.
-
-    Context variables required for this template:
-    * label - form element name
-    * href - element id
-    * forceltr - always display as ltr
+    Template for showing the purpose info.
 
     Example context (json):
     {
+        "termsofuse": "This are the terms of use which you need to accept",
+        "purposes": [
+            {
+                "highlight": true,
+                "purpose": "chat",
+                "name": "Instance for ChatGPT 4o",
+                "model": "chatgpt4o",
+                "infolink": "https://someexternallinkwithadditionalinfo.com/chatgpt"
+            },
+            {
+                "highlight": false,
+                "purpose": "translate",
+                "name": "Instance for Google Gemini",
+                "model": "gemini-flash-1.5",
+                "infolink": "https://someexternallinkwithadditionalinfo.com/googlegemini"
+            }
+        ]
     }
 }}
 <div class="local_ai_manager-purposeinfo">
@@ -48,7 +60,7 @@
 
         <h4>{{#str}}privacy_terms_heading, local_ai_manager{{/str}}</h4>
         <p>
-            {{#str}}privacy_terms_text1, local_ai_manager{{/str}}<br/>
+            {{#str}}privacy_terms_text1, local_ai_manager{{/str}}<br>
             {{{termsofuse}}}
         </p>
         <p>{{#str}}privacy_terms_text2, local_ai_manager{{/str}}</p>
@@ -56,10 +68,12 @@
 
     <table class="table table-bordered">
         <thead>
-            <th>{{#str}}table_heading_purpose, local_ai_manager{{/str}}</th>
-            <th>{{#str}}table_heading_instance_name, local_ai_manager{{/str}}</th>
-            <th>{{#str}}table_heading_model, local_ai_manager{{/str}}</th>
-            <th>{{#str}}table_heading_infolink, local_ai_manager{{/str}}</th>
+            <tr>
+                <th>{{#str}}table_heading_purpose, local_ai_manager{{/str}}</th>
+                <th>{{#str}}table_heading_instance_name, local_ai_manager{{/str}}</th>
+                <th>{{#str}}table_heading_model, local_ai_manager{{/str}}</th>
+                <th>{{#str}}table_heading_infolink, local_ai_manager{{/str}}</th>
+            </tr>
         </thead>
         <tbody>
         {{#purposes}}
@@ -67,7 +81,7 @@
                 <td>{{purpose}}</td>
                 <td>{{name}}</td>
                 <td>{{model}}</td>
-                <td><a href="{{infolink}}">{{infolink}}</a></td>
+                <td><a href="{{{infolink}}}">{{infolink}}</a></td>
             </tr>
         {{/purposes}}
         </tbody>

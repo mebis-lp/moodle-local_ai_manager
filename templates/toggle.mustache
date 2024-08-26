@@ -15,17 +15,14 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_ai_manager/tenantnavbar
-
-    Admin text setting template.
-
-    Context variables required for this template:
-    * label - form element name
-        * href - element id
-    * forceltr - always display as ltr
+    @template local_ai_manager/toggle
 
     Example context (json):
     {
+        "checked": true,
+        "targetwhenchecked": "https://thispage.mymoodle.com/editpage/enable=0",
+        "targetwhennotchecked": "https://thispage.mymoodle.com/editpage/enable=1",
+        "text": "Toggle this to enable/disable what you want"
     }
 }}
 <div id="local_ai_manager_toggle-{{uniqid}}" class="custom-control custom-switch">
@@ -33,7 +30,7 @@
                 }} {{#checked}}checked{{/checked}}{{!
                 }} data-targetwhenchecked="{{{targetwhenchecked}}}"{{!
                 }} data-targetwhennotchecked="{{{targetwhennotchecked}}}"{{!>
-                }}/>
+                }}>
     <span class="custom-control-label">{{text}}</span>
 </div>
 {{#js}}

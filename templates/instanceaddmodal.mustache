@@ -17,15 +17,22 @@
 {{!
     @template local_ai_manager/instanceaddmodal
 
-    Admin text setting template.
-
-    Context variables required for this template:
-    * label - form element name
-        * href - element id
-    * forceltr - always display as ltr
+    Template for the modal to add an instance.
 
     Example context (json):
     {
+        "tools": [
+            {
+                "linklabel": "Add test tool",
+                "addurl": "https://mymoodle.com/addtool?tool=testtool",
+                "adddescription": "This tool is a very great tool to add"
+            },
+            {
+                "linklabel": "Add another test tool",
+                "addurl": "https://mymoodle.com/addtool?tool=anothertesttool",
+                "adddescription": "This tool is another very great tool to add"
+            }
+        ]
     }
 }}
 {{< core/modal}}
