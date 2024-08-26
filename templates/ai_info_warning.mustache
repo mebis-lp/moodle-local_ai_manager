@@ -1,4 +1,6 @@
 <div class="local_ai_manager-info-warning">
     <p class="local_ai_manager-info-warning-text">{{#str}}aiwarning, local_ai_manager{{/str}}</p>
-    <a class="local_ai_manager-info-warning-link" href="https://mebis.bycs.de/beitrag/kuenstliche-intelligenz" target="_blank"><i class="fa-solid fa-circle-info"></i></a>
+    {{#showaiwarninglink}}
+        <a class="local_ai_manager-info-warning-link" href="{{{aiwarningurl}}}" target="_blank"><i class="fa-solid fa-circle-info"></i></a>
+    {{/showaiwarninglink}}
 </div>

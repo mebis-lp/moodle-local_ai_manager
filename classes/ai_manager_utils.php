@@ -192,12 +192,15 @@ class ai_manager_utils {
             $tool['addurl'] = $addurl->out(false);
             $tools[] = $tool;
         }
+        // If the warning url is empty, we will not show a link.
+        $aiwarningurl = get_config('local_ai_manager', 'aiwarningurl') ?: '';
 
         return [
                 'tenantenabled' => $configmanager->is_tenant_enabled(),
                 'userlocked' => $userinfo->is_locked(),
                 'userconfirmed' => $userinfo->is_confirmed(),
                 'role' => userinfo::get_role_as_string($userinfo->get_role()),
+                'aiwarningurl' => $aiwarningurl,
                 'purposes' => $purposes,
                 'tools' => $tools,
         ];
