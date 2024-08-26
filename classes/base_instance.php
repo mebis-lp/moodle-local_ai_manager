@@ -16,6 +16,7 @@
 
 namespace local_ai_manager;
 
+use local_ai_manager\local\config_manager;
 use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\tenant;
 use stdClass;
@@ -582,6 +583,16 @@ class base_instance {
             $this->load();
             if (empty($this->id)) {
                 throw new \moodle_exception('Instance with id ' . $this->id . ' does not exist');
+            }
+        }
+
+        // Before deleting we remove all assignments of purposes to this instance, if there are any.
+        // We intentionally do not use dependency injection here to make sure we are using the config manager that belongs
+        // to this instance.
+        $configmanager = new config_manager(new tenant($this->get_tenant()));
+        foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
+            if (intval($instanceid) === $this->get_id()) {
+                $configmanager->unset_config(base_purpose::get_purpose_tool_config_key($purpose));
             }
         }
         $DB->delete_records('local_ai_manager_instance', ['id' => $this->id]);
