@@ -31,7 +31,7 @@ import Templates from 'core/templates';
  *
  * @param {string} selector the selector where the warning box should be rendered into
  */
-export const renderWarningBox = async (selector) => {
+export const renderWarningBox = async(selector) => {
     const aiConfig = await getAiConfig();
     const showAiWarningLink = aiConfig.aiwarningurl.length > 0;
     const targetElement = document.querySelector(selector);
