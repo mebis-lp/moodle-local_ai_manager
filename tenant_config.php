@@ -24,6 +24,7 @@
  */
 
 use local_ai_manager\base_instance;
+use local_ai_manager\local\tenant;
 use local_ai_manager\local\tenant_config_output_utils;
 use local_ai_manager\output\tenantnavbar;
 
@@ -49,7 +50,7 @@ if ($enabletenant !== 'not_set') {
 
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 
-$rightsconfiglink = html_writer::link(new moodle_url('/local/ai_manager/statistics.php'),
+$rightsconfiglink = html_writer::link(new moodle_url('/local/ai_manager/rights_config.php'),
         get_string('rightsconfig', 'local_ai_manager'));
 
 echo $OUTPUT->header();
