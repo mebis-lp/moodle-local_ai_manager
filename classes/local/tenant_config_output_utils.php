@@ -58,5 +58,9 @@ class tenant_config_output_utils {
         $PAGE->set_heading($strtitle);
         $PAGE->navbar->add($strtitle);
         $PAGE->set_secondary_navigation(false);
+
+        if (!$tenant->is_tenant_allowed()) {
+            throw new \moodle_exception('Tenant not allowed');
+        }
     }
 }
