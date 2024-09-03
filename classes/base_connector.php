@@ -176,9 +176,9 @@ abstract class base_connector {
             $return = request_response::create_from_result($response->getBody());
         } else {
             $return = request_response::create_from_error(
-                    $response->getStatusCode(),
-                    get_string('error_sendingrequestfailed', 'local_ai_manager'),
-                    $response->getBody(),
+                $response->getStatusCode(),
+                get_string('error_sendingrequestfailed', 'local_ai_manager'),
+                $response->getBody(),
             );
         }
         return $return;
@@ -238,8 +238,8 @@ abstract class base_connector {
      */
     protected function get_headers(): array {
         return [
-                'Authorization' => 'Bearer ' . $this->get_api_key(),
-                'Content-Type' => 'application/json;charset=utf-8',
+            'Authorization' => 'Bearer ' . $this->get_api_key(),
+            'Content-Type' => 'application/json;charset=utf-8',
         ];
     }
 }

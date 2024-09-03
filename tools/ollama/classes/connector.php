@@ -33,13 +33,25 @@ class connector extends \local_ai_manager\base_connector {
 
     #[\Override]
     public function get_models_by_purpose(): array {
-        $textmodels = ['gemma', 'llama3', 'llama3.1', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
-                'tinyllama'];
+        $textmodels = [
+            'gemma',
+            'llama3',
+            'llama3.1',
+            'mistral',
+            'codellama',
+            'qwen',
+            'phi3',
+            'mixtral',
+            'dolphin-mixtral',
+            'llava',
+            'tinyllama'
+        ];
         return [
-                'chat' => $textmodels,
-                'feedback' => $textmodels,
-                'singleprompt' => $textmodels,
-                'translate' => $textmodels,
+            'chat' => $textmodels,
+            'feedback' => $textmodels,
+            'singleprompt' => $textmodels,
+            'translate' => $textmodels,
+            'genai' => $textmodels,
         ];
     }
 
@@ -58,9 +70,11 @@ class connector extends \local_ai_manager\base_connector {
         $responsetokencount = isset($content['eval_count']) ? $content['eval_count'] : 0.0;
         $totaltokencount = $prompttokencount + $responsetokencount;
 
-        return prompt_response::create_from_result($content['model'],
-                new usage($totaltokencount, $prompttokencount, $prompttokencount),
-                $content['message']['content']);
+        return prompt_response::create_from_result(
+            $content['model'],
+            new usage($totaltokencount, $prompttokencount, $prompttokencount),
+            $content['message']['content']
+        );
     }
 
     #[\Override]
@@ -82,20 +96,20 @@ class connector extends \local_ai_manager\base_connector {
                         throw new \moodle_exception('Bad message format');
                 }
                 $messages[] = [
-                        'role' => $role,
-                        'content' => $message['message'],
+                    'role' => $role,
+                    'content' => $message['message'],
                 ];
             }
         }
         $messages[] = ['role' => 'user', 'content' => $prompttext];
         $data = [
-                'model' => $this->instance->get_model(),
-                'messages' => $messages,
-                'stream' => false,
-                'keep_alive' => '60m',
-                'options' => [
-                        'temperature' => $this->instance->get_temperature(),
-                ],
+            'model' => $this->instance->get_model(),
+            'messages' => $messages,
+            'stream' => false,
+            'keep_alive' => '60m',
+            'options' => [
+                'temperature' => $this->instance->get_temperature(),
+            ],
         ];
         return $data;
     }

@@ -35,10 +35,11 @@ class connector extends \local_ai_manager\base_connector {
     public function get_models_by_purpose(): array {
         $textmodels = ['gemini-1.0-pro-latest', 'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
         return [
-                'chat' => $textmodels,
-                'feedback' => $textmodels,
-                'singleprompt' => $textmodels,
-                'translate' => $textmodels,
+            'chat' => $textmodels,
+            'feedback' => $textmodels,
+            'singleprompt' => $textmodels,
+            'translate' => $textmodels,
+            'genai' => $textmodels,
         ];
     }
 
@@ -61,12 +62,13 @@ class connector extends \local_ai_manager\base_connector {
             $textanswer .= $part['text'];
         }
         return prompt_response::create_from_result(
-                $this->instance->get_model(),
-                new usage(
-                        (float) $content['usageMetadata']['totalTokenCount'],
-                        (float) $content['usageMetadata']['promptTokenCount'],
-                        (float) $content['usageMetadata']['candidatesTokenCount']),
-                $textanswer,
+            $this->instance->get_model(),
+            new usage(
+                (float) $content['usageMetadata']['totalTokenCount'],
+                (float) $content['usageMetadata']['promptTokenCount'],
+                (float) $content['usageMetadata']['candidatesTokenCount']
+            ),
+            $textanswer,
         );
     }
 
@@ -90,24 +92,24 @@ class connector extends \local_ai_manager\base_connector {
                         throw new \moodle_exception('Bad message format');
                 }
                 $messages[] = [
-                        'role' => $role,
-                        'parts' => [
-                                ['text' => $message['message']],
-                        ],
+                    'role' => $role,
+                    'parts' => [
+                        ['text' => $message['message']],
+                    ],
                 ];
             }
         }
         $messages[] = [
-                'role' => 'user',
-                'parts' => [
-                        ['text' => $prompttext],
-                ],
+            'role' => 'user',
+            'parts' => [
+                ['text' => $prompttext],
+            ],
         ];
         return [
-                'contents' => $messages,
-                'generationConfig' => [
-                        'temperature' => $this->instance->get_temperature(),
-                ],
+            'contents' => $messages,
+            'generationConfig' => [
+                'temperature' => $this->instance->get_temperature(),
+            ],
         ];
     }
 
