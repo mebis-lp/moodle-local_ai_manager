@@ -226,7 +226,7 @@ class manager {
                     ['component' => $component, 'contextid' => $context->id, 'itemid' => $options['itemid']])) {
                 $existingitemid = $options['itemid'];
                 unset($options['itemid']);
-                $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
+                $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions);
                 $promptresponse = prompt_response::create_from_error(409, get_string('error_http409', 'local_ai_manager',
                         $existingitemid), '');
                 get_ai_response_failed::create_from_prompt_response($promptdata, $promptresponse, $duration)->trigger();
@@ -234,8 +234,10 @@ class manager {
             }
         }
 
-        $logrecordid = $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
+        $logrecordid = $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions);
         get_ai_response_succeeded::create_from_prompt_response($promptcompletion, $logrecordid)->trigger();
+
+        $promptcompletion->set_content($this->purpose->format_output($promptcompletion->get_content()));
 
         return $promptcompletion;
     }
