@@ -89,8 +89,7 @@ class submit_query extends external_api {
                 $return = ['code' => $result->get_code(), 'string' => 'error', 'result' => json_encode($error)];
             } else {
                 $factory = \core\di::get(connector_factory::class);
-                $purposeobject = $factory->get_purpose_by_purpose_string($purpose);
-                $return = ['code' => 200, 'string' => 'ok', 'result' => $purposeobject->format_output($result->get_content())];
+                $return = ['code' => 200, 'string' => 'ok', 'result' => $result->get_content()];
             }
         } catch (\Exception $e) {
             $error = ['message' => $e->getMessage()];

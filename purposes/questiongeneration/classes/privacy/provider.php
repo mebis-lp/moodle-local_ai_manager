@@ -15,17 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * aipurpose_questiongeneration privacy provider class.
  *
- * @package    local_ai_manager
+ * @package    aipurpose_questiongeneration
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2025061802;
-$plugin->requires = 2024042200;
-$plugin->release = '1.1';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_BETA;
+namespace aipurpose_questiongeneration\privacy;
+
+/**
+ * aipurpose_questiongeneration privacy provider class.
+ *
+ * @package    aipurpose_questiongeneration
+ * @copyright  ISB Bayern, 2024
+ * @author     Dr. Peter Mayer
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}
