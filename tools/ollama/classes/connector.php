@@ -42,6 +42,7 @@ class connector extends \local_ai_manager\base_connector {
                 'singleprompt' => $textmodels,
                 'translate' => $textmodels,
                 'itt' => $visionmodels,
+                'genai' => $textmodels,
         ];
     }
 
