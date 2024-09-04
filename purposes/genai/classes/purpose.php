@@ -48,8 +48,8 @@ class purpose extends base_purpose {
 
         if (array_key_exists('messages', $options)) {
             $messages = [];
-            foreach($options['messages']  as $message) {
-                switch($message['role']) {
+            foreach ($options['messages']  as $message) {
+                switch ($message['role']) {
                     case 'user':
                         $messages[] = ['sender' => 'user', 'message' => $message['content']];
                         break;

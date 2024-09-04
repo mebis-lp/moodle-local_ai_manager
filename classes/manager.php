@@ -112,9 +112,9 @@ class manager {
             $options = $this->sanitize_options($options);
         } catch (\Exception $exception) {
             return prompt_response::create_from_error(
-                    400,
-                    get_string('error_http400', 'local_ai_manager'),
-                    $exception->getMessage()
+                400,
+                get_string('error_http400', 'local_ai_manager'),
+                $exception->getMessage()
             );
         }
 
@@ -140,14 +140,16 @@ class manager {
         if ($userusage->get_currentusage() >= $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) {
             $period = format_time($this->configmanager->get_max_requests_period());
             return prompt_response::create_from_error(
-                    429,
-                    get_string(
-                            'error_http429',
-                            'local_ai_manager',
-                            ['count' => $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role()),
-                                    'period' => $period]
-                    ),
-                    ''
+                429,
+                get_string(
+                    'error_http429',
+                    'local_ai_manager',
+                    [
+                        'count' => $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role()),
+                        'period' => $period
+                    ]
+                ),
+                ''
             );
         }
 
@@ -168,21 +170,35 @@ class manager {
         $endtime = microtime(true);
         $duration = round($endtime - $starttime, 2);
         if ($requestresult->get_code() !== 200) {
-            $promptresponse = prompt_response::create_from_error($requestresult->get_code(), $requestresult->get_errormessage(),
-                    $requestresult->get_debuginfo());
+            $promptresponse = prompt_response::create_from_error(
+                $requestresult->get_code(),
+                $requestresult->get_errormessage(),
+                $requestresult->get_debuginfo()
+            );
             get_ai_response_failed::create_from_prompt_response($promptdata, $promptresponse, $duration)->trigger();
             return $promptresponse;
         }
         $promptcompletion = $this->connector->execute_prompt_completion($requestresult->get_response(), $options);
-        if (!empty($options['forcenewitemid']) && !empty($options['component']) &&
-                !empty($options['contextid'] && !empty($options['itemid']))) {
-            if ($DB->record_exists('local_ai_manager_request_log',
-                    ['component' => $options['component'], 'contextid' => $options['contextid'], 'itemid' => $options['itemid']])) {
+        if (
+            !empty($options['forcenewitemid']) && !empty($options['component']) &&
+            !empty($options['contextid'] && !empty($options['itemid']))
+        ) {
+            if ($DB->record_exists(
+                'local_ai_manager_request_log',
+                [
+                    'component' => $options['component'],
+                    'contextid' => $options['contextid'],
+                    'itemid' => $options['itemid']
+                ]
+            )) {
                 $existingitemid = $options['itemid'];
                 unset($options['itemid']);
                 $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
-                $promptresponse = prompt_response::create_from_error(409, get_string('error_http409', 'local_ai_manager',
-                        $existingitemid), '');
+                $promptresponse = prompt_response::create_from_error(409, get_string(
+                    'error_http409',
+                    'local_ai_manager',
+                    $existingitemid
+                ), '');
                 get_ai_response_failed::create_from_prompt_response($promptdata, $promptresponse, $duration)->trigger();
                 return $promptresponse;
             }
@@ -205,9 +221,13 @@ class manager {
      * @param array $options part of $requestoptions, contains the options directly passed to the manager
      * @return int the record id of the log record which has been stored to the database
      */
-    public function log_request(string $prompttext, prompt_response $promptcompletion, float $executiontime,
-            array $requestoptions = [],
-            array $options = []): int {
+    public function log_request(
+        string $prompttext,
+        prompt_response $promptcompletion,
+        float $executiontime,
+        array $requestoptions = [],
+        array $options = []
+    ): int {
         global $DB, $USER;
 
         // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
@@ -267,13 +287,15 @@ class manager {
         foreach ($options as $key => $value) {
             if (!array_key_exists($key, $this->purpose->get_available_purpose_options())) {
                 throw new \coding_exception('Option ' . $key . ' is not allowed for the purpose ' .
-                        $this->purpose->get_plugin_name());
+                    $this->purpose->get_plugin_name());
             }
             if (is_array($this->purpose->get_available_purpose_options()[$key])) {
-                if (!in_array($value[0], array_map(fn($valueobject) => $valueobject['key'],
-                        $this->purpose->get_available_purpose_options()[$key]))) {
+                if (!in_array($value[0], array_map(
+                    fn($valueobject) => $valueobject['key'],
+                    $this->purpose->get_available_purpose_options()[$key]
+                ))) {
                     throw new \coding_exception('Value ' . $value[0] . ' for option ' . $key . ' is not allowed for the purpose ' .
-                            $this->purpose->get_plugin_name());
+                        $this->purpose->get_plugin_name());
                 }
             } else {
                 if ($this->purpose->get_available_purpose_options()[$key] === base_purpose::PARAM_ARRAY) {
