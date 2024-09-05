@@ -44,7 +44,7 @@ class connector extends \local_ai_manager\base_connector {
             'mixtral',
             'dolphin-mixtral',
             'llava',
-            'tinyllama'
+            'tinyllama',
         ];
         return [
             'chat' => $textmodels,

@@ -146,7 +146,7 @@ class manager {
                     'local_ai_manager',
                     [
                         'count' => $this->configmanager->get_max_requests($this->purpose, $userinfo->get_role()),
-                        'period' => $period
+                        'period' => $period,
                     ]
                 ),
                 ''
@@ -188,7 +188,7 @@ class manager {
                 [
                     'component' => $options['component'],
                     'contextid' => $options['contextid'],
-                    'itemid' => $options['itemid']
+                    'itemid' => $options['itemid'],
                 ]
             )) {
                 $existingitemid = $options['itemid'];
