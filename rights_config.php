@@ -25,7 +25,6 @@
 
 use local_ai_manager\local\userinfo;
 use local_ai_manager\output\tenantnavbar;
-use local_bycsauth\idmgroup;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_login();

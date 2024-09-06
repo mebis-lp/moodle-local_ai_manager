@@ -27,15 +27,6 @@
 
 namespace local_ai_manager\form;
 
-use core_plugin_manager;
-use local_ai_manager\base_connector;
-use local_ai_manager\base_purpose;
-use local_ai_manager\local\tenant;
-use local_ai_manager\local\userinfo;
-use local_ai_manager\manager;
-use local_bycsauth\idmgroup;
-use local_bycsauth\school;
-
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
