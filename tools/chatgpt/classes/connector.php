@@ -39,6 +39,7 @@ class connector extends \local_ai_manager\base_connector {
                 'feedback' => $chatgptmodels,
                 'singleprompt' => $chatgptmodels,
                 'translate' => $chatgptmodels,
+                'genai' => $chatgptmodels,
         ];
     }
 
@@ -90,16 +91,21 @@ class connector extends \local_ai_manager\base_connector {
                 ];
             }
         }
-        $messages[] = ['role' => 'user', 'content' => $prompttext];
+
+        if (!empty($prompttext)) {
+            $messages[] = ['role' => 'user', 'content' => $prompttext];
+        }
 
         $parameters = [
                 'temperature' => $this->instance->get_temperature(),
                 'messages' => $messages,
         ];
+
         if (!$this->instance->azure_enabled()) {
             // If azure is enabled, the model will be preconfigured in the azure resource, so we do not need to send it.
             $parameters['model'] = $this->instance->get_model();
         }
+
         return $parameters;
     }
 
