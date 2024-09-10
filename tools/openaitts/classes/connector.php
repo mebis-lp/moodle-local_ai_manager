@@ -47,6 +47,9 @@ class connector extends \local_ai_manager\base_connector {
         if (!$this->instance->azure_enabled()) {
             // If azure is enabled, the model will be preconfigured in the azure resource, so we do not need to send it.
             $data['model'] = $this->instance->get_model();
+        } else {
+            // OpenAI via Azure expects the model to be sent despite being preconfigured in the resource. So we hardcode "tts".
+            $data['model'] = 'tts';
         }
 
         return $data;
