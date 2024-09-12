@@ -16,7 +16,7 @@
 
 namespace local_ai_manager\hook;
 
-use core\exception\coding_exception;
+use coding_exception;
 use local_ai_manager\local\userinfo;
 
 /**
