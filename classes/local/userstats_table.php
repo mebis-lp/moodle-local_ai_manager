@@ -94,21 +94,24 @@ class userstats_table extends table_sql {
             $from = '{local_ai_manager_request_log} rl LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid'
                     . ' JOIN {user} u ON u.id = rl.userid';
             $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id';
-            $params = ['tenant' => $tenant->get_identifier(), 'purpose' => $purpose];
+            $params = [
+                    'tenant' => $tenant->get_sql_identifier(),
+                    'purpose' => $purpose,
+            ];
             $this->set_count_sql(
                     "SELECT COUNT(DISTINCT userid) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id "
                     . "WHERE " . $tenantfield . " = :tenant AND purpose = :purpose",
-                    ['tenant' => $tenant->get_identifier(), 'purpose' => $purpose]
+                    $params
             );
         } else {
             $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount';
             $from =
-                    '{user} u LEFT JOIN {local_ai_manager_request_log} rl ON u.id = rl.userid';
-            $where = $tenantfield . ' = :tenant GROUP BY u.id';
-            $params = ['tenant' => $tenant->get_identifier()];
+                    '{local_ai_manager_request_log} rl LEFT JOIN {user} u ON rl.userid = u.id';
+            $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id';
+            $params = ['tenant' => $tenant->get_sql_identifier()];
             $this->set_count_sql(
                     "SELECT COUNT(DISTINCT id) FROM {user} WHERE " . $tenantfield . " = :tenant",
-                    ['tenant' => $tenant->get_identifier()]
+                    $params
             );
         }
         $this->set_sql($fields, $from, $where, $params);

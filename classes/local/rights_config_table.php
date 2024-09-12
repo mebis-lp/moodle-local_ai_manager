@@ -72,7 +72,7 @@ class rights_config_table extends table_sql {
         $from =
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
         $where = 'u.deleted != 1 AND u.suspended != 1 AND ' . $tenantfield . ' = :tenant';
-        $params = ['tenant' => $tenant->get_identifier()];
+        $params = ['tenant' => $tenant->get_sql_identifier()];
 
         $usertableextend = new usertable_extend($tenant, $columns, $headers, $filterids, $fields, $from, $where, $params);
         \core\di::get(\core\hook\manager::class)->dispatch($usertableextend);
@@ -86,7 +86,7 @@ class rights_config_table extends table_sql {
 
         $this->set_count_sql(
                 "SELECT COUNT(DISTINCT id) FROM {user} WHERE " . $tenantfield . " = :tenant",
-                ['tenant' => $tenant->get_identifier()]
+                ['tenant' => $tenant->get_sql_identifier()]
         );
 
         $this->set_sql($usertableextend->get_fields(), $usertableextend->get_from(),

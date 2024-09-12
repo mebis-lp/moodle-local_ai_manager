@@ -51,12 +51,12 @@ $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
 $recordscount =
         $DB->count_records_sql("SELECT COUNT(*) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id"
                 . " WHERE u." . $tenantfield . " = :tenant",
-                ['tenant' => $tenant->get_identifier()]);
+                ['tenant' => $tenant->get_sql_identifier()]);
 
 if ($recordscount !== 0) {
     $uniqid = 'statistics-table-users-all-purposes';
 
-    $baseurl = new moodle_url('/local/ai_manager/user_statistics.php', ['tenant' => $tenant->get_identifier()]);
+    $baseurl = new moodle_url('/local/ai_manager/user_statistics.php', ['tenant' => $tenant->get_sql_identifier()]);
     $table = new \local_ai_manager\local\userstats_table($uniqid, '', $tenant, $baseurl);
     $table->out(5, false);
 } else {

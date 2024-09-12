@@ -61,6 +61,15 @@ class tenant {
     }
 
     /**
+     * Returns the identifier which needs to be used in SQL statements.
+     *
+     * @return string the tenant identifier for SQL statements
+     */
+    public function get_sql_identifier(): string {
+        return $this->is_default_tenant() ? '' : $this->identifier;
+    }
+
+    /**
      * Returns if the current tenant of this object is the default tenant.
      *
      * @return bool true if this tenant is the default tenant

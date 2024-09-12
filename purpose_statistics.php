@@ -56,7 +56,7 @@ echo $OUTPUT->heading(get_string('purpose', 'local_ai_manager') . ': '
 $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
 $recordscountsql = "SELECT COUNT(*) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id"
         . " WHERE u." . $tenantfield . " = :tenant AND rl.purpose = :purpose";
-$recordscountparams = ['tenant' => $tenant->get_identifier(), 'purpose' => $purpose];
+$recordscountparams = ['tenant' => $tenant->get_sql_identifier(), 'purpose' => $purpose];
 $recordscount = $DB->count_records_sql($recordscountsql, $recordscountparams);
 
 if ($recordscount !== 0) {

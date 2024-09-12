@@ -17,7 +17,6 @@
 namespace local_ai_manager\local;
 
 use local_ai_manager\hook\userinfo_extend;
-use local_bycsauth\school;
 use stdClass;
 
 /**
