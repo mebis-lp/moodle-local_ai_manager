@@ -17,6 +17,7 @@
 namespace aitool_dalle;
 
 use local_ai_manager\base_connector;
+use local_ai_manager\base_instance;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
@@ -109,6 +110,8 @@ class connector extends base_connector {
                 ];
                 break;
             case 'dall-e-3':
+            // We assume that if using Azure (in which we would have PRECONFIGURED_MODEL as model) we only can deploy dall-e-3.
+            case base_instance::PRECONFIGURED_MODEL:
                 $options['sizes'] = [
                         ['key' => '1024x1024', 'displayname' => get_string('squared', 'local_ai_manager') . ' (1024px x 1024px)'],
                         ['key' => '1792x1024', 'displayname' => get_string('landscape', 'local_ai_manager') . ' (1792px x 1024px)'],
