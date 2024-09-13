@@ -27,8 +27,13 @@
 <div class="local_ai_manager-confirm_ai_usage mt-0 mb-5">
     <div class="text-center">
         <h2 class="p-2 mb-0 pb-0">{{#str}} userconfirmation_headline, local_ai_manager {{/str}}</h2>
-        <p>{{{termsofuse}}}</p>
-        <p class="p-3">{{#str}} userconfirmation_description, local_ai_manager {{/str}}</p>
+        {{#showtermsofuse}}
+            <p>{{{termsofuse}}}</p>
+        {{/showtermsofuse}}
+        {{^showtermsofuse}}
+            <p>{{#str}}privacy_terms_missing, local_ai_manager{{/str}}</p>
+            <p>{{#str}}privacy_terms_missing_enable_anyway, local_ai_manager{{/str}}</p>
+        {{/showtermsofuse}}
     </div>
     <div class="d-flex justify-content-center m-5">
         {{> local_ai_manager/toggle }}

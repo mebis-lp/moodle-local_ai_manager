@@ -61,20 +61,25 @@ if ($confirm !== -1) {
 
 echo $OUTPUT->header();
 
-$termsofuse = get_config('local_ai_manager', 'termsofuse') ?: '';
+$templatecontext = [
+        'checked' => $userinfo->is_confirmed(),
+        'description' => $userinfo->is_confirmed() ? get_string('revokeconfirmation', 'local_ai_manager') :
+                get_string('confirm', 'local_ai_manager'),
+        'text' => $userinfo->is_confirmed() ? get_string('confirmed', 'local_ai_manager') :
+                get_string('notconfirmed', 'local_ai_manager'),
+        'targetwhenchecked' => (new moodle_url('/local/ai_manager/confirm_ai_usage.php',
+                ['confirm' => 0]))->out(false),
+        'targetwhennotchecked' => (new moodle_url('/local/ai_manager/confirm_ai_usage.php',
+                ['confirm' => 1]))->out(false),
+];
 
-echo $OUTPUT->render_from_template('local_ai_manager/confirm_ai_usage',
-        [
-                'checked' => $userinfo->is_confirmed(),
-                'description' => $userinfo->is_confirmed() ? get_string('revokeconfirmation', 'local_ai_manager') :
-                        get_string('confirm', 'local_ai_manager'),
-                'text' => $userinfo->is_confirmed() ? get_string('confirmed', 'local_ai_manager') :
-                        get_string('notconfirmed', 'local_ai_manager'),
-                'targetwhenchecked' => (new moodle_url('/local/ai_manager/confirm_ai_usage.php',
-                        ['confirm' => 0]))->out(false),
-                'targetwhennotchecked' => (new moodle_url('/local/ai_manager/confirm_ai_usage.php',
-                        ['confirm' => 1]))->out(false),
-                'termsofuse' => $termsofuse,
-        ]);
+$termsofuse = get_config('local_ai_manager', 'termsofuse') ?: '';
+$showtermsofuse = !empty($termsofuse);
+$templatecontext['showtermsofuse'] = $showtermsofuse;
+if ($showtermsofuse) {
+    $templatecontext['termsofuse'] = $termsofuse;
+}
+
+echo $OUTPUT->render_from_template('local_ai_manager/confirm_ai_usage', $templatecontext);
 
 echo $OUTPUT->footer();
