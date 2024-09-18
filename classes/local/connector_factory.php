@@ -125,25 +125,6 @@ class connector_factory {
     }
 
     /**
-     * Returns the connector object for a given model.
-     *
-     * The function searches through all the connector classes and looks if the given model name is in the available models of the
-     * connector class. First match will be returned.
-     *
-     * @param string $model the model name
-     * @return ?base_connector the corresponding connector object
-     */
-    public function get_connector_by_model(string $model): ?base_connector {
-        foreach (base_connector::get_all_connectors() as $connectorname) {
-            $connector = $this->get_connector_by_connectorname($connectorname);
-            if (in_array($model, $connector->get_models())) {
-                return $connector;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Helper function to determine if an instance already exists.
      *
      * @param int $id the id of the instance to check

@@ -60,11 +60,11 @@ class statistics_overview_table extends table_sql {
         $this->define_headers($headers);
         $this->collapsible(false);
 
-        $fields = 'modelinfo, model, COUNT(modelinfo) AS requestcount, SUM(value) AS userusage';
+        $fields = 'modelinfo, connector, COUNT(modelinfo) AS requestcount, SUM(value) AS userusage';
         $from = '{local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id';
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         $tenant = \core\di::get(tenant::class);
-        $where = 'u.' . $tenantfield . ' = :tenant GROUP BY modelinfo, model';
+        $where = 'u.' . $tenantfield . ' = :tenant GROUP BY modelinfo, connector';
         $params = ['tenant' => $tenant->get_sql_identifier()];
         $this->set_sql($fields, $from, $where, $params);
         $this->set_count_sql('SELECT COUNT(DISTINCT modelinfo) FROM {local_ai_manager_request_log} rl'
@@ -81,11 +81,7 @@ class statistics_overview_table extends table_sql {
      * @return string the string representation of the userusage column
      */
     public function col_userusage(stdClass $row): string {
-        $connector = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_connector_by_model($row->model);
-        if ($connector === null) {
-            // This should only be in case we have disabled or removed a connector plugin. In this case we cannot provide a unit.
-            return $row->userusage;
-        }
+        $connector = \core\di::get(connector_factory::class)->get_connector_by_connectorname($row->connector);
         // Currently there are only requests and tokens as units, so we can use intval for the moment.
         return intval($row->userusage) . " " . $connector->get_unit()->to_string();
     }
