@@ -100,6 +100,22 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         }
         $rs->close();
 
+        $rs = $DB->get_recordset('local_ai_manager_instance');
+        foreach ($rs as $record) {
+            if ($record->model === 'preconfigured') {
+                if ($record->connector === 'chatgpt') {
+                    $record->model = 'chatgpt_preconfigured_azure';
+                } else if ($record->connector === 'openaitts') {
+                    $record->model = 'openaitts_preconfigured_azure';
+                } else if ($record->connector === 'dalle') {
+                    $record->model = 'dalle_preconfigured_azure';
+                }
+            }
+            $DB->update_record('local_ai_manager_instance', $record);
+        }
+
+        $rs->close();
+
         upgrade_plugin_savepoint(true, 2024091800, 'local', 'ai_manager');
     }
     return true;
