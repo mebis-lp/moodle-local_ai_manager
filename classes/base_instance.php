@@ -610,10 +610,8 @@ class base_instance {
             return [];
         }
         $connector = \core\di::get(connector_factory::class)->get_connector_by_connectorname($this->connector);
-        if ($this->get_model() === self::PRECONFIGURED_MODEL) {
-            // In case we have a preconfigured model (for example via Microsoft Azure) we have no information what the preconfigured
-            // model is capable of, so we just allow every purpose and have to deal with the fact that there might be errors when
-            // trying to use the preconfigured model for a purpose which it isn't capable of.
+        if (!in_array($this->get_model(), $connector->get_models())) {
+            // This typically is the case if we are using a model that is preconfigured (for example when using Azure).
             return array_keys($connector->get_models_by_purpose());
         }
         $purposesofcurrentmodel = [];
