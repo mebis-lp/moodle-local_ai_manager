@@ -54,5 +54,53 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         // Ai_manager savepoint reached.
         upgrade_plugin_savepoint(true, 2024080900, 'local', 'ai_manager');
     }
+
+    if ($oldversion < 2024091800) {
+        $table = new xmldb_table('local_ai_manager_request_log');
+        $field = new xmldb_field('connector', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'purpose');
+
+        // Conditionally launch add field connector.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Migrate existing records.
+        $rs = $DB->get_recordset('local_ai_manager_request_log');
+        foreach ($rs as $record) {
+            if ($record->model === 'preconfigured') {
+                if ($record->purpose === 'tts') {
+                    $record->model = 'openaitts_preconfigured_azure';
+                    $record->modelinfo = 'openaitts_preconfigured_azure';
+                } else if ($record->purpose === 'imggen') {
+                    $record->model = 'dalle_preconfigured_azure';
+                    $record->modelinfo = 'dalle_preconfigured_azure';
+                } else {
+                    $record->model = 'chatgpt_preconfigured_azure';
+                }
+            }
+            if ($record->purpose === 'tts') {
+                if ($record->model === 'openaitts_preconfigured_azure' || $record->model === 'tts-1') {
+                    $record->connector = 'openaitts';
+                } else {
+                    $record->connector = 'googlesynthesize';
+                }
+            } else if ($record->purpose === 'imggen') {
+                $record->connector = 'dalle';
+            } else {
+                // We have a text based language model.
+                if (str_starts_with($record->model, 'gemini-')) {
+                    $record->connector = 'gemini';
+                } else if (str_starts_with($record->model, 'gpt-') || $record->model === 'chatgpt_preconfigured_azure') {
+                    $record->connector = 'chatgpt';
+                } else {
+                    $record->connector = 'ollama';
+                }
+            }
+            $DB->update_record('local_ai_manager_request_log', $record);
+        }
+        $rs->close();
+
+        upgrade_plugin_savepoint(true, 2024091800, 'local', 'ai_manager');
+    }
     return true;
 }

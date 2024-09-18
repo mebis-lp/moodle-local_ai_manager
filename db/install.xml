@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/ai_manager/db" VERSION="20240809" COMMENT="XMLDB file for Moodle local/ai_manager"
+<XMLDB PATH="local/ai_manager/db" VERSION="20240918" COMMENT="XMLDB file for Moodle local/ai_manager"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -49,6 +49,7 @@
         <FIELD NAME="customvalue1" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
         <FIELD NAME="customvalue2" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
         <FIELD NAME="purpose" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="connector" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="model" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modelinfo" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="duration" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>

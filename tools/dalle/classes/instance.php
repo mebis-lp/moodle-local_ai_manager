@@ -54,6 +54,9 @@ class instance extends base_instance {
             $endpoint = 'https://' . $resourcename .
                     '.openai.azure.com/openai/deployments/'
                     . $deploymentid . '/images/generations?api-version=' . $apiversion;
+            // We have an empty model because the model is preconfigured if we're using azure.
+            // So we overwrite the default "preconfigured" value by a better model name.
+            $this->set_model(aitool_option_azure::get_azure_model_name($this->get_connector()));
         } else {
             $endpoint = 'https://api.openai.com/v1/images/generations';
         }

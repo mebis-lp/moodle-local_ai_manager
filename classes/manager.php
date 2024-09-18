@@ -217,6 +217,7 @@ class manager {
         $data = new stdClass();
         $data->userid = $USER->id;
         $data->value = $promptcompletion->get_usage()->value;
+        $data->connector = $this->connector->get_instance()->get_connector();
         if ($this->connector->has_customvalue1()) {
             $data->customvalue1 = $promptcompletion->get_usage()->customvalue1;
         }

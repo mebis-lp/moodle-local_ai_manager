@@ -521,6 +521,8 @@ class base_instance {
         $this->set_connector($data->connector);
         $this->set_tenant($data->tenant);
         if (empty($data->model)) {
+            // This is only a fallback. If the connector does not support the selection of a model,
+            // it is supposed to overwrite this default value in the extend_store_formdata function.
             $data->model = self::PRECONFIGURED_MODEL;
         }
         $this->set_model($data->model);

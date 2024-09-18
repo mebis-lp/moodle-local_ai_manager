@@ -16,6 +16,7 @@
 
 namespace local_ai_manager\local;
 
+use local_ai_manager\base_connector;
 use stdClass;
 
 /**
@@ -110,5 +111,22 @@ class aitool_option_azure {
             }
         }
         return $errors;
+    }
+
+    /**
+     * Define the model name in case we are using azure.
+     *
+     * When using azure we cannot select a model, because it is preconfigured in the azure resource.
+     * This function defines the string to use as model for logging etc.
+     *
+     * @param ?string $connectorname The name of the connector, will be included into the model name
+     * @return string the string defining the name of the model
+     * @throws \coding_exception if the $connectorname is null or empty
+     */
+    public static function get_azure_model_name(?string $connectorname): string {
+        if (empty($connectorname)) {
+            throw new \coding_exception('Azure model name cannot be empty or null');
+        }
+        return $connectorname . '_preconfigured_azure';
     }
 }
