@@ -136,6 +136,7 @@ class ai_manager_utils {
      * @return base_instance the connector instance object
      */
     public static function get_connector_instance_by_purpose(string $purpose, ?int $userid = null): base_instance {
+        global $USER;
         if (is_null($userid)) {
             $tenant = \core\di::get(tenant::class);
         } else {
@@ -144,8 +145,9 @@ class ai_manager_utils {
             $tenant = new tenant($user->{$tenantfield});
             \core\di::set(tenant::class, $tenant);
         }
+        $userinfo = new userinfo(empty($userid) ? $USER->id : $userid);
         $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
-        return $factory->get_connector_instance_by_purpose($purpose);
+        return $factory->get_connector_instance_by_purpose($purpose, $userinfo->get_role());
     }
 
     /**
@@ -165,7 +167,7 @@ class ai_manager_utils {
         $userinfo = new userinfo($user->id);
 
         $purposes = [];
-        $purposeconfig = $configmanager->get_purpose_config();
+        $purposeconfig = $configmanager->get_purpose_config($userinfo->get_role());
         $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $purposeinstance = $factory->get_purpose_by_purpose_string($purpose);

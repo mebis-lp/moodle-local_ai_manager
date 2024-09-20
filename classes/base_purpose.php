@@ -21,6 +21,7 @@ use core_plugin_manager;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
+use local_ai_manager\local\userinfo;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -59,10 +60,15 @@ class base_purpose {
      * Returns the name of the config key for storing the configured tool for a given purpose.
      *
      * @param string $purpose the purpose name
+     * @param int $role the local_ai_manager internal role to retrieve the config key for
      * @return string the config key for storing the config setting for accessing the config via the config manager
      */
-    public static function get_purpose_tool_config_key(string $purpose): string {
-        return 'purpose_' . $purpose . '_tool';
+    public static function get_purpose_tool_config_key(string $purpose, int $role): string {
+        // Currently, userinfo::ROLE_EXTENDED and userinfo::ROLE_UNLIMITED are handled equally.
+        if ($role === userinfo::ROLE_UNLIMITED) {
+            $role = userinfo::ROLE_EXTENDED;
+        }
+        return 'purpose_' . $purpose . '_tool_' . userinfo::get_role_as_string($role);
     }
 
     /**

@@ -21,6 +21,7 @@ use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
 use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\tenant;
+use local_ai_manager\local\userinfo;
 use local_ai_manager\manager;
 
 defined('MOODLE_INTERNAL') || die;
@@ -55,14 +56,28 @@ class purpose_config_form extends \moodleform {
             $instances = $factory::get_connector_instances_for_purpose($purpose);
             $instances = array_map(fn ($instance) => $instance->get_name(), $instances);
             $instances[0] = get_string('notselected', 'local_ai_manager');
+
+            $mform->addElement(
+                    'header',
+                    'purpose_config_purpose_' . $purpose . '_header',
+                    get_string('select_tool_for_purpose', 'local_ai_manager',
+                            get_string('pluginname', 'aipurpose_' . $purpose))
+            );
+
             $mform->addElement(
                 'select',
-                'purpose_' . $purpose . '_tool',
-                get_string('select_tool_for_purpose', 'local_ai_manager',
-                        get_string('pluginname', 'aipurpose_' . $purpose)),
-                $instances
+                base_purpose::get_purpose_tool_config_key($purpose, userinfo::ROLE_BASIC),
+                get_string('role_basic', 'local_ai_manager'),
+                $instances,
             );
-            $mform->setDefault('purpose_' . $purpose . '_tool', 0);
+            $mform->setDefault('purpose_' . $purpose . '_tool_role_basic', 0);
+            $mform->addElement(
+                    'select',
+                    base_purpose::get_purpose_tool_config_key($purpose, userinfo::ROLE_EXTENDED),
+                    get_string('role_extended', 'local_ai_manager'),
+                    $instances
+            );
+            $mform->setDefault('purpose_' . $purpose . '_tool_role_extended', 0);
         }
         $this->add_action_buttons();
     }

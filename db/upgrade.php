@@ -118,5 +118,31 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2024091800, 'local', 'ai_manager');
     }
+
+    if ($oldversion < 2024092600) {
+
+        $sqllike = $DB->sql_like('configkey', ':configkeypattern');
+        $sql = "SELECT * FROM {local_ai_manager_config} WHERE $sqllike";
+        $rs = $DB->get_recordset_sql($sql, ['configkeypattern' => 'purpose_%_tool']);
+        foreach ($rs as $record) {
+            $oldconfigkey = $record->configkey;
+            $record->configkey = $oldconfigkey . '_role_basic';
+            $DB->update_record('local_ai_manager_config', $record);
+            $roleextendedrecord = clone($record);
+            unset($roleextendedrecord->id);
+            $roleextendedrecord->configkey = $oldconfigkey . '_role_extended';
+            if (!$DB->record_exists('local_ai_manager_config',
+                    [
+                            'configkey' => $roleextendedrecord->configkey,
+                            'tenant' => $roleextendedrecord->tenant,
+                    ])) {
+                $DB->insert_record('local_ai_manager_config', $roleextendedrecord);
+            }
+        }
+        $rs->close();
+
+        upgrade_plugin_savepoint(true, 2024092600, 'local', 'ai_manager');
+    }
+
     return true;
 }

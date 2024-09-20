@@ -23,9 +23,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_ai_manager\base_instance;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\tenant_config_output_utils;
+use local_ai_manager\output\instancetable;
+use local_ai_manager\output\tenantenable;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
@@ -48,74 +49,21 @@ if ($enabletenant !== 'not_set') {
     redirect($PAGE->url);
 }
 
-$tenant = \core\di::get(\local_ai_manager\local\tenant::class);
+$tenant = \core\di::get(tenant::class);
 
-$rightsconfiglink = html_writer::link(new moodle_url('/local/ai_manager/rights_config.php'),
-        get_string('rightsconfig', 'local_ai_manager'));
-
+$renderer = $PAGE->get_renderer('core');
 echo $OUTPUT->header();
 if ($configmanager->is_tenant_enabled()) {
     $tenantnavbar = new tenantnavbar('tenant_config.php');
     echo $OUTPUT->render($tenantnavbar);
 }
-echo $OUTPUT->render_from_template('local_ai_manager/tenantenable',
-    [
-        'checked' => $istenantenabled,
-        'text' => $istenantenabled ? get_string('tenantenabled', 'local_ai_manager') :
-                get_string('tenantdisabled', 'local_ai_manager'),
-        'targetwhenchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                ['tenant' => $tenant->get_identifier(), 'enabletenant' => 0]))->out(false),
-        'targetwhennotchecked' => (new moodle_url('/local/ai_manager/tenant_config.php',
-                ['tenant' => $tenant->get_identifier(), 'enabletenant' => 1]))->out(false),
-        'tenantfullname' => $tenant->get_fullname(),
-        'rightsconfiglink' => $rightsconfiglink,
-    ]);
+
+$tenantenable = new tenantenable();
+echo $OUTPUT->render($tenantenable);
 
 if ($configmanager->is_tenant_enabled()) {
-    $instances = [];
-
-    $purposeconfig = $configmanager->get_purpose_config();
-    $purposeswithtool = [];
-    foreach ($purposeconfig as $purpose => $instanceid) {
-        if (!is_null($instanceid)) {
-            $purposeswithtool[] = $purpose;
-        }
-    }
-
-    $purposesheading = get_string('purposesheading', 'local_ai_manager', [
-            'currentcount' => count($purposeswithtool),
-            'maxcount' => count($purposeconfig),
-    ]);
-
-    foreach (\local_ai_manager\base_instance::get_all_instances() as $instance) {
-        $purposes = [];
-        foreach ($purposeconfig as $purpose => $instanceid) {
-            if (intval($instanceid) === $instance->get_id()) {
-                $purposes[] = ['fullname' => get_string('pluginname', 'aipurpose_' . $purpose)];
-            }
-        }
-        $linkedname = html_writer::link(new moodle_url('/local/ai_manager/edit_instance.php',
-                ['id' => $instance->get_id(), 'tenant' => $tenant->get_identifier()]), $instance->get_name());
-
-        $instances[] = [
-                'name' => $linkedname,
-                'toolname' => get_string('pluginname', 'aitool_' . $instance->get_connector()),
-                'model' => $instance->get_model() === base_instance::PRECONFIGURED_MODEL
-                        ? get_string('preconfiguredmodel', 'local_ai_manager')
-                        : $instance->get_model(),
-                'purposes' => $purposes,
-                'nopurposeslink' => html_writer::link(new moodle_url('/local/ai_manager/purpose_config.php',
-                        ['tenant' => $tenant->get_identifier()]),
-                        '<i class="fa fa-arrow-right"></i> ' . get_string('assignpurposes', 'local_ai_manager')),
-        ];
-    }
-    echo $PAGE->get_renderer('core')->render_from_template('local_ai_manager/instancetable',
-            [
-                    'tenant' => $tenant->get_identifier(),
-                    'purposesheading' => $purposesheading,
-                    'instances' => $instances,
-            ]
-    );
+    $instancetable = new instancetable();
+    echo $renderer->render($instancetable);
 }
 
 echo $OUTPUT->footer();
