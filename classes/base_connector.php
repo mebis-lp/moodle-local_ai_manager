@@ -242,4 +242,15 @@ abstract class base_connector {
                 'Content-Type' => 'application/json;charset=utf-8',
         ];
     }
+
+    /**
+     * Returns the allowed mimetypes.
+     *
+     * This can be overwritten in connector classes that are capable of files being submitted.
+     *
+     * @return array an array of allowed mimetypes
+     */
+    public function allowed_mimetypes(): array {
+        return [];
+    }
 }

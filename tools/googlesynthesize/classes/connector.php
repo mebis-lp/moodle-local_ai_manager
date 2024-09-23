@@ -171,7 +171,7 @@ class connector extends \local_ai_manager\base_connector {
         }
 
         $client = new http_client([
-                'timeout' => 10,
+                'timeout' => get_config('local_ai_manager', 'requesttimeout'),
         ]);
 
         $options['headers'] = [
