@@ -71,10 +71,11 @@ class connector_factory {
      * Returns the connector instance object defined for the given purpose.
      *
      * @param string $purpose the purpose name
+     * @param int $role the local_ai_manager internal role
      * @return ?base_instance the instance object or null if no instance has been configured for the given purpose
      */
-    public function get_connector_instance_by_purpose(string $purpose): ?base_instance {
-        $instanceid = $this->configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose));
+    public function get_connector_instance_by_purpose(string $purpose, int $role): ?base_instance {
+        $instanceid = $this->configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose, $role));
         if (empty($instanceid)) {
             return null;
         }
@@ -111,11 +112,12 @@ class connector_factory {
      * Retrieve the connector object based on the purpose.
      *
      * @param string $purpose the purpose name
+     * @param int $role the local_ai_manager internal role
      * @return ?base_connector the connector object or null if no connector instance for the purpose has been configured for this
      *  tenant
      */
-    public function get_connector_by_purpose(string $purpose): ?base_connector {
-        $instance = $this->get_connector_instance_by_purpose($purpose);
+    public function get_connector_by_purpose(string $purpose, int $role): ?base_connector {
+        $instance = $this->get_connector_instance_by_purpose($purpose, $role);
         if ($instance === null) {
             return null;
         }

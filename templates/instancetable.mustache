@@ -67,7 +67,8 @@
                 <th scope="col">{{#str}} instancename, local_ai_manager {{/str}}</th>
                 <th scope="col">{{#str}} aitool, local_ai_manager {{/str}}</th>
                 <th scope="col">{{#str}} model, local_ai_manager {{/str}}</th>
-                <th scope="col">{{purposesheading}}</th>
+                <th scope="col">{{purposesheadingrolebasic}}</th>
+                <th scope="col">{{purposesheadingroleextended}}</th>
             </tr>
             </thead>
             <tbody>
@@ -77,12 +78,20 @@
                         <td>{{toolname}}</td>
                         <td>{{model}}</td>
                     <td>
-                        {{#purposes}}
+                        {{#purposesrolebasic}}
                             <span class="badge badge-pill badge-secondary">{{fullname}}</span>
-                        {{/purposes}}
-                        {{^purposes}}
+                        {{/purposesrolebasic}}
+                        {{^purposesrolebasic}}
                             {{{nopurposeslink}}}
-                        {{/purposes}}
+                        {{/purposesrolebasic}}
+                    </td>
+                    <td>
+                        {{#purposesroleextended}}
+                            <span class="badge badge-pill badge-secondary">{{fullname}}</span>
+                        {{/purposesroleextended}}
+                        {{^purposesroleextended}}
+                            {{{nopurposeslink}}}
+                        {{/purposesroleextended}}
                     </td>
                 </tr>
             {{/instances}}

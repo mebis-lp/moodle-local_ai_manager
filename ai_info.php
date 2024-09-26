@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\local\userinfo;
+
 require_once(dirname(__FILE__) . '/../../config.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $USER;
@@ -59,7 +61,8 @@ echo $OUTPUT->header();
 $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
 $templatecontext = [];
 $templateinstances = [];
-foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
+$userinfo = new userinfo($USER->id);
+foreach ($configmanager->get_purpose_config($userinfo->get_role()) as $purpose => $instanceid) {
     if ($instanceid === null) {
         continue;
     }

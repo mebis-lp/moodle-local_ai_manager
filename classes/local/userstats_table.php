@@ -18,6 +18,7 @@ namespace local_ai_manager\local;
 
 use flexible_table;
 use html_writer;
+use local_ai_manager\base_purpose;
 use moodle_url;
 use stdClass;
 use table_sql;
@@ -70,15 +71,13 @@ class userstats_table extends table_sql {
                 // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
                 /* TODO This is actually a bad thing: When designing the structure we did not think of the case that for a purpose
                     there can be multiple connectors with different units.
-                    So we must not use the unit of the current connector here, but have to use the connectors of each single record
-                    before aggregating. This is somehow tough. Probably we need to fall back to the case that we cannot show any
-                    information at all, if there are connectors with different units.
+                    So for now we hardcode the purposes assuming they are stable in terms of which units their connectors are using.
                 */
                 // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
-                $connector = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_connector_by_purpose($purpose);
-                if (!empty($connector) && $connector->get_unit() !== unit::COUNT) {
-                    $columns[] = 'currentusage';
-                    $headers[] = $connector->get_unit()->to_string();
+                if (in_array($purpose, array_filter(base_purpose::get_all_purposes(),
+                        fn($purposecandidate) => !in_array($purposecandidate, ['imggen', 'tts'])))) {
+                    $columns[] = 'tokens';
+                    $headers[] = unit::TOKEN->to_string();
                 }
             }
         }
@@ -90,7 +89,7 @@ class userstats_table extends table_sql {
 
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         if (!empty($purpose)) {
-            $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount, SUM(value) AS currentusage';
+            $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount, SUM(value) AS tokens';
             $from = '{local_ai_manager_request_log} rl LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid'
                     . ' JOIN {user} u ON u.id = rl.userid';
             $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id';
@@ -146,7 +145,7 @@ class userstats_table extends table_sql {
      * @param stdClass $value the object containing the information of the current row
      * @return string the resulting string for the lastname column
      */
-    public function col_currentusage(stdClass $value): string {
-        return strval(intval($value->currentusage));
+    public function col_tokens(stdClass $value): string {
+        return strval(intval($value->tokens));
     }
 }

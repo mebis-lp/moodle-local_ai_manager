@@ -19,6 +19,7 @@ namespace local_ai_manager;
 use local_ai_manager\local\config_manager;
 use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\tenant;
+use local_ai_manager\local\userinfo;
 use stdClass;
 
 /**
@@ -40,7 +41,7 @@ class base_instance {
     /** @var int The record id */
     protected int $id = 0;
 
-    /** @var ?string The name of the instance  */
+    /** @var ?string The name of the instance */
     protected ?string $name = null;
 
     /** @var ?string The tenant the instance belongs to */
@@ -503,7 +504,7 @@ class base_instance {
         }
         $mform->addElement('select', 'model', get_string('model', 'local_ai_manager'), $availablemodels, $textelementparams);
 
-        $mform->addElement('text', 'infolink', get_string('infolink',  'local_ai_manager'), $textelementparams);
+        $mform->addElement('text', 'infolink', get_string('infolink', 'local_ai_manager'), $textelementparams);
         $mform->setType('infolink', PARAM_URL);
 
         $this->extend_form_definition($mform);
@@ -592,9 +593,13 @@ class base_instance {
         // We intentionally do not use dependency injection here to make sure we are using the config manager that belongs
         // to this instance.
         $configmanager = new config_manager(new tenant($this->get_tenant()));
-        foreach ($configmanager->get_purpose_config() as $purpose => $instanceid) {
-            if (intval($instanceid) === $this->get_id()) {
-                $configmanager->unset_config(base_purpose::get_purpose_tool_config_key($purpose));
+        foreach (base_purpose::get_all_purposes() as $purpose) {
+            foreach ([userinfo::ROLE_BASIC, userinfo::ROLE_EXTENDED] as $role) {
+                $configkey = base_purpose::get_purpose_tool_config_key($purpose, $role);
+                $configvalue = $configmanager->get_config($configkey);
+                if (!$configvalue || intval($configvalue) === $this->get_id()) {
+                    $configmanager->unset_config($configkey);
+                }
             }
         }
         $DB->delete_records('local_ai_manager_instance', ['id' => $this->id]);

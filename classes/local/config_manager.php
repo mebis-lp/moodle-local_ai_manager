@@ -37,7 +37,7 @@ class config_manager {
      * @param tenant $tenant the tenant for which the config manager should manage the configuration
      */
     public function __construct(
-            /** @var tenant $tenant the tenant for which the config manager should manage the configuration */
+        /** @var tenant $tenant the tenant for which the config manager should manage the configuration */
             private readonly tenant $tenant
     ) {
         $this->load_config();
@@ -112,14 +112,15 @@ class config_manager {
     /**
      * Retrieve the purpose config for this tenant.
      *
+     * @param int $role the local_ai_manager internal role for which the purpose config should be calculated
      * @return array Returns array of the form ['purposename' => 3, 'purpose2name' => null, ...].
      *  Value null means that purpose is not configured for the tenant, integer value is the id of the configured connector instance
      */
-    public function get_purpose_config(): array {
+    public function get_purpose_config(int $role): array {
         $purposeconfig = [];
         foreach (base_purpose::get_all_purposes() as $purpose) {
-            if (array_key_exists(base_purpose::get_purpose_tool_config_key($purpose), $this->config)) {
-                $purposeconfig[$purpose] = $this->config[base_purpose::get_purpose_tool_config_key($purpose)];
+            if (array_key_exists(base_purpose::get_purpose_tool_config_key($purpose, $role), $this->config)) {
+                $purposeconfig[$purpose] = $this->config[base_purpose::get_purpose_tool_config_key($purpose, $role)];
             } else {
                 $purposeconfig[$purpose] = null;
             }

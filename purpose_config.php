@@ -26,6 +26,7 @@
 use local_ai_manager\base_purpose;
 use local_ai_manager\form\purpose_config_form;
 use local_ai_manager\local\tenant_config_output_utils;
+use local_ai_manager\local\userinfo;
 use local_ai_manager\output\tenantnavbar;
 
 require_once(dirname(__FILE__) . '/../../config.php');
@@ -47,13 +48,14 @@ if ($purposeconfigform->is_cancelled()) {
     redirect($returnurl);
 } else if ($data = $purposeconfigform->get_data()) {
     foreach (base_purpose::get_all_purposes() as $purpose) {
-        if (property_exists($data, base_purpose::get_purpose_tool_config_key($purpose))
-                && intval($data->{base_purpose::get_purpose_tool_config_key($purpose)}) === 0) {
-            $configmanager->unset_config(base_purpose::get_purpose_tool_config_key($purpose));
-        }
-        if (!empty($data->{base_purpose::get_purpose_tool_config_key($purpose)})) {
-            $configmanager->set_config(base_purpose::get_purpose_tool_config_key($purpose),
-                    $data->{base_purpose::get_purpose_tool_config_key($purpose)});
+        foreach ([userinfo::ROLE_BASIC, userinfo::ROLE_EXTENDED] as $role) {
+            $configkey = base_purpose::get_purpose_tool_config_key($purpose, $role);
+            if (property_exists($data, $configkey) && intval($data->{$configkey}) === 0) {
+                $configmanager->unset_config($configkey);
+            }
+            if (!empty($data->{$configkey})) {
+                $configmanager->set_config($configkey, $data->{$configkey});
+            }
         }
     }
     redirect($PAGE->url, get_string('configsaved', 'repository'));
@@ -67,9 +69,11 @@ if ($purposeconfigform->is_cancelled()) {
 
     $data = new stdClass();
     foreach (base_purpose::get_all_purposes() as $purpose) {
-        if (!empty($configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose)))) {
-            $data->{base_purpose::get_purpose_tool_config_key($purpose)} =
-                    $configmanager->get_config(base_purpose::get_purpose_tool_config_key($purpose));
+        foreach ([userinfo::ROLE_BASIC, userinfo::ROLE_EXTENDED] as $role) {
+            $configkey = base_purpose::get_purpose_tool_config_key($purpose, $role);
+            if (!empty($configmanager->get_config($configkey))) {
+                $data->{$configkey} = $configmanager->get_config($configkey);
+            }
         }
     }
     $purposeconfigform->set_data($data);

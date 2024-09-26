@@ -64,9 +64,11 @@ class manager {
      * @param string $purpose the purpose name of the purpose to use
      */
     public function __construct(string $purpose) {
+        global $USER;
+        $userinfo = new userinfo($USER->id);
         $this->factory = \core\di::get(connector_factory::class);
         $this->purpose = $this->factory->get_purpose_by_purpose_string($purpose);
-        $toolconnector = $this->factory->get_connector_by_purpose($purpose);
+        $toolconnector = $this->factory->get_connector_by_purpose($purpose, $userinfo->get_role());
         if (!empty($toolconnector)) {
             $this->connector = $toolconnector;
         } else {

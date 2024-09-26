@@ -28,6 +28,7 @@ namespace aipurpose_tts;
 use coding_exception;
 use local_ai_manager\base_purpose;
 use local_ai_manager\local\connector_factory;
+use local_ai_manager\local\userinfo;
 
 /**
  * Purpose tts methods
@@ -41,8 +42,10 @@ class purpose extends base_purpose {
 
     #[\Override]
     public function get_additional_purpose_options(): array {
+        global $USER;
         $factory = \core\di::get(connector_factory::class);
-        $connector = $factory->get_connector_by_purpose($this->get_plugin_name());
+        $userinfo = new userinfo($USER->id);
+        $connector = $factory->get_connector_by_purpose($this->get_plugin_name(), $userinfo->get_role());
         $instance = $connector->get_instance();
         if (!in_array($this->get_plugin_name(), $instance->supported_purposes())) {
             // Currently selected instance does not support tts, so we do not add any options.
