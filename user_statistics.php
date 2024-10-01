@@ -58,7 +58,7 @@ if ($recordscount !== 0) {
 
     $baseurl = new moodle_url('/local/ai_manager/user_statistics.php', ['tenant' => $tenant->get_sql_identifier()]);
     $table = new \local_ai_manager\local\userstats_table($uniqid, '', $tenant, $baseurl);
-    $table->out(5, false);
+    $table->out(20, false);
 } else {
     echo html_writer::div(get_string('nodata', 'local_ai_manager'), 'alert alert-info');
 }
