@@ -109,7 +109,7 @@ class userstats_table extends table_sql {
             $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id ORDER BY u.lastname';
             $params = ['tenant' => $tenant->get_sql_identifier()];
             $this->set_count_sql(
-                    "SELECT COUNT(DISTINCT u.id) FROM $from WHERE u." . $tenantfield . " = :tenant",
+                    "SELECT COUNT(DISTINCT u.id) FROM " . $from . " WHERE u." . $tenantfield . " = :tenant",
                     $params
             );
         }
