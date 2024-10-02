@@ -33,13 +33,15 @@ class connector extends \local_ai_manager\base_connector {
 
     #[\Override]
     public function get_models_by_purpose(): array {
-        $textmodels = ['gemma', 'llama3', 'llama3.1', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral', 'llava',
+        $visionmodels = ['llava', 'llava:7b', 'llava:13b', 'llava:34b', 'bakllava', 'moondream'];
+        $textmodels = ['gemma', 'llama3', 'llama3.1', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral',
                 'tinyllama'];
         return [
                 'chat' => $textmodels,
                 'feedback' => $textmodels,
                 'singleprompt' => $textmodels,
                 'translate' => $textmodels,
+                'itt' => $visionmodels,
         ];
     }
 
@@ -86,8 +88,16 @@ class connector extends \local_ai_manager\base_connector {
                         'content' => $message['message'],
                 ];
             }
+            $messages[] = ['role' => 'user', 'content' => $prompttext];
+        } else if (array_key_exists('image', $requestoptions)) {
+            $messages[] = [
+                    'role' => 'user',
+                    'content' => $prompttext,
+                    'images' => [explode(',', $requestoptions['image'])[1]],
+            ];
+        } else {
+            $messages[] = ['role' => 'user', 'content' => $prompttext];
         }
-        $messages[] = ['role' => 'user', 'content' => $prompttext];
         $data = [
                 'model' => $this->instance->get_model(),
                 'messages' => $messages,
@@ -98,5 +108,10 @@ class connector extends \local_ai_manager\base_connector {
                 ],
         ];
         return $data;
+    }
+
+    #[\Override]
+    public function allowed_mimetypes(): array {
+        return ['image/png', 'image/jpg'];
     }
 }

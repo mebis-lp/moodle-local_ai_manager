@@ -14,18 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace aipurpose_itt\privacy;
+
 /**
- * Version file for local_ai_manager.
+ * Purpose itt privacy provider.
  *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    aipurpose_itt
+ * @copyright  2024 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
+class provider implements \core_privacy\local\metadata\null_provider {
 
-$plugin->version  = 2024092700;
-$plugin->requires = 2024042200;
-$plugin->release = '0.0.2';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_ALPHA;
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

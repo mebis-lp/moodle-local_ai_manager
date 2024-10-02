@@ -15,17 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * Lang strings for aipurpose_itt - EN.
  *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    aipurpose_itt
+ * @copyright  2024 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2024092700;
-$plugin->requires = 2024042200;
-$plugin->release = '0.0.2';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_ALPHA;
+$string['pluginname'] = 'Image to text';
+$string['privacy:metadata'] = 'The local ai_manager purpose subplugin "Image to text" does not store any personal data.';
+$string['requestcount'] = 'image to text requests';
+$string['requestcount_shortened'] = 'image to text';

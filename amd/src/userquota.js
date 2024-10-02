@@ -42,7 +42,9 @@ const queryCountStrings = {
     translate: 'translation requests',
     translateShortened: 'translation',
     tts: 'audio requests',
-    ttsShortened: 'audio'
+    ttsShortened: 'audio',
+    itt: 'image analyse requests',
+    ittShortened: 'image analyse'
 };
 
 const fetchUserquotaData = () => fetchMany([{

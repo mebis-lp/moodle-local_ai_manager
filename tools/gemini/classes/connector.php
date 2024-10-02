@@ -39,6 +39,7 @@ class connector extends \local_ai_manager\base_connector {
                 'feedback' => $textmodels,
                 'singleprompt' => $textmodels,
                 'translate' => $textmodels,
+                'itt' => ['gemini-1.5-pro-latest', 'gemini-1.5-flash-latest'],
         ];
     }
 
@@ -96,13 +97,35 @@ class connector extends \local_ai_manager\base_connector {
                         ],
                 ];
             }
+            $messages[] = [
+                    'role' => 'user',
+                    'parts' => [
+                            ['text' => $prompttext],
+                    ],
+            ];
+        } else if (array_key_exists('image', $requestoptions)) {
+            $messages[] = [
+                    'role' => 'user',
+                    'parts' => [
+                            ['text' => $prompttext],
+                            [
+                                    'inline_data' => [
+                                            'mime_type' => mime_content_type($requestoptions['image']),
+                                        // Gemini API expects the plain base64 encoded string,
+                                        // without the leading data url metadata.
+                                            'data' => explode(',', $requestoptions['image'])[1],
+                                    ],
+                            ],
+                    ],
+            ];
+        } else {
+            $messages[] = [
+                    'role' => 'user',
+                    'parts' => [
+                            ['text' => $prompttext],
+                    ],
+            ];
         }
-        $messages[] = [
-                'role' => 'user',
-                'parts' => [
-                        ['text' => $prompttext],
-                ],
-        ];
         return [
                 'contents' => $messages,
                 'generationConfig' => [
@@ -129,5 +152,12 @@ class connector extends \local_ai_manager\base_connector {
             $headers['x-goog-api-key'] = $this->get_api_key();
         }
         return $headers;
+    }
+
+    #[\Override]
+    public function allowed_mimetypes(): array {
+        // We use the inline_data for sending data to the API, so we basically support every format.
+        // However, we restrict it to some basics.
+        return ['image/png', 'image/jpeg', 'image/webp', 'image/heic', 'image/heiff', 'application/pdf'];
     }
 }

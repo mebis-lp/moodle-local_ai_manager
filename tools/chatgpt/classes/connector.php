@@ -39,6 +39,7 @@ class connector extends \local_ai_manager\base_connector {
                 'feedback' => $chatgptmodels,
                 'singleprompt' => $chatgptmodels,
                 'translate' => $chatgptmodels,
+                'itt' => ['gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'],
         ];
     }
 
@@ -89,8 +90,26 @@ class connector extends \local_ai_manager\base_connector {
                         'content' => $message['message'],
                 ];
             }
+            $messages[] = ['role' => 'user', 'content' => $prompttext];
+        } else if (array_key_exists('image', $requestoptions)) {
+            $messages[] = [
+                    'role' => 'user',
+                    'content' => [
+                            [
+                                    'type' => 'text',
+                                    'text' => $prompttext,
+                            ],
+                            [
+                                    'type' => 'image_url',
+                                    'image_url' => [
+                                            'url' => $requestoptions['image'],
+                                    ],
+                            ],
+                    ],
+            ];
+        } else {
+            $messages[] = ['role' => 'user', 'content' => $prompttext];
         }
-        $messages[] = ['role' => 'user', 'content' => $prompttext];
 
         $parameters = [
                 'temperature' => $this->instance->get_temperature(),
@@ -125,5 +144,10 @@ class connector extends \local_ai_manager\base_connector {
             $headers['api-key'] = $this->instance->get_apikey();
         }
         return $headers;
+    }
+
+    #[\Override]
+    public function allowed_mimetypes(): array {
+        return ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
     }
 }
