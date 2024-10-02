@@ -108,7 +108,7 @@ class userstats_table extends table_sql {
         } else {
             $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount';
             $from = '{local_ai_manager_request_log} rl LEFT JOIN {user} u ON rl.userid = u.id';
-            $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id ORDER BY lastname';
+            $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id ORDER BY u.lastname';
             $params = ['tenant' => $tenant->get_sql_identifier()];
             $this->set_count_sql(
                     "SELECT COUNT(DISTINCT u.id) FROM $from WHERE u.$tenantfield = :tenant",
