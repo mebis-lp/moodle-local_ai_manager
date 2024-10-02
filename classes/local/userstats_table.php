@@ -99,9 +99,7 @@ class userstats_table extends table_sql {
                     'purpose' => $purpose,
             ];
             $this->set_count_sql(
-                    "SELECT COUNT(DISTINCT rl.userid) FROM {local_ai_manager_request_log} rl "
-                    . "LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid "
-                    . "JOIN {user} u ON u.id = rl.userid "
+                    "SELECT COUNT(DISTINCT rl.userid) FROM $from "
                     . "WHERE " . $tenantfield . " = :tenant AND purpose = :purpose",
                     $params
             );
