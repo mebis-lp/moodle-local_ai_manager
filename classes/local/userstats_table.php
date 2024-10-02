@@ -93,7 +93,7 @@ class userstats_table extends table_sql {
             $from = '{local_ai_manager_request_log} rl '
                     . 'LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid '
                     . 'JOIN {user} u ON u.id = rl.userid';
-            $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id ORDER BY lastname';
+            $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id ORDER BY u.lastname';
             $params = [
                     'tenant' => $tenant->get_sql_identifier(),
                     'purpose' => $purpose,
