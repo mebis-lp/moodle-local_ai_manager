@@ -86,6 +86,7 @@ class userstats_table extends table_sql {
         // Define the titles of columns to show in header.
         $this->define_headers($headers);
         $this->collapsible(false);
+        $this->sortable(true, 'lastname');
 
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         if (!empty($purpose)) {
@@ -93,7 +94,7 @@ class userstats_table extends table_sql {
             $from = '{local_ai_manager_request_log} rl '
                     . 'LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid '
                     . 'JOIN {user} u ON u.id = rl.userid';
-            $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id ORDER BY u.lastname';
+            $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id';
             $params = [
                     'tenant' => $tenant->get_sql_identifier(),
                     'purpose' => $purpose,
@@ -106,7 +107,7 @@ class userstats_table extends table_sql {
         } else {
             $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount';
             $from = '{local_ai_manager_request_log} rl LEFT JOIN {user} u ON rl.userid = u.id';
-            $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id ORDER BY u.lastname';
+            $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id';
             $params = ['tenant' => $tenant->get_sql_identifier()];
             $this->set_count_sql(
                     "SELECT COUNT(DISTINCT u.id) FROM " . $from . " WHERE u." . $tenantfield . " = :tenant",
