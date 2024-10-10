@@ -83,6 +83,7 @@ class rights_config_table extends table_sql {
 
         $this->no_sorting('checkbox');
         $this->collapsible(false);
+        $this->sortable(true, 'lastname');
 
         $this->set_count_sql(
                 "SELECT COUNT(DISTINCT id) FROM {user} WHERE " . $tenantfield . " = :tenant",
