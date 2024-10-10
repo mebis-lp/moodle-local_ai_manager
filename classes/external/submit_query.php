@@ -63,17 +63,14 @@ class submit_query extends external_api {
             'prompt' => $prompt,
             'options' => $options,
         ]);
-        $context = \context_system::instance();
+        if (!empty($options)) {
+            $options = json_decode($options, true);
+        }
+        $context = !empty($options['contextid']) ? \context::instance_by_id($options['contextid']) : \context_system::instance();
         self::validate_context($context);
-        require_capability('local/ai_manager:use', $context);
-
-        $factory = \core\di::get(connector_factory::class);
-        $purposeobject = $factory->get_purpose_by_purpose_string($purpose);
+        // We do not check the 'local/ai_manager:use' capability here, because this is beim done inside manager::perform_request.
 
         try {
-            if (!empty($options)) {
-                $options = json_decode($options, true);
-            }
             $aimanager = new \local_ai_manager\manager($purpose);
 
             $result = $aimanager->perform_request($prompt, $options);
@@ -85,6 +82,8 @@ class submit_query extends external_api {
                 }
                 $return = ['code' => $result->get_code(), 'string' => 'error', 'result' => json_encode($error)];
             } else {
+                $factory = \core\di::get(connector_factory::class);
+                $purposeobject = $factory->get_purpose_by_purpose_string($purpose);
                 $return = ['code' => 200, 'string' => 'ok', 'result' => $purposeobject->format_output($result->get_content())];
             }
         } catch (\Exception $e) {
