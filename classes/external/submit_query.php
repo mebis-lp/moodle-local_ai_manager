@@ -68,7 +68,7 @@ class submit_query extends external_api {
         }
         $context = !empty($options['contextid']) ? \context::instance_by_id($options['contextid']) : \context_system::instance();
         self::validate_context($context);
-        // We do not check the 'local/ai_manager:use' capability here, because this is beim done inside manager::perform_request.
+        // We do not check the 'local/ai_manager:use' capability here, because this is being done inside manager::perform_request.
 
         try {
             $aimanager = new \local_ai_manager\manager($purpose);
