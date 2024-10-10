@@ -23,6 +23,7 @@
  */
 
 import {getAiConfig} from 'local_ai_manager/config';
+import Log from 'core/log';
 import Templates from 'core/templates';
 
 
@@ -32,7 +33,15 @@ import Templates from 'core/templates';
  * @param {string} selector the selector where the warning box should be rendered into
  */
 export const renderWarningBox = async(selector) => {
-    const aiConfig = await getAiConfig();
+    let aiConfig = null;
+    try {
+        aiConfig = await getAiConfig();
+    } catch (error) {
+        // This typically happens if we do not have the capabilities to retrieve the AI config.
+        // So we just eventually log in debug mode and do not render anything.
+        Log.debug(error);
+        return;
+    }
     const showAiWarningLink = aiConfig.aiwarningurl.length > 0;
     const targetElement = document.querySelector(selector);
     const {html, js} = await Templates.renderForPromise('local_ai_manager/ai_info_warning', {

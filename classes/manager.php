@@ -25,6 +25,8 @@
 
 namespace local_ai_manager;
 
+use context;
+use context_system;
 use core_plugin_manager;
 use dml_exception;
 use local_ai_manager\event\get_ai_response_failed;
@@ -110,6 +112,10 @@ class manager {
         if ($options === null) {
             $options = [];
         }
+
+        $context = !empty($options['contextid']) ? context::instance_by_id($options['contextid']) : context_system::instance();
+        require_capability('local/ai_manager:use', $context);
+
         try {
             $options = $this->sanitize_options($options);
         } catch (\Exception $exception) {
