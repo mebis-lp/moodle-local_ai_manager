@@ -41,6 +41,12 @@ Currently available AI purposes:
 - Translate
 - Text to speech
 
+#  Tenants and accessing tenant config pages
+
+Once installed, the local_ai_manager plugin will register a navigation node in the primary navigation. If you do not want this, you can disable the navigation node by an admin setting of the local_ai_manager plugin. By clicking on the navigation node you will be redirected to the main configuration page of your tenant. For accessing the tenant config pages, you will need to have either the capability `local/ai_manager:manage` on the tenant context (system context by default, but can be customized by a hook) or `local/ai_manager:managetenents` on the system context.
+
+The selected tenant is being determined by the current user's configured tenant user field (which is an admin setting, currently you currently can select between `institution` (default) and `department`). If the field is empty for your user, this means that the "default tenant" is being used. If you want to make configurations for a different tenant than the one which is being automatically determined by the user field, you can just use the deeplink https://your_moodle_site.com/local/ai_manager/tenant_config.php?tenant=YOUR_TENANT_IDENTIFIER. Of course, you will need sufficient capabilities for being able to use that. 
+
 
 ## Requirements
 
