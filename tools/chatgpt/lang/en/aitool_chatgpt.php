@@ -24,5 +24,6 @@
  */
 
 $string['adddescription'] = 'ChatGPT is a versatile AI model used for natural language interactions such as customer support, virtual assistants, content creation and more.';
+$string['err_contentfilter'] = 'Your request was rejected as a result of the content filter of the external tool. Your prompt probably requests something that is not allowed.';
 $string['pluginname'] = 'ChatGPT';
 $string['privacy:metadata'] = 'The local ai_manager tool subplugin "ChatGPT" does not store any personal data.';

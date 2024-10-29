@@ -16,7 +16,6 @@
 
 namespace local_ai_manager;
 
-use aitool_chatgpt\instance;
 use core\http_client;
 use core_plugin_manager;
 use local_ai_manager\local\prompt_response;
@@ -199,7 +198,7 @@ abstract class base_connector {
      * @param ClientExceptionInterface $exception the exception which has been thrown
      * @return request_response a request_response object containing the necessary information in a standardized way
      */
-    protected function create_error_response_from_exception(ClientExceptionInterface $exception): request_response {
+    final protected function create_error_response_from_exception(ClientExceptionInterface $exception): request_response {
         $message = '';
         // This is actually pretty bad, but it does not seem possible to get to these kind of errors through some kind of
         // Guzzle API functions, so we have to hope the cURL error messages are kinda stable.
@@ -210,18 +209,22 @@ abstract class base_connector {
                 $message = get_string('exception_curl', 'local_ai_manager');
             }
         } else {
-            switch ($exception->getCode()) {
-                case 401:
-                    $message = get_string('exception_http401', 'local_ai_manager');
-                    break;
-                case 429:
-                    $message = get_string('exception_http429', 'local_ai_manager');
-                    break;
-                case 500:
-                    $message = get_string('exception_http500', 'local_ai_manager');
-                    break;
-                default:
-                    $message = get_string('exception_default', 'local_ai_manager');
+            $message = $this->get_custom_error_message($exception->getCode(), $exception);
+            if (empty($message)) {
+                // If the tool specific connector does not provide a customized error message, we use our defaults.
+                switch ($exception->getCode()) {
+                    case 401:
+                        $message = get_string('exception_http401', 'local_ai_manager');
+                        break;
+                    case 429:
+                        $message = get_string('exception_http429', 'local_ai_manager');
+                        break;
+                    case 500:
+                        $message = get_string('exception_http500', 'local_ai_manager');
+                        break;
+                    default:
+                        $message = get_string('exception_default', 'local_ai_manager');
+                }
             }
         }
         $debuginfo = $exception->getMessage() . '\n' . $exception->getTraceAsString() . '\n';
@@ -252,5 +255,19 @@ abstract class base_connector {
      */
     public function allowed_mimetypes(): array {
         return [];
+    }
+
+    /**
+     * Provides a custom error message for a given error code.
+     *
+     * This method is intended to be overwritten by subclasses to provide customized error information.
+     *
+     * @param int $code the error code from the request of the external AI tool
+     * @param ?ClientExceptionInterface $exception the exception (if there is any) to extract additional information from,
+     *  can be null if no exception had been thrown
+     * @return string the localized error message string
+     */
+    protected function get_custom_error_message(int $code, ?ClientExceptionInterface $exception = null): string {
+        return '';
     }
 }

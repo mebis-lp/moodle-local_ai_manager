@@ -24,5 +24,6 @@
  */
 
 $string['adddescription'] = 'ChatGPT ist ein vielseitiges KI-Modell, das für natürliche Sprachinteraktionen wie Kundensupport, virtuelle Assistenzen, Content-Erstellung und mehr eingesetzt wird.';
+$string['err_contentfilter'] = 'Ihre Anfrage wurde vom Inhaltsfilter des KI-Tools zurückgewiesen. Ihr Prompt enthält vermutlich eine Anweisung, die nicht erlaubt ist.';
 $string['pluginname'] = 'ChatGPT';
 $string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "ChatGPT" speichert keine personenbezogenen Daten.';
