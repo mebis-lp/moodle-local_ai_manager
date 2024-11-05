@@ -144,5 +144,24 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024092600, 'local', 'ai_manager');
     }
 
+    if ($oldversion < 2024110501) {
+
+        // Changing type of field customfield1 on table local_ai_manager_instance to text.
+        $table = new xmldb_table('local_ai_manager_instance');
+        $field = new xmldb_field('customfield1', XMLDB_TYPE_TEXT, null, null, null, null, null, 'infolink');
+        $dbman->change_field_type($table, $field);
+        $field = new xmldb_field('customfield2', XMLDB_TYPE_TEXT, null, null, null, null, null, 'customfield1');
+        $dbman->change_field_type($table, $field);
+        $field = new xmldb_field('customfield3', XMLDB_TYPE_TEXT, null, null, null, null, null, 'customfield2');
+        $dbman->change_field_type($table, $field);
+        $field = new xmldb_field('customfield4', XMLDB_TYPE_TEXT, null, null, null, null, null, 'customfield3');
+        $dbman->change_field_type($table, $field);
+        $field = new xmldb_field('customfield5', XMLDB_TYPE_TEXT, null, null, null, null, null, 'customfield4');
+        $dbman->change_field_type($table, $field);
+
+        // Ai_manager savepoint reached.
+        upgrade_plugin_savepoint(true, 2024110501, 'local', 'ai_manager');
+    }
+
     return true;
 }
