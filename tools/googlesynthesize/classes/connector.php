@@ -161,7 +161,7 @@ class connector extends \local_ai_manager\base_connector {
      */
     public function retrieve_available_voices(): array {
         $clock = \core\di::get(\core\clock::class);
-        $cache = \cache::make('local_ai_manager', 'googlesynthesizevoices');
+        $cache = \cache::make('aitool_googlesynthesize', 'googlesynthesizevoices');
         $voices = $cache->get('voices');
         if ($voices) {
             $lastfetched = $cache->get('lastfetched');

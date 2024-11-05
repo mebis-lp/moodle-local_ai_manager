@@ -24,5 +24,6 @@
  */
 
 $string['adddescription'] = 'Google Synthesize, often in the context of "Google Text-to-Speech", is a tool for converting text into spoken language.';
+$string['cachedef_googlesynthesizevoices'] = 'Cache for storing available voices for the google synthesize service';
 $string['pluginname'] = 'Google Synthesize';
 $string['privacy:metadata'] = 'The local ai_manager tool subplugin "Google Synthesize" does not store any personal data.';

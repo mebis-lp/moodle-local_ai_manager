@@ -24,5 +24,6 @@
  */
 
 $string['adddescription'] = 'Google Synthesize, oft im Kontext von “Google Text-to-Speech”, ist ein Werkzeug zur Umwandlung von Text in gesprochene Sprache.';
+$string['cachedef_googlesynthesizevoices'] = 'Cache zum Zwischenspeichern verfügbarer Stimmen des Synthesize-Dienstes';
 $string['pluginname'] = 'Google Synthesize';
 $string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "Google Synthesize" speichert keine personenbezogenen Daten.';
