@@ -517,7 +517,9 @@ class base_instance {
      */
     final public function store_formdata(stdClass $data): void {
         $this->set_name(trim($data->name));
-        $this->set_endpoint(trim($data->endpoint));
+        if (!empty($data->endpoint)) {
+            $this->set_endpoint(trim($data->endpoint));
+        }
         $this->set_apikey(trim($data->apikey));
         $this->set_connector($data->connector);
         $this->set_tenant(trim($data->tenant));
@@ -555,7 +557,9 @@ class base_instance {
         if (empty($data['name'])) {
             $errors['name'] = get_string('formvalidation_editinstance_name', 'local_ai_manager');
         }
-        if (str_starts_with($data['endpoint'], 'http://') && !str_starts_with($data['endpoint'], 'https://')) {
+        if (!empty($data['endpoint'])
+                && str_starts_with($data['endpoint'], 'http://')
+                && !str_starts_with($data['endpoint'], 'https://')) {
             $errors['endpoint'] = get_string('formvalidation_editinstance_endpointnossl', 'local_ai_manager');
         }
         return $errors + $this->extend_validation($data, $files);

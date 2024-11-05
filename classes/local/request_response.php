@@ -126,13 +126,18 @@ class request_response {
      * @param int $code the status code
      * @param string $errormessage the error message
      * @param string $debuginfo the debug info
+     * @param ?StreamInterface $rawresponse the raw response object, or null if not available
      * @return request_response the request_response object containing all information about the error
      */
-    public static function create_from_error(int $code, string $errormessage, string $debuginfo): request_response {
+    public static function create_from_error(int $code, string $errormessage, string $debuginfo,
+            ?StreamInterface $rawresponse = null): request_response {
         $requestresponse = new self();
         $requestresponse->set_code($code);
         $requestresponse->set_errormessage($errormessage);
         $requestresponse->set_debuginfo($debuginfo);
+        if (!empty($rawresponse)) {
+            $requestresponse->set_response($rawresponse);
+        }
         return $requestresponse;
     }
 

@@ -64,6 +64,7 @@ class connector extends \local_ai_manager\base_connector {
         } else {
             $return = request_response::create_from_error($response->getStatusCode(),
                     get_string('error_sendingrequestfailed', 'local_ai_manager'),
+                    $response->getBody()->getContents(),
                     $response->getBody()
             );
         }

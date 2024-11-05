@@ -16,6 +16,7 @@
 
 namespace local_ai_manager;
 
+use Firebase\JWT\JWT;
 use stdClass;
 
 /**
