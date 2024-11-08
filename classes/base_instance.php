@@ -133,6 +133,7 @@ class base_instance {
      */
     final public function store(): void {
         global $DB;
+        $clock = \core\di::get(\core\clock::class);
         $record = new stdClass();
         $record->name = $this->name;
         $record->tenant = $this->tenant;
@@ -146,13 +147,14 @@ class base_instance {
         $record->customfield3 = $this->customfield3;
         $record->customfield4 = $this->customfield4;
         $record->customfield5 = $this->customfield5;
+        $currenttime = $clock->time();
+        $record->timemodified = $currenttime;
         if (is_null($this->record)) {
-            $record->timecreated = time();
+            $record->timecreated = $currenttime;
             $record->id = $DB->insert_record('local_ai_manager_instance', $record);
             $this->id = $record->id;
         } else {
             $record->id = $this->id;
-            $record->timemodified = time();
             $DB->update_record('local_ai_manager_instance', $record);
         }
         $this->record = $record;
