@@ -55,7 +55,7 @@ class instance extends base_instance {
     #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
         $temperature = aitool_option_temperature::extract_temperature_to_store($data);
-        $this->set_customfield1($temperature);
+        $this->set_customfield1(trim($temperature));
 
         [$enabled, $resourcename, $deploymentid, $apiversion] = aitool_option_azure::extract_azure_data_to_store($data);
 
@@ -72,9 +72,9 @@ class instance extends base_instance {
         $this->set_endpoint($endpoint);
 
         $this->set_customfield2($enabled);
-        $this->set_customfield3($resourcename);
-        $this->set_customfield4($deploymentid);
-        $this->set_customfield5($apiversion);
+        $this->set_customfield3(trim($resourcename));
+        $this->set_customfield4(trim($deploymentid));
+        $this->set_customfield5(trim($apiversion));
     }
 
     #[\Override]
