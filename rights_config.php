@@ -49,7 +49,7 @@ if ($rightsconfigform->is_cancelled()) {
         if (!$user) {
             throw new moodle_exception('User with userid ' . $userid . ' does not exist!');
         }
-        if ($user->{$tenantfield} !== $tenant->get_identifier()) {
+        if ($user->{$tenantfield} !== $tenant->get_sql_identifier()) {
             throw new moodle_exception('You must not change the status of the user with the id ' . $userid);
         }
         $userinfo = new userinfo($userid);
@@ -72,30 +72,29 @@ if ($rightsconfigform->is_cancelled()) {
 
     echo $OUTPUT->heading(get_string('rightsconfig', 'local_ai_manager'), 2, 'text-center');
 
+    // Render and handle external filter provided through a hook.
     $usertablefilter = new \local_ai_manager\hook\usertable_filter($tenant);
     \core\di::get(\core\hook\manager::class)->dispatch($usertablefilter);
 
-    $filterform =
-            new \local_ai_manager\form\rights_config_filter_form(null, ['filteroptions' => $usertablefilter->get_filter_options()]);
-
     $filterids = [];
-    if (!empty($usertablefilter->get_filter_options())) {
-        if ($filterform->is_cancelled() || empty($filterform->get_data())) {
-            $filterids = [];
-        } else {
-            $filterids = [];
-            if (!empty($filterform->get_data())) {
-                $filterids = $filterform->get_data()->filterids;
-                // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
-                // TODO: Evtl. add validation possibility in usertable_filter.
-                // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
-            }
+    $rolefilterids = [];
+    $filterform =
+            new \local_ai_manager\form\rights_config_filter_form(null,
+                    ['filteroptions' => $usertablefilter->get_filter_options()]);
+    if (!empty($filterform->get_data())) {
+        $filterids = [];
+        if (!empty($filterform->get_data())) {
+            $filterids = $filterform->get_data()->filterids;
+            $rolefilterids = $filterform->get_data()->rolefilterids;
+            // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
+            // TODO: Evtl. add validation possibility in usertable_filter.
+            // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
         }
-        $filterform->display();
     }
+    $filterform->display();
 
     $uniqid = 'rights-config-table-' . uniqid();
-    $rightstable = new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $filterids);
+    $rightstable = new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $filterids, $rolefilterids);
     $rightstable->out(100, false);
     $rightsconfigform->display();
     $PAGE->requires->js_call_amd('local_ai_manager/rights_config_table', 'init', ['id' => $uniqid]);
