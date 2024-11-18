@@ -29,7 +29,7 @@ use local_ai_manager\output\tenantnavbar;
 require_once(dirname(__FILE__) . '/../../config.php');
 require_login();
 
-global $CFG, $DB, $OUTPUT, $PAGE, $USER;
+global $CFG, $DB, $OUTPUT, $PAGE, $SESSION, $USER;
 
 \local_ai_manager\local\tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/rights_config.php'));
 
@@ -76,25 +76,34 @@ if ($rightsconfigform->is_cancelled()) {
     $usertablefilter = new \local_ai_manager\hook\usertable_filter($tenant);
     \core\di::get(\core\hook\manager::class)->dispatch($usertablefilter);
 
-    $filterids = [];
-    $rolefilterids = [];
     $filterform =
             new \local_ai_manager\form\rights_config_filter_form(null,
                     ['filteroptions' => $usertablefilter->get_filter_options()]);
-    if (!empty($filterform->get_data())) {
+    if ($filterform->is_cancelled()) {
         $filterids = [];
-        if (!empty($filterform->get_data())) {
-            $filterids = $filterform->get_data()->filterids;
-            $rolefilterids = $filterform->get_data()->rolefilterids;
-            // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
-            // TODO: Evtl. add validation possibility in usertable_filter.
-            // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
-        }
+        $rolefilterids = [];
+    } else if (!empty($filterform->get_data())) {
+        $filterids = !empty($filterform->get_data()->filterids) ? $filterform->get_data()->filterids : [];
+        $rolefilterids = !empty($filterform->get_data()->rolefilterids) ? $filterform->get_data()->rolefilterids : [];
+        // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
+        // TODO: Evtl. add validation possibility in usertable_filter.
+        // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
+    } else {
+        $filterids = !empty($SESSION->local_ai_manager_filterids) ? $SESSION->local_ai_manager_filterids : [];
+        $rolefilterids = !empty($SESSION->local_ai_manager_rolefilterids) ? $SESSION->local_ai_manager_rolefilterids : [];
+        $filterform->set_data(['filterids' => $filterids, 'rolefilterids' => $rolefilterids]);
+    }
+    if ($SESSION->local_ai_manager_filterids !== $filterids) {
+        $SESSION->local_ai_manager_filterids = $filterids;
+    }
+    if ($SESSION->local_ai_manager_rolefilterids !== $rolefilterids) {
+        $SESSION->local_ai_manager_rolefilterids = $rolefilterids;
     }
     $filterform->display();
 
     $uniqid = 'rights-config-table-' . uniqid();
-    $rightstable = new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $filterids, $rolefilterids);
+    $rightstable =
+            new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $filterids, $rolefilterids);
     $rightstable->out(100, false);
     $rightsconfigform->display();
     $PAGE->requires->js_call_amd('local_ai_manager/rights_config_table', 'init', ['id' => $uniqid]);
