@@ -63,9 +63,9 @@ class instance extends base_instance {
         $this->set_endpoint($endpoint);
 
         $this->set_customfield2($enabled);
-        $this->set_customfield3(trim($resourcename));
-        $this->set_customfield4(trim($deploymentid));
-        $this->set_customfield5(trim($apiversion));
+        $this->set_customfield3($resourcename);
+        $this->set_customfield4($deploymentid);
+        $this->set_customfield5($apiversion);
     }
 
     /**
