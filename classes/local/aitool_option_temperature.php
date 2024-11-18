@@ -100,7 +100,7 @@ class aitool_option_temperature {
                     break;
             }
         } else {
-            $temperature = $data->temperaturecustom;
+            $temperature = trim($data->temperaturecustom);
         }
         return $temperature;
     }

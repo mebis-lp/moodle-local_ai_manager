@@ -85,9 +85,9 @@ class aitool_option_azure {
      * @return array array with the extracted azure information
      */
     public static function extract_azure_data_to_store(stdClass $data): array {
-        $resourcename = empty($data->azure_resourcename) ? null : $data->azure_resourcename;
-        $deploymentid = empty($data->azure_deploymentid) ? null : $data->azure_deploymentid;
-        $apiversion = empty($data->azure_apiversion) ? null : $data->azure_apiversion;
+        $resourcename = empty($data->azure_resourcename) ? null : trim($data->azure_resourcename);
+        $deploymentid = empty($data->azure_deploymentid) ? null : trim($data->azure_deploymentid);
+        $apiversion = empty($data->azure_apiversion) ? null : trim($data->azure_apiversion);
         return [$data->azure_enabled, $resourcename, $deploymentid, $apiversion];
     }
 
