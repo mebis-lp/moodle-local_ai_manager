@@ -6,7 +6,7 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Moodle is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,https://github.com/mebis-lp/moodle-local_ai_manager/blob/MBS-9445_local_ai_manager_add_trimming_to_instance_edit_form/tools/chatgpt/classes/instance.php
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -55,7 +55,7 @@ class instance extends base_instance {
     #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
         $temperature = aitool_option_temperature::extract_temperature_to_store($data);
-        $this->set_customfield1(trim($temperature));
+        $this->set_customfield1($temperature);
 
         [$enabled, $resourcename, $deploymentid, $apiversion] = aitool_option_azure::extract_azure_data_to_store($data);
 
@@ -72,9 +72,9 @@ class instance extends base_instance {
         $this->set_endpoint($endpoint);
 
         $this->set_customfield2($enabled);
-        $this->set_customfield3(trim($resourcename));
-        $this->set_customfield4(trim($deploymentid));
-        $this->set_customfield5(trim($apiversion));
+        $this->set_customfield3($resourcename);
+        $this->set_customfield4($deploymentid);
+        $this->set_customfield5($apiversion);
     }
 
     #[\Override]
