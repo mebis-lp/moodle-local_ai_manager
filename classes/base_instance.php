@@ -525,7 +525,7 @@ class base_instance {
             // it is supposed to overwrite this default value in the extend_store_formdata function.
             $data->model = self::PRECONFIGURED_MODEL;
         }
-        $this->set_model(trim($data->model));
+        $this->set_model($data->model);
         $this->set_infolink(trim($data->infolink));
         $this->extend_store_formdata($data);
         $this->store();
