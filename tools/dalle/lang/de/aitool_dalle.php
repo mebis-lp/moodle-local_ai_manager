@@ -24,5 +24,6 @@
  */
 
 $string['adddescription'] = 'Dall-E ist ein KI-Modell von OpenAI, das darauf spezialisiert ist, aus Textbeschreibungen Bilder zu generieren.';
+$string['err_contentpolicyviolation'] = 'Ihre Anfrage wurde vom Sicherheitssystem des KI-Tools zurückgewiesen. Ihr Prompt enthält vermutlich eine Anweisung, die nicht erlaubt ist.';
 $string['pluginname'] = 'Dall-E';
 $string['privacy:metadata'] = 'Das Subplugin des ai_manager Plugins "Dall-E" speichert keine personenbezogenen Daten.';

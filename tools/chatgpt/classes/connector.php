@@ -19,6 +19,7 @@ namespace aitool_chatgpt;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -149,5 +150,22 @@ class connector extends \local_ai_manager\base_connector {
     #[\Override]
     public function allowed_mimetypes(): array {
         return ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    }
+
+    #[\Override]
+    protected function get_custom_error_message(int $code, ?ClientExceptionInterface $exception = null): string {
+        $message = '';
+        switch ($code) {
+            case 400:
+                if (method_exists($exception, 'getResponse') && !empty($exception->getResponse())) {
+                    $responsebody = json_decode($exception->getResponse()->getBody()->getContents());
+                    if (property_exists($responsebody, 'error') && property_exists($responsebody->error, 'code')
+                            && $responsebody->error->code === 'content_filter') {
+                        $message = get_string('err_contentfilter', 'aitool_chatgpt');
+                    }
+                }
+                break;
+        }
+        return $message;
     }
 }

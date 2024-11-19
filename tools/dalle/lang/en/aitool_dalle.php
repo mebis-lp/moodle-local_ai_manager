@@ -24,5 +24,6 @@
  */
 
 $string['adddescription'] = 'Dall-E is an AI model from OpenAI that specializes in generating images from text descriptions.';
+$string['err_contentpolicyviolation'] = 'Your request was rejected as a result of our safety system. Your prompt probably requests something that is not allowed.';
 $string['pluginname'] = 'Dall-E';
 $string['privacy:metadata'] = 'The local ai_manager tool subplugin "Dall-E" does not store any personal data.';
