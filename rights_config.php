@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\form\rights_config_filter_form;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\output\tenantnavbar;
 
@@ -72,16 +73,22 @@ if ($rightsconfigform->is_cancelled()) {
     \core\di::get(\core\hook\manager::class)->dispatch($usertablefilter);
 
     $filterform =
-            new \local_ai_manager\form\rights_config_filter_form(null,
-                    ['filteroptions' => $usertablefilter->get_filter_options()]);
-
+            new rights_config_filter_form(null,
+                    [
+                            'hookfilteroptions' => $usertablefilter->get_filter_options(),
+                            'hookfilterlabel' => $usertablefilter->get_filter_label(),
+                    ]
+            );
+    $hookfilterids = [];
+    $rolefilterids = [];
     if (!empty($filterform->get_data())) {
 
         if (!empty($filterform->get_data()->resetfilter)) {
-            $filterform->store_filter([], []);
+            $filterform->store_filterids(rights_config_filter_form::FILTER_IDENTIFIER_HOOK_FILTER, []);
+            $filterform->store_filterids(rights_config_filter_form::FILTER_IDENTIFIER_ROLE_FILTER, []);
             redirect($PAGE->url);
         } else {
-            $filterids = !empty($filterform->get_data()->filterids) ? $filterform->get_data()->filterids : [];
+            $hookfilterids = !empty($filterform->get_data()->hookfilterids) ? $filterform->get_data()->hookfilterids : [];
             $rolefilterids = !empty($filterform->get_data()->rolefilterids) ? $filterform->get_data()->rolefilterids : [];
         }
         // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
@@ -89,14 +96,16 @@ if ($rightsconfigform->is_cancelled()) {
         // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
     } else {
         // Filter form has not submitted, so use the filter ids stored in the session.
-         [$filterids, $rolefilterids] = $filterform->get_stored_filters();
+        $hookfilterids = $filterform->get_stored_filterids(rights_config_filter_form::FILTER_IDENTIFIER_HOOK_FILTER);
+        $hookfilterids = $filterform->get_stored_filterids(rights_config_filter_form::FILTER_IDENTIFIER_ROLE_FILTER);
     }
 
     // Store filterdata in session.
-    $filterform->store_filter($filterids, $rolefilterids);
+    $filterform->store_filterids(\local_ai_manager\form\rights_config_filter_form::FILTER_IDENTIFIER_HOOK_FILTER, $hookfilterids);
+    $filterform->store_filterids(\local_ai_manager\form\rights_config_filter_form::FILTER_IDENTIFIER_ROLE_FILTER, $rolefilterids);
 
-    // Set default data (if not set already by request.
-    $filterform->set_data(['filterids' => $filterids, 'rolefilterids' => $rolefilterids]);
+    // Set default data (if not set already by request).
+    $filterform->set_data(['hookfilterids' => $hookfilterids, 'rolefilterids' => $rolefilterids]);
 
     echo $OUTPUT->header();
 
@@ -110,7 +119,7 @@ if ($rightsconfigform->is_cancelled()) {
     // Render rights table.
     $uniqid = 'rights-config-table-' . uniqid();
     $rightstable =
-            new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $filterids, $rolefilterids);
+            new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $hookfilterids, $rolefilterids);
     $rightstable->out(100, false);
     $rightsconfigform->display();
     $PAGE->requires->js_call_amd('local_ai_manager/rights_config_table', 'init', ['id' => $uniqid]);

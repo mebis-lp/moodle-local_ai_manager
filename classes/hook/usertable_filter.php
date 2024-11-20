@@ -36,6 +36,9 @@ class usertable_filter {
     /** @var array associative array for providing filter options to the filter component of the rights config table */
     private array $filteroptions = [];
 
+    /** @var string String for providing a label for the filter selection form element */
+    private string $filterlabel = '';
+
     /**
      * Constructor for the hook.
      * @param tenant $tenant the tenant for which the user table is being shown
@@ -73,5 +76,23 @@ class usertable_filter {
      */
     public function set_filter_options(array $filteroptions): void {
         $this->filteroptions = $filteroptions;
+    }
+
+    /**
+     * Standard getter for retrieving the label which should be shown above the filter form element.
+     *
+     * @return string the localized string to show above the filter form element
+     */
+    public function get_filter_label(): string {
+        return $this->filterlabel;
+    }
+
+    /**
+     * Standard setter for the label which should be shown above the filter form element.
+     *
+     * @param string $label The localized string to show above the filter form element.
+     */
+    public function set_filter_label(string $label): void {
+        $this->filterlabel = $label;
     }
 }
