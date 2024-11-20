@@ -66,11 +66,6 @@ if ($rightsconfigform->is_cancelled()) {
 
     redirect($PAGE->url, get_string('userstatusupdated', 'local_ai_manager'));
 } else {
-    echo $OUTPUT->header();
-    $tenantnavbar = new tenantnavbar('rights_config.php');
-    echo $OUTPUT->render($tenantnavbar);
-
-    echo $OUTPUT->heading(get_string('rightsconfig', 'local_ai_manager'), 2, 'text-center');
 
     // Render and handle external filter provided through a hook.
     $usertablefilter = new \local_ai_manager\hook\usertable_filter($tenant);
@@ -79,11 +74,12 @@ if ($rightsconfigform->is_cancelled()) {
     $filterform =
             new \local_ai_manager\form\rights_config_filter_form(null,
                     ['filteroptions' => $usertablefilter->get_filter_options()]);
-    $filterform->set_data(['rolefilterids' => [1,2,3]]);
+
     if (!empty($filterform->get_data())) {
+
         if (!empty($filterform->get_data()->resetfilter)) {
-            $filterids = [];
-            $rolefilterids = [];
+            $filterform->store_filter([], []);
+            redirect($PAGE->url);
         } else {
             $filterids = !empty($filterform->get_data()->filterids) ? $filterform->get_data()->filterids : [];
             $rolefilterids = !empty($filterform->get_data()->rolefilterids) ? $filterform->get_data()->rolefilterids : [];
@@ -93,20 +89,25 @@ if ($rightsconfigform->is_cancelled()) {
         // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
     } else {
         // Filter form has not submitted, so use the filter ids stored in the session.
-        $filterids = !empty($SESSION->local_ai_manager_filterids) ? $SESSION->local_ai_manager_filterids : [];
-        $rolefilterids = !empty($SESSION->local_ai_manager_rolefilterids) ? $SESSION->local_ai_manager_rolefilterids : [];
+         [$filterids, $rolefilterids] = $filterform->get_stored_filters();
     }
+
+    // Store filterdata in session.
+    $filterform->store_filter($filterids, $rolefilterids);
+
+    // Set default data (if not set already by request.
     $filterform->set_data(['filterids' => $filterids, 'rolefilterids' => $rolefilterids]);
 
-    // Update session if necessary.
-    if ($SESSION->local_ai_manager_filterids !== $filterids) {
-        $SESSION->local_ai_manager_filterids = $filterids;
-    }
-    if ($SESSION->local_ai_manager_rolefilterids !== $rolefilterids) {
-        $SESSION->local_ai_manager_rolefilterids = $rolefilterids;
-    }
+    echo $OUTPUT->header();
+
+    $tenantnavbar = new tenantnavbar('rights_config.php');
+    echo $OUTPUT->render($tenantnavbar);
+    echo $OUTPUT->heading(get_string('rightsconfig', 'local_ai_manager'), 2, 'text-center');
+
+    // Render filter form.
     $filterform->display();
 
+    // Render rights table.
     $uniqid = 'rights-config-table-' . uniqid();
     $rightstable =
             new \local_ai_manager\local\rights_config_table($uniqid, $tenant, $PAGE->url, $filterids, $rolefilterids);

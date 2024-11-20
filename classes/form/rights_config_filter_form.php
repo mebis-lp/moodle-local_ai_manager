@@ -77,4 +77,52 @@ class rights_config_filter_form extends \moodleform {
         $elementarray[] = $mform->createElement('submit', 'resetfilter', get_string('resetfilter', 'local_ai_manager'));
         $mform->addGroup($elementarray, 'elementarray', get_string('filterheading', 'local_ai_manager'), [' '], false);
     }
+
+    /**
+     * Store filterids and rolefilterids in session.
+     *
+     * @param array $filterids
+     * @param array $rolefilterids
+     * @return void
+     */
+    public function store_filter(array $filterids, array $rolefilterids) {
+        global $SESSION;
+
+        // Ensure attribute exists for following lines.
+        if (!isset($SESSION->local_ai_manager_filterids)) {
+            $SESSION->local_ai_manager_filterids = [];
+        }
+
+        if (!isset($SESSION->local_ai_manager_rolefilterids)) {
+            $SESSION->local_ai_manager_rolefilterids = [];
+        }
+
+        if ($SESSION->local_ai_manager_filterids !== $filterids) {
+            $SESSION->local_ai_manager_filterids = $filterids;
+        }
+        if ($SESSION->local_ai_manager_rolefilterids !== $rolefilterids) {
+            $SESSION->local_ai_manager_rolefilterids = $rolefilterids;
+        }
+    }
+
+    /**
+     * Get filters from session.
+     *
+     * @return array
+     */
+    public function get_stored_filters() : array {
+        global $SESSION;
+
+        // Ensure attribute exists for following lines.
+        if (!isset($SESSION->local_ai_manager_filterids)) {
+            $SESSION->local_ai_manager_filterids = [];
+        }
+
+        if (!isset($SESSION->local_ai_manager_rolefilterids)) {
+            $SESSION->local_ai_manager_rolefilterids = [];
+        }
+
+        return [$SESSION->local_ai_manager_filterids, $SESSION->local_ai_manager_rolefilterids];
+    }
+
 }
