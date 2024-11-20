@@ -46,11 +46,15 @@ class rights_config_filter_form extends \moodleform {
         $mform->addElement('hidden', 'tenant', $tenant->get_identifier());
         $mform->setType('tenant', PARAM_ALPHANUM);
 
+        $options = [
+                'multiple' => true,
+                'noselectionstring' => get_string('allareas', 'search'),
+        ];
+
         $elementarray = [];
         if (!empty($filteroptions)) {
             $filteroptionsmultiselect =
-                    $mform->createElement('select', 'filterids', '', $filteroptions,
-                            ['size' => 2, 'class' => 'local_ai_manager-filter_select pr-1']);
+                    $mform->createElement('autocomplete', 'filterids', '', $filteroptions, $options);
             $filteroptionsmultiselect->setMultiple(true);
             $filteroptionsmultiselect->setSelected(0);
             $elementarray[] = $filteroptionsmultiselect;
@@ -65,13 +69,12 @@ class rights_config_filter_form extends \moodleform {
                                 'local_ai_manager'),
                 ];
         $rolefilteroptionsmultiselect =
-                $mform->createElement('select', 'rolefilterids', '', $rolefilteroptions,
-                        ['size' => 2, 'class' => 'local_ai_manager-filter_select pr-1']);
+                $mform->createElement('autocomplete', 'rolefilterids', '', $rolefilteroptions, $options);
         $rolefilteroptionsmultiselect->setMultiple(true);
         $elementarray[] = $rolefilteroptionsmultiselect;
 
         $elementarray[] = $mform->createElement('submit', 'applyfilter', get_string('applyfilter', 'local_ai_manager'));
-        $elementarray[] = $mform->createElement('cancel', 'resetfilter', get_string('resetfilter', 'local_ai_manager'));
+        $elementarray[] = $mform->createElement('submit', 'resetfilter', get_string('resetfilter', 'local_ai_manager'));
         $mform->addGroup($elementarray, 'elementarray', get_string('filterheading', 'local_ai_manager'), [' '], false);
     }
 }

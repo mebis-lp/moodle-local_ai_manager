@@ -79,20 +79,26 @@ if ($rightsconfigform->is_cancelled()) {
     $filterform =
             new \local_ai_manager\form\rights_config_filter_form(null,
                     ['filteroptions' => $usertablefilter->get_filter_options()]);
-    if ($filterform->is_cancelled()) {
-        $filterids = [];
-        $rolefilterids = [];
-    } else if (!empty($filterform->get_data())) {
-        $filterids = !empty($filterform->get_data()->filterids) ? $filterform->get_data()->filterids : [];
-        $rolefilterids = !empty($filterform->get_data()->rolefilterids) ? $filterform->get_data()->rolefilterids : [];
+    $filterform->set_data(['rolefilterids' => [1,2,3]]);
+    if (!empty($filterform->get_data())) {
+        if (!empty($filterform->get_data()->resetfilter)) {
+            $filterids = [];
+            $rolefilterids = [];
+        } else {
+            $filterids = !empty($filterform->get_data()->filterids) ? $filterform->get_data()->filterids : [];
+            $rolefilterids = !empty($filterform->get_data()->rolefilterids) ? $filterform->get_data()->rolefilterids : [];
+        }
         // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
         // TODO: Evtl. add validation possibility in usertable_filter.
         // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
     } else {
+        // Filter form has not submitted, so use the filter ids stored in the session.
         $filterids = !empty($SESSION->local_ai_manager_filterids) ? $SESSION->local_ai_manager_filterids : [];
         $rolefilterids = !empty($SESSION->local_ai_manager_rolefilterids) ? $SESSION->local_ai_manager_rolefilterids : [];
-        $filterform->set_data(['filterids' => $filterids, 'rolefilterids' => $rolefilterids]);
     }
+    $filterform->set_data(['filterids' => $filterids, 'rolefilterids' => $rolefilterids]);
+
+    // Update session if necessary.
     if ($SESSION->local_ai_manager_filterids !== $filterids) {
         $SESSION->local_ai_manager_filterids = $filterids;
     }
