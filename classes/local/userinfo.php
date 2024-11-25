@@ -84,7 +84,7 @@ class userinfo {
     public function get_default_role() {
         $accessmanager = \core\di::get(access_manager::class);
         if (\core\di::get(tenant::class)->is_default_tenant()) {
-            return $accessmanager->is_tenant_manager() ? self::ROLE_UNLIMITED : self::ROLE_BASIC;
+            return $accessmanager->is_tenant_manager($this->userid) ? self::ROLE_UNLIMITED : self::ROLE_BASIC;
         }
 
         $userinfoextend = new userinfo_extend($this->userid);

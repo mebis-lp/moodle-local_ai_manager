@@ -43,13 +43,16 @@ class rights_config_table extends table_sql {
      * @param tenant $tenant the tenant to display the table for
      * @param moodle_url $baseurl the current base url on which the table is being displayed
      * @param array $filterids list of ids to filter
+     * @param array $rolefilterids list of role ids to filter
      */
     public function __construct(
             string $uniqid,
             tenant $tenant,
             moodle_url $baseurl,
             array $filterids,
+            array $rolefilterids
     ) {
+        global $DB;
         parent::__construct($uniqid);
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
@@ -68,11 +71,37 @@ class rights_config_table extends table_sql {
 
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
 
+        // This is a nightmare concerning performance, but showing the rights config table while also filtering roles does not
+        // happen very often, so we should be fine.
+        // On the other hand we cannot just apply the filter SQL to the table sql, because there is no SQL way to determine the
+        // roles for users who do not have a userinfo record yet.
+        $rolewhere = '';
+        $roleparams = [];
+        if (!empty($rolefilterids)) {
+            $rolefiltersql = "SELECT u.id as userid, ui.role as role FROM {user} u "
+                    . "LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid "
+                    . "WHERE u.deleted != 1 AND u.suspended != 1 AND " . $tenantfield . " = :tenant";
+            $rolefilterparams = ['tenant' => $tenant->get_sql_identifier()];
+            $records = $DB->get_records_sql($rolefiltersql, $rolefilterparams);
+            $roleuserids = [];
+            foreach ($records as $record) {
+                $userinfo = new userinfo($record->userid);
+                $role = $record->role === null ? $userinfo->get_default_role() : $record->role;
+                if (in_array($role, $rolefilterids)) {
+                    $roleuserids[] = $record->userid;
+                }
+            }
+            if (!empty($roleuserids)) {
+                [$insql, $roleparams] = $DB->get_in_or_equal($roleuserids, SQL_PARAMS_NAMED);
+                $rolewhere = ' AND u.id ' . $insql;
+            }
+        }
+
         $fields = 'u.id as id, lastname, firstname, role, locked, ui.confirmed';
         $from =
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
-        $where = 'u.deleted != 1 AND u.suspended != 1 AND ' . $tenantfield . ' = :tenant';
-        $params = ['tenant' => $tenant->get_sql_identifier()];
+        $where = 'u.deleted != 1 AND u.suspended != 1 AND ' . $tenantfield . ' = :tenant' . $rolewhere;
+        $params = array_merge(['tenant' => $tenant->get_sql_identifier()], $roleparams);
 
         $usertableextend = new usertable_extend($tenant, $columns, $headers, $filterids, $fields, $from, $where, $params);
         \core\di::get(\core\hook\manager::class)->dispatch($usertableextend);
@@ -82,16 +111,18 @@ class rights_config_table extends table_sql {
         $this->define_headers($usertableextend->get_headers());
 
         $this->no_sorting('checkbox');
+        $this->no_sorting('role');
+        $this->no_sorting('locked');
+        $this->no_sorting('confirmed');
         $this->collapsible(false);
         $this->sortable(true, 'lastname');
 
-        $this->set_count_sql(
-                "SELECT COUNT(DISTINCT id) FROM {user} WHERE " . $tenantfield . " = :tenant",
-                ['tenant' => $tenant->get_sql_identifier()]
-        );
-
         $this->set_sql($usertableextend->get_fields(), $usertableextend->get_from(),
                 $usertableextend->get_where() . ' GROUP BY u.id',
+                $usertableextend->get_params());
+        // We need to use this because we are using "GROUP BY" which is not being expected by the sql table.
+        $this->set_count_sql("SELECT COUNT(*) FROM (SELECT " . $usertableextend->get_fields() . " FROM "
+                . $usertableextend->get_from() . " WHERE " . $usertableextend->get_where() . " GROUP BY u.id) AS subquery",
                 $usertableextend->get_params());
         parent::setup();
     }

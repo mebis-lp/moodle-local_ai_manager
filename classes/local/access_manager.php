@@ -56,14 +56,18 @@ class access_manager {
     }
 
     /**
-     * Determines if the current user is a tenant manager.
+     * Determines if a user is a tenant manager.
      *
+     * @param int $userid the user id of the user to check, or empty/0 if current user should be used
      * @param ?tenant $tenant the tenant to use, if not passed or null the currently used tenant is being used
      * @return bool true if the current user is a tenant manager
      */
-    public function is_tenant_manager(?tenant $tenant = null): bool {
+    public function is_tenant_manager(int $userid = 0, ?tenant $tenant = null): bool {
         global $USER;
-        if (has_capability('local/ai_manager:managetenants', \context_system::instance())) {
+        if (empty($userid)) {
+            $userid = $USER->id;
+        }
+        if (has_capability('local/ai_manager:managetenants', \context_system::instance(), $userid)) {
             return true;
         }
 
@@ -77,15 +81,16 @@ class access_manager {
         // In case of default tenant we get system context here, admin should have all capabilities, so we need no admin check.
         $tenantcontext = $tenant->get_context();
 
+        $user = empty($userid) ? $USER : \core_user::get_user($userid);
         if ($tenantcontext === \context_system::instance()) {
             // If the context of the tenant is systemwide, we distinguish between the capabilities "manage" and "managetenants":
             // If someone has the manage capability on system context, he/she will also have to be member of the tenant to be able
             // to manage it.
             $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
-            return has_capability('local/ai_manager:manage', $tenantcontext) && $tenant->is_tenant_allowed()
-                    && $USER->{$tenantfield} === $tenant->get_identifier();
+            return has_capability('local/ai_manager:manage', $tenantcontext, $user) && $tenant->is_tenant_allowed()
+                    && $user->{$tenantfield} === $tenant->get_sql_identifier();
         }
-        return has_capability('local/ai_manager:manage', $tenantcontext) && $tenant->is_tenant_allowed();
+        return has_capability('local/ai_manager:manage', $tenantcontext, $user) && $tenant->is_tenant_allowed();
     }
 
     /**
@@ -106,7 +111,7 @@ class access_manager {
         \core\di::get(\core\hook\manager::class)->dispatch($customtenant);
 
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
-        if (empty($USER->{$tenantfield}) || $USER->{$tenantfield} !== $this->tenant->get_identifier()) {
+        if (empty($USER->{$tenantfield}) || $USER->{$tenantfield} !== $this->tenant->get_sql_identifier()) {
             throw new \moodle_exception('You must not access information for the tenant '
                     . $this->tenant->get_identifier() . '!');
         }
@@ -119,10 +124,11 @@ class access_manager {
      * @return bool true if the current user is allowed to manage the instance
      */
     public function can_manage_connectorinstance(base_instance $instance) {
+        global $USER;
         if (has_capability('local/ai_manager:managetenants', \context_system::instance())) {
             return true;
         }
-        if ($this->is_tenant_manager(new tenant($instance->get_tenant()))) {
+        if ($this->is_tenant_manager($USER->id, new tenant($instance->get_tenant()))) {
             return has_capability('local/ai_manager:manage', $this->tenant->get_context());
         }
         return false;
