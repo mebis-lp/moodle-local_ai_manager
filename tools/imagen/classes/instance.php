@@ -17,6 +17,7 @@
 namespace aitool_imagen;
 
 use local_ai_manager\base_instance;
+use local_ai_manager\local\aitool_option_vertexai;
 use stdClass;
 
 /**
@@ -31,48 +32,25 @@ class instance extends base_instance {
 
     #[\Override]
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->freeze('apikey');
-        $mform->freeze('endpoint');
-        $mform->addElement('textarea', 'serviceaccountjson',
-                get_string('serviceaccountjson', 'aitool_imagen'), ['rows' => '20']);
+        aitool_option_vertexai::extend_form_definition($mform);
     }
 
     #[\Override]
     protected function get_extended_formdata(): stdClass {
-        $data = new stdClass();
-        $data->serviceaccountjson = $this->get_customfield1();
-        return $data;
+        return aitool_option_vertexai::add_vertexai_to_form_data($this->get_customfield1());
     }
 
     #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
-        $serviceaccountjson = trim($data->serviceaccountjson);
-        $this->set_customfield1($serviceaccountjson);
-        $serviceaccountinfo = json_decode($serviceaccountjson);
-        $projectid = $serviceaccountinfo->project_id;
 
-        $endpoint = 'https://europe-west3-aiplatform.googleapis.com/v1/projects/' . $projectid
-                . '/locations/europe-west3/publishers/google/models/'
-                . $this->get_model() . ':predict';
+        [$serviceaccountjson, $endpoint] = aitool_option_vertexai::extract_vertexai_to_store($data);
+
+        $this->set_customfield1($serviceaccountjson);
         $this->set_endpoint($endpoint);
     }
 
     #[\Override]
     protected function extend_validation(array $data, array $files): array {
-        $errors = [];
-        if (empty($data['serviceaccountjson'])) {
-            $errors['serviceaccountjson'] = get_string('err_serviceaccountjsonempty', 'aitool_imagen');
-            return $errors;
-        }
-
-        $serviceaccountinfo = json_decode(trim($data['serviceaccountjson']));
-        foreach (['private_key_id', 'private_key', 'client_email'] as $field) {
-            if (!property_exists($serviceaccountinfo, $field)) {
-                $errors['serviceaccountjson'] = get_string('err_serviceaccountjsoninvalid', 'aitool_imagen', $field);
-                break;
-            }
-        }
-
-        return $errors;
+        return aitool_option_vertexai::validate_vertexai($data);
     }
 }

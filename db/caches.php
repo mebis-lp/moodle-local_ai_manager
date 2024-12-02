@@ -17,7 +17,7 @@
 /**
  * Cache definitions.
  *
- * @package   aitool_imagen
+ * @package   local_ai_manager
  * @copyright 2024 ISB Bayern
  * @author    Philipp Memmel
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $definitions = [
-        'auth' => [
+        'googleauth' => [
                 'mode' => cache_store::MODE_APPLICATION,
                 'simplekeys' => true,
                 'simpledata' => true,

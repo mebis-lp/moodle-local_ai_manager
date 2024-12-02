@@ -19,6 +19,8 @@ namespace aitool_imagen;
 use core\http_client;
 use Firebase\JWT\JWT;
 use local_ai_manager\base_connector;
+use local_ai_manager\base_instance;
+use local_ai_manager\local\aitool_option_vertexai_authhandler;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
@@ -37,8 +39,18 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends base_connector {
 
+    /** @var aitool_option_vertexai_authhandler Auth handler for Vertex AI. */
+    private aitool_option_vertexai_authhandler $vertexaiauthhandler;
+
     /** @var string The access token to use for authentication against the Google imagen API endpoint. */
     private string $accesstoken = '';
+
+    public function __construct(base_instance $instance) {
+        parent::__construct($instance);
+        $serviceaccountinfo = empty($this->instance->get_customfield1()) ? '' : $this->instance->get_customfield1();
+        $this->vertexaiauthhandler =
+                new aitool_option_vertexai_authhandler($this->instance->get_id(), $serviceaccountinfo);
+    }
 
     #[\Override]
     public function get_models_by_purpose(): array {
@@ -96,10 +108,11 @@ class connector extends base_connector {
         $data['instances'][0]['prompt'] = $translatedprompt;
 
         try {
+
             // Composing the "Authorization" header is not that easy as just looking up a Bearer token in the database.
             // So we here explicitly retrieve the access token from cache or the Google OAuth API and do some proper error handling.
             // After we stored it in $this->accesstoken it can be properly set into the header by the self::get_headers method.
-            $this->accesstoken = $this->get_access_token();
+            $this->accesstoken = $this->vertexaiauthhandler->get_access_token();
         } catch (\moodle_exception $exception) {
             return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
         }
@@ -114,8 +127,12 @@ class connector extends base_connector {
             $requestresponse->get_response()->rewind();
             $content = json_decode($requestresponse->get_response()->getContents(), true);
             if (!empty(array_filter($content['error']['details'], fn($details) => $details['reason'] === 'ACCESS_TOKEN_EXPIRED'))) {
-                $authcache = \cache::make('aitool_imagen', 'auth');
-                $authcache->delete($this->instance->get_id());
+                // We refresh the outdated access token and send the request again.
+                try {
+                    $this->accesstoken = $this->vertexaiauthhandler->refresh_access_token();
+                } catch (\moodle_exception $exception) {
+                    return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
+                }
                 $requestresponse = parent::make_request($data);
             }
         }
@@ -160,91 +177,6 @@ class connector extends base_connector {
                 ['key' => '4:3', 'displayname' => '4:3 (1792 x 1344)'],
         ];
         return $options;
-    }
-
-    /**
-     * Retrieves a fresh access token from the Google oauth endpoint.
-     *
-     * @return array of the form ['access_token' => 'xxx', 'expires' => 1730805678] containing the access token and the time at
-     *  which the token expires. If there has been an error, the array is of the form
-     *  ['error' => 'more detailed info about the error']
-     * @throws \dml_exception
-     */
-    public function retrieve_access_token(): array {
-        $clock = \core\di::get(\core\clock::class);
-        $serviceaccountinfo = json_decode($this->instance->get_customfield1());
-        $kid = $serviceaccountinfo->private_key_id;
-        $privatekey = $serviceaccountinfo->private_key;
-        $clientemail = $serviceaccountinfo->client_email;
-        $jwtpayload = [
-                'iss' => $clientemail,
-                'sub' => $clientemail,
-                'scope' => 'https://www.googleapis.com/auth/cloud-platform',
-                'aud' => 'https://oauth2.googleapis.com/token',
-                'iat' => $clock->time(),
-                'exp' => $clock->time() + HOURSECS,
-        ];
-        $jwt = JWT::encode($jwtpayload, $privatekey, 'RS256', null, ['kid' => $kid]);
-
-        $client = new http_client([
-                'timeout' => get_config('local_ai_manager', 'requesttimeout'),
-        ]);
-        $options['query'] = [
-                'assertion' => $jwt,
-                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        ];
-
-        try {
-            $response = $client->post('https://oauth2.googleapis.com/token', $options);
-        } catch (ClientExceptionInterface $exception) {
-            return ['error' => $exception->getMessage()];
-        }
-        if ($response->getStatusCode() === 200) {
-            $content = $response->getBody()->getContents();
-            if (empty($content)) {
-                return ['error' => 'Empty response'];
-            }
-            $content = json_decode($content, true);
-            if (empty($content['access_token'])) {
-                return ['error' => 'Response does not contain "access_token" key'];
-            }
-            return [
-                    'access_token' => $content['access_token'],
-                // We set the expiry time of the access token and reduce it by 10 seconds to avoid some errors caused
-                // by different clocks on different servers, latency etc.
-                    'expires' => $clock->time() + intval($content['expires_in']) - 10,
-            ];
-        } else {
-            return ['error' => 'Response status code is not OK 200, but ' . $response->getStatusCode() . ': ' .
-                    $response->getBody()->getContents()];
-        }
-    }
-
-    /**
-     * Gets an access token for accessing the imagen API.
-     *
-     * This will check if the cached access token still has not expired. If cache is empty or the token has expired
-     * a new access token will be fetched by calling {@see self::retrieve_access_token} and the new token will be stored
-     * in the cache.
-     *
-     * @return string the access token as string, empty if no
-     */
-    public function get_access_token(): string {
-        $clock = \core\di::get(\core\clock::class);
-        $authcache = \cache::make('aitool_imagen', 'auth');
-        $cachedauthinfo = $authcache->get($this->instance->get_id());
-        if (empty($cachedauthinfo) || json_decode($cachedauthinfo)->expires < $clock->time()) {
-            $authinfo = $this->retrieve_access_token();
-            if (!empty($authinfo['error'])) {
-                throw new \moodle_exception('Error retrieving access token', '', '', '', $authinfo['error']);
-            }
-            $cachedauthinfo = json_encode($authinfo);
-            $authcache->set($this->instance->get_id(), $cachedauthinfo);
-            $accesstoken = $authinfo['access_token'];
-        } else {
-            $accesstoken = json_decode($cachedauthinfo, true)['access_token'];
-        }
-        return $accesstoken;
     }
 
     #[\Override]

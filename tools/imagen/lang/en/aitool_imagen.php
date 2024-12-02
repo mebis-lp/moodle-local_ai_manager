@@ -24,11 +24,7 @@
  */
 
 $string['adddescription'] = 'Imagen is an AI model from Google that specializes in generating images from text descriptions.';
-$string['cachedef_imagenauth'] = 'Cache for storing authentication tokens';
 $string['err_contentpolicyviolation'] = 'Your request was rejected as a result of our safety system. Your prompt probably requests something that is not allowed.';
 $string['err_predictionmissing'] = 'No image could be generated based on your prompt. Your prompt probably requests something that is not allowed.';
-$string['err_serviceaccountjsonempty'] = 'You need to paste the content of the JSON file that you downloaded when creating the service account in your Google Cloud Console.';
-$string['err_serviceaccountjsoninvalid'] = 'Invalid format. The entry "{$a}" is missing.';
 $string['pluginname'] = 'Imagen';
 $string['privacy:metadata'] = 'The local ai_manager tool subplugin "Imagen" does not store any personal data.';
-$string['serviceaccountjson'] = 'Content of the JSON file of the Google service account';
