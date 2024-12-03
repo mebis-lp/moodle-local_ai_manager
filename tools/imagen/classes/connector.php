@@ -39,18 +39,8 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends base_connector {
 
-    /** @var aitool_option_vertexai_authhandler Auth handler for Vertex AI. */
-    private aitool_option_vertexai_authhandler $vertexaiauthhandler;
-
     /** @var string The access token to use for authentication against the Google imagen API endpoint. */
     private string $accesstoken = '';
-
-    public function __construct(base_instance $instance) {
-        parent::__construct($instance);
-        $serviceaccountinfo = empty($this->instance->get_customfield1()) ? '' : $this->instance->get_customfield1();
-        $this->vertexaiauthhandler =
-                new aitool_option_vertexai_authhandler($this->instance->get_id(), $serviceaccountinfo);
-    }
 
     #[\Override]
     public function get_models_by_purpose(): array {
@@ -107,34 +97,27 @@ class connector extends base_connector {
         // Subsitute the current prompt by the translated one.
         $data['instances'][0]['prompt'] = $translatedprompt;
 
+        $vertexaiauthhandler =
+                new aitool_option_vertexai_authhandler($this->instance->get_id(), $this->instance->get_customfield1());
         try {
-
             // Composing the "Authorization" header is not that easy as just looking up a Bearer token in the database.
             // So we here explicitly retrieve the access token from cache or the Google OAuth API and do some proper error handling.
             // After we stored it in $this->accesstoken it can be properly set into the header by the self::get_headers method.
-            $this->accesstoken = $this->vertexaiauthhandler->get_access_token();
+            $this->accesstoken = $vertexaiauthhandler->get_access_token();
         } catch (\moodle_exception $exception) {
             return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
         }
+        $requestresponse = parent::make_request($data);
         // We keep track of the time the cached access token expires. However, due latency, different clocks
         // on different servers etc. we could end up sending a request with an actually expired access token.
-        // So we clear the cached access token and re-submit the request ONE TIME if we receive a 401 response code
-        // with an ACCESS_TOKEN_EXPIRED error code.
-
-        $requestresponse = parent::make_request($data);
-        if ($requestresponse->get_code() === 401) {
-            // We need to reset the stream, so we can again read it.
-            $requestresponse->get_response()->rewind();
-            $content = json_decode($requestresponse->get_response()->getContents(), true);
-            if (!empty(array_filter($content['error']['details'], fn($details) => $details['reason'] === 'ACCESS_TOKEN_EXPIRED'))) {
-                // We refresh the outdated access token and send the request again.
-                try {
-                    $this->accesstoken = $this->vertexaiauthhandler->refresh_access_token();
-                } catch (\moodle_exception $exception) {
-                    return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
-                }
-                $requestresponse = parent::make_request($data);
+        // In this case we refresh our access token and re-submit the request ONE TIME.
+        if ($vertexaiauthhandler->is_expired_accesstoken_reason_for_failing($requestresponse)) {
+            try {
+                $vertexaiauthhandler->refresh_access_token();
+            } catch (\moodle_exception $exception) {
+                return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
             }
+            $requestresponse = parent::make_request($data);
         }
         return $requestresponse;
     }

@@ -43,10 +43,10 @@ class instance extends base_instance {
     #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
 
-        [$serviceaccountjson, $endpoint] = aitool_option_vertexai::extract_vertexai_to_store($data);
+        [$serviceaccountjson, $baseendpoint] = aitool_option_vertexai::extract_vertexai_to_store($data);
 
         $this->set_customfield1($serviceaccountjson);
-        $this->set_endpoint($endpoint);
+        $this->set_endpoint($baseendpoint . ':predict');
     }
 
     #[\Override]

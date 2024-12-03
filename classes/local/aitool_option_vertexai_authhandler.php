@@ -21,7 +21,12 @@ use Firebase\JWT\JWT;
 use Psr\Http\Client\ClientExceptionInterface;
 
 /**
- * Class responsible for handling authentication with Vertex AI using Google's OAuth mechanism.
+ * Helper class for providing the necessary extension functions to implement the authentication with Google OAuth for an AI tool.
+ *
+ * @package    local_ai_manager
+ * @copyright  2024 ISB Bayern
+ * @author     Philipp Memmel
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class aitool_option_vertexai_authhandler {
 
@@ -101,6 +106,7 @@ class aitool_option_vertexai_authhandler {
      * in the cache.
      *
      * @return string the access token as string, empty if no
+     * @throws \moodle_exception if there is an error retrieving the access token.
      */
     public function get_access_token(): string {
         $clock = \core\di::get(\core\clock::class);
@@ -138,6 +144,25 @@ class aitool_option_vertexai_authhandler {
     public function clear_access_token(): void {
         $authcache = \cache::make('local_ai_manager', 'googleauth');
         $authcache->delete($this->instanceid);
+    }
+
+    /**
+     * Regenerate a token if necessary.
+     *
+     * To check if it's necessary you need to pass over a request_response object that contains an answer from the API that you
+     * tried to access with an access token before. If the request response shows that the token was expired, it will be
+     * regenerated. You then can get it by calling {@see self::get_access_token()}.
+     *
+     * @param request_response $requestresponse the request_response object of the request before
+     */
+    public function is_expired_accesstoken_reason_for_failing(request_response $requestresponse): bool {
+        if ($requestresponse->get_code() !== 401) {
+            return false;
+        }
+        // We need to reset the stream, so we can again read it.
+        $requestresponse->get_response()->rewind();
+        $content = json_decode($requestresponse->get_response()->getContents(), true);
+        return !empty(array_filter($content['error']['details'], fn($details) => $details['reason'] === 'ACCESS_TOKEN_EXPIRED'));
     }
 
 }

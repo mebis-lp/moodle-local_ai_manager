@@ -17,6 +17,8 @@
 namespace aitool_googlesynthesize;
 
 use local_ai_manager\base_instance;
+use local_ai_manager\local\aitool_option_temperature;
+use local_ai_manager\local\aitool_option_vertexai;
 
 /**
  * Instance class for the connector instance of aitool_googlesynthesize.

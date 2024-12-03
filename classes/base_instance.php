@@ -522,7 +522,7 @@ class base_instance {
         if (!empty($data->endpoint)) {
             $this->set_endpoint(trim($data->endpoint));
         }
-        $this->set_apikey(trim($data->apikey));
+        $this->set_apikey(!empty($data->apikey) ? trim($data->apikey) : '');
         $this->set_connector($data->connector);
         $this->set_tenant(trim($data->tenant));
         if (empty($data->model)) {

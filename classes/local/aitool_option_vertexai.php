@@ -35,7 +35,6 @@ class aitool_option_vertexai {
      * @param \MoodleQuickForm $mform the mform object
      */
     public static function extend_form_definition(\MoodleQuickForm $mform): void {
-        $mform->freeze('apikey');
         $mform->freeze('endpoint');
         $mform->addElement('textarea', 'serviceaccountjson',
                 get_string('serviceaccountjson', 'local_ai_manager'), ['rows' => '20']);
@@ -54,7 +53,7 @@ class aitool_option_vertexai {
     }
 
     /**
-     * Extract the service account JSON and calculate the new endpoint from the form data submitted by the form.
+     * Extract the service account JSON and calculate the new base endpoint from the form data submitted by the form.
      *
      * @param stdClass $data the form data after submission
      * @return array array of the service account JSON and the calculated endpoint
@@ -64,10 +63,10 @@ class aitool_option_vertexai {
         $serviceaccountinfo = json_decode($serviceaccountjson);
         $projectid = $serviceaccountinfo->project_id;
 
-        $endpoint = 'https://europe-west3-aiplatform.googleapis.com/v1/projects/' . $projectid
+        $baseendpoint = 'https://europe-west3-aiplatform.googleapis.com/v1/projects/' . $projectid
                 . '/locations/europe-west3/publishers/google/models/'
-                . $data->model . ':predict';
-        return [$serviceaccountjson, $endpoint];
+                . $data->model;
+        return [$serviceaccountjson, $baseendpoint];
     }
 
     /**
@@ -84,10 +83,15 @@ class aitool_option_vertexai {
         }
 
         $serviceaccountinfo = json_decode(trim($data['serviceaccountjson']));
-        foreach (['private_key_id', 'private_key', 'client_email'] as $field) {
-            if (!property_exists($serviceaccountinfo, $field)) {
-                $errors['serviceaccountjson'] = get_string('error_vertexai_serviceaccountjsoninvalid', 'local_ai_manager', $field);
-                break;
+        if (is_null($serviceaccountinfo)) {
+            $errors['serviceaccountjson'] = get_string('error_vertexai_serviceaccountjsoninvalid', 'local_ai_manager');
+        } else {
+            foreach (['private_key_id', 'private_key', 'client_email'] as $field) {
+                if (!property_exists($serviceaccountinfo, $field)) {
+                    $errors['serviceaccountjson'] =
+                            get_string('error_vertexai_serviceaccountjsoninvalidmissing', 'local_ai_manager', $field);
+                    break;
+                }
             }
         }
 

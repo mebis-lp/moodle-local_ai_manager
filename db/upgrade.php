@@ -163,5 +163,20 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024110501, 'local', 'ai_manager');
     }
 
+    if ($oldversion < 2024120200) {
+
+        $rs = $DB->get_recordset('local_ai_manager_instance', ['connector' => 'gemini']);
+        foreach ($rs as $record) {
+            $record->customfield2 = 'googleai';
+            $record->model = str_replace('-latest', '', $record->model);
+            $record->endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/' . $record->model . ':generateContent';
+            $DB->update_record('local_ai_manager_instance', $record);
+        }
+        $rs->close();
+
+        // AI manager savepoint reached.
+        upgrade_plugin_savepoint(true, 2024120200, 'local', 'ai_manager');
+    }
+
     return true;
 }
