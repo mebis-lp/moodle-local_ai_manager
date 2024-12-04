@@ -34,7 +34,7 @@ class aitool_option_vertexai_authhandler {
      * Constructor for the auth handler.
      */
     public function __construct(
-            /** @var int The ID of the instance being used. Will be used as key for the cache handling. */
+        /** @var int The ID of the instance being used. Will be used as key for the cache handling. */
             private readonly int $instanceid,
             /** @var string The serviceaccountinfo stringified JSON */
             private readonly string $serviceaccountinfo
@@ -165,4 +165,65 @@ class aitool_option_vertexai_authhandler {
         return !empty(array_filter($content['error']['details'], fn($details) => $details['reason'] === 'ACCESS_TOKEN_EXPIRED'));
     }
 
+    /**
+     * Retrieves and checks the cache status from Google's AI Platform.
+     *
+     * Makes an HTTP GET request to the AI Platform cache configuration endpoint
+     * using the project ID from the service account information. The method
+     * verifies if the cache is enabled by checking the 'disableCache' key in the
+     * response.
+     *
+     * @return bool true if the cache is enabled, false if the cache is disabled
+     * @throws \moodle_exception if the HTTP request to retrieve the cache status fails.
+     */
+    public function get_google_cache_status(): bool {
+        $client = new http_client([
+                'timeout' => get_config('local_ai_manager', 'requesttimeout'),
+        ]);
+
+        $options['headers'] = [
+                'Authorization' => 'Bearer ' . $this->get_access_token(),
+        ];
+
+        $serviceaccountinfo = json_decode($this->serviceaccountinfo);
+        $projectid = trim($serviceaccountinfo->project_id);
+
+        $response = $client->get('https://europe-west3-aiplatform.googleapis.com/v1beta1/projects/' . $projectid . '/cacheConfig',
+                $options);
+        if ($response->getStatusCode() !== 200) {
+            throw new \moodle_exception('Error retrieving cache status', '', '', '', $response->getBody()->getContents());
+        } else {
+            $result = json_decode($response->getBody()->getContents(), true);
+            return !array_key_exists('disableCache', $result);
+        }
+    }
+
+    /**
+     * Sets the Google cache status for the specified project.
+     *
+     * @param bool $status Determines whether the cache should be enabled or disabled.
+     * @return bool Returns true if the cache status was successfully set, false otherwise.
+     */
+    public function set_google_cache_status(bool $status): bool {
+        $client = new http_client([
+                'timeout' => get_config('local_ai_manager', 'requesttimeout'),
+        ]);
+        $options['headers'] = [
+                'Authorization' => 'Bearer ' . $this->get_access_token(),
+        ];
+
+        $serviceaccountinfo = json_decode($this->serviceaccountinfo);
+        $projectid = trim($serviceaccountinfo->project_id);
+
+        $data = [
+                'name' => 'projects/' . $projectid . '/cacheConfig',
+                'disableCache' => !$status,
+        ];
+
+        $options['body'] = json_encode($data);
+
+        $response = $client->patch('https://europe-west3-aiplatform.googleapis.com/v1beta1/projects/' . $projectid . '/cacheConfig',
+                $options);
+        return $response->getStatusCode() === 200;
+    }
 }

@@ -35,9 +35,14 @@ class aitool_option_vertexai {
      * @param \MoodleQuickForm $mform the mform object
      */
     public static function extend_form_definition(\MoodleQuickForm $mform): void {
+        global $OUTPUT;
         $mform->freeze('endpoint');
         $mform->addElement('textarea', 'serviceaccountjson',
                 get_string('serviceaccountjson', 'local_ai_manager'), ['rows' => '20']);
+        $vertexcachestatushtml = $OUTPUT->render_from_template('local_ai_manager/vertexcachestatus', ['noStatus' => true]);
+        $mform->addElement('static', 'vertexcachestatus',
+                get_string('vertexcachestatus', 'local_ai_manager'),
+                $vertexcachestatushtml, ['class' => 'mw-100']);
     }
 
     /**

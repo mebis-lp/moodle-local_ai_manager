@@ -24,7 +24,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2024120200;
+$plugin->version  = 2024120400;
 $plugin->requires = 2024042200;
 $plugin->release = '0.0.3';
 $plugin->component = 'local_ai_manager';

@@ -54,4 +54,12 @@ $functions = [
                 'ajax' => true,
                 'capabilities' => 'local/ai_manager:use',
         ],
+        'local_ai_manager_vertex_cache_status' => [
+                'classname' => 'local_ai_manager\external\vertex_cache_status',
+                'description' => 'Fetch and update the Google Vertex AI caching status',
+                'type' => 'write',
+                'ajax' => true,
+                'capabilities' => '',
+        ],
+
 ];

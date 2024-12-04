@@ -17,6 +17,7 @@
 namespace local_ai_manager;
 
 use Firebase\JWT\JWT;
+use local_ai_manager\local\aitool_option_vertexai_authhandler;
 use stdClass;
 
 /**
