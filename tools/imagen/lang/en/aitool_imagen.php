@@ -23,8 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['adddescription'] = 'Imagen is an AI model from Google that specializes in generating images from text descriptions.';
+$string['adddescription'] = 'Google Imagen is an AI model by Google that specializes in generating images from text descriptions.';
 $string['err_contentpolicyviolation'] = 'Your request was rejected as a result of our safety system. Your prompt probably requests something that is not allowed.';
 $string['err_predictionmissing'] = 'No image could be generated based on your prompt. Your prompt probably requests something that is not allowed.';
-$string['pluginname'] = 'Imagen';
-$string['privacy:metadata'] = 'The local ai_manager tool subplugin "Imagen" does not store any personal data.';
+$string['pluginname'] = 'Google Imagen';
+$string['privacy:metadata'] = 'The local ai_manager tool subplugin "Google Imagen" does not store any personal data.';

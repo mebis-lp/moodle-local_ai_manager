@@ -23,8 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['adddescription'] = 'Imagen ist ein KI-Modell von Google, das darauf spezialisiert ist, aus Textbeschreibungen Bilder zu generieren.';
+$string['adddescription'] = 'Google Imagen ist ein KI-Modell von Google, das darauf spezialisiert ist, aus Textbeschreibungen Bilder zu generieren.';
 $string['err_contentpolicyviolation'] = 'Ihre Anfrage wurde vom Sicherheitssystem des KI-Tools zurückgewiesen. Ihr Prompt enthält vermutlich eine Anweisung, die nicht erlaubt ist.';
 $string['err_predictionmissing'] = 'Auf Ihre Anfrage hin konnte kein Bild generiert werden. Ihr Prompt enthält vermutlich eine Anweisung, die nicht erlaubt ist.';
-$string['pluginname'] = 'Imagen';
-$string['privacy:metadata'] = 'Das Subplugin "Imagen" des AI-Manager-Plugins speichert keine personenbezogenen Daten.';
+$string['pluginname'] = 'Google Imagen';
+$string['privacy:metadata'] = 'Das Subplugin "Google Imagen" des AI-Manager-Plugins speichert keine personenbezogenen Daten.';
