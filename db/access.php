@@ -110,5 +110,16 @@ $capabilities = [
                         'manager' => CAP_ALLOW,
                 ],
         ],
-
+        'local/ai_manager:managevertexcache' => [
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_PREVENT,
+                        'guest' => CAP_PREVENT,
+                        'student' => CAP_PREVENT,
+                        'teacher' => CAP_PREVENT,
+                        'editingteacher' => CAP_PREVENT,
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
 ];

@@ -28,7 +28,6 @@ namespace local_ai_manager;
 use context;
 use context_system;
 use core_plugin_manager;
-use dml_exception;
 use local_ai_manager\event\get_ai_response_failed;
 use local_ai_manager\event\get_ai_response_succeeded;
 use local_ai_manager\local\config_manager;
@@ -182,6 +181,10 @@ class manager {
             return $promptresponse;
         }
         $promptcompletion = $this->connector->execute_prompt_completion($requestresult->get_response(), $options);
+        if (!empty($promptcompletion->get_errormessage())) {
+            get_ai_response_failed::create_from_prompt_response($promptdata, $promptcompletion, $duration)->trigger();
+            return $promptcompletion;
+        }
         if (!empty($options['forcenewitemid']) && !empty($options['component']) &&
                 !empty($options['contextid'] && !empty($options['itemid']))) {
             if ($DB->record_exists('local_ai_manager_request_log',

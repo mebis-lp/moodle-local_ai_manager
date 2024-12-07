@@ -26,10 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $definitions = [
-        'googlesynthesizevoices' => [
+        'googleauth' => [
                 'mode' => cache_store::MODE_APPLICATION,
                 'simplekeys' => true,
-                'simpledata' => false,
+                'simpledata' => true,
                 'canuselocalstore' => false,
         ],
 ];

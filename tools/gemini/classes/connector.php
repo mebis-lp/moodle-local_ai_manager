@@ -16,7 +16,9 @@
 
 namespace aitool_gemini;
 
+use local_ai_manager\local\aitool_option_vertexai_authhandler;
 use local_ai_manager\local\prompt_response;
+use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
 use Psr\Http\Message\StreamInterface;
@@ -31,15 +33,18 @@ use Psr\Http\Message\StreamInterface;
  */
 class connector extends \local_ai_manager\base_connector {
 
+    /** @var string The access token to use for authentication against the Google API endpoint. */
+    private string $accesstoken = '';
+
     #[\Override]
     public function get_models_by_purpose(): array {
-        $textmodels = ['gemini-1.0-pro-latest', 'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
+        $textmodels = ['gemini-1.0-pro', 'gemini-1.0-pro-vision', 'gemini-1.5-flash', 'gemini-1.5-pro'];
         return [
                 'chat' => $textmodels,
                 'feedback' => $textmodels,
                 'singleprompt' => $textmodels,
                 'translate' => $textmodels,
-                'itt' => ['gemini-1.5-pro-latest', 'gemini-1.5-flash-latest'],
+                'itt' => ['gemini-1.5-pro', 'gemini-1.5-flash'],
         ];
     }
 
@@ -148,10 +153,39 @@ class connector extends \local_ai_manager\base_connector {
     protected function get_headers(): array {
         $headers = parent::get_headers();
         if (in_array('Authorization', array_keys($headers))) {
-            unset($headers['Authorization']);
-            $headers['x-goog-api-key'] = $this->get_api_key();
+            if ($this->instance->get_customfield2() === \aitool_gemini\instance::GOOGLE_BACKEND_GOOGLEAI) {
+                unset($headers['Authorization']);
+                $headers['x-goog-api-key'] = $this->get_api_key();
+            } else {
+                $headers['Authorization'] = 'Bearer ' . $this->accesstoken;
+            }
         }
         return $headers;
+    }
+
+    #[\Override]
+    public function make_request(array $data): request_response {
+        if ($this->instance->get_customfield2() === instance::GOOGLE_BACKEND_VERTEXAI) {
+            $vertexaiauthhandler =
+                    new aitool_option_vertexai_authhandler($this->instance->get_id(), $this->instance->get_customfield3());
+            try {
+                $this->accesstoken = $vertexaiauthhandler->get_access_token();
+            } catch (\moodle_exception $exception) {
+                return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
+            }
+            $requestresponse = parent::make_request($data);
+            // We keep track of the time the cached access token expires. However, due latency, different clocks
+            // on different servers etc. we could end up sending a request with an actually expired access token.
+            // In this case we refresh our access token and re-submit the request ONE TIME.
+            if ($vertexaiauthhandler->is_expired_accesstoken_reason_for_failing($requestresponse)) {
+                try {
+                    $vertexaiauthhandler->refresh_access_token();
+                } catch (\moodle_exception $exception) {
+                    return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
+                }
+            }
+        }
+        return parent::make_request($data);
     }
 
     #[\Override]

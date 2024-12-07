@@ -142,3 +142,15 @@ body.limitcontentwidth #page-content {
 .dark .local_ai_manager-info-warning .local_ai_manager-info-warning-link {
     color: #60616d;
 }
+
+.local_ai_manager-caching_enabled {
+    color: #f00;
+}
+
+.local_ai_manager-caching_disabled {
+    color: #00bf00;
+}
+
+#page-local-ai_manager-edit_instance [data-name="vertexcachestatus"] {
+    width: 100%;
+}

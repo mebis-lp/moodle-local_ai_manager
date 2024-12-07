@@ -39,7 +39,7 @@ class prompt_response {
     private int $code;
 
     /** @var string If there has been an error, this variable contains the error message */
-    private string $errormessage;
+    private string $errormessage = '';
 
     /** @var string If there has been an error, this variable contains additional debugging information */
     private string $debuginfo;

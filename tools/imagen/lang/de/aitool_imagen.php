@@ -15,15 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for aitool_googlesynthesize - EN.
+ * Lang strings for aitool_imagen - DE.
  *
- * @package    aitool_googlesynthesize
- * @copyright  ISB Bayern, 2024
+ * @package    aitool_imagen
+ * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['adddescription'] = 'Google Synthesize, often in the context of "Google Text-to-Speech", is a tool for converting text into spoken language.';
-$string['cachedef_googlesynthesizevoices'] = 'Cache for storing available voices for the google synthesize service';
-$string['pluginname'] = 'Google Synthesize';
-$string['privacy:metadata'] = 'The local ai_manager tool subplugin "Google Synthesize" does not store any personal data.';
+$string['adddescription'] = 'Google Imagen ist ein KI-Modell von Google, das darauf spezialisiert ist, aus Textbeschreibungen Bilder zu generieren.';
+$string['err_contentpolicyviolation'] = 'Ihre Anfrage wurde vom Sicherheitssystem des KI-Tools zurückgewiesen. Ihr Prompt enthält vermutlich eine Anweisung, die nicht erlaubt ist.';
+$string['err_predictionmissing'] = 'Auf Ihre Anfrage hin konnte kein Bild generiert werden. Ihr Prompt enthält vermutlich eine Anweisung, die nicht erlaubt ist.';
+$string['pluginname'] = 'Google Imagen';
+$string['privacy:metadata'] = 'Das Subplugin "Google Imagen" des AI-Manager-Plugins speichert keine personenbezogenen Daten.';

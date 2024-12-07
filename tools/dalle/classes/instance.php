@@ -18,7 +18,6 @@ namespace aitool_dalle;
 
 use local_ai_manager\base_instance;
 use local_ai_manager\local\aitool_option_azure;
-use local_ai_manager\local\aitool_option_temperature;
 use stdClass;
 
 /**
@@ -71,7 +70,6 @@ class instance extends base_instance {
     #[\Override]
     protected function extend_validation(array $data, array $files): array {
         $errors = [];
-        $errors = array_merge($errors, aitool_option_temperature::validate_temperature($data));
         $errors = array_merge($errors, aitool_option_azure::validate_azure_options($data));
         return $errors;
     }

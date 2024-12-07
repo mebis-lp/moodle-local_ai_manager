@@ -15,15 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for aitool_googlesynthesize - EN.
+ * Cache definitions.
  *
- * @package    aitool_googlesynthesize
- * @copyright  ISB Bayern, 2024
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   aitool_googlesynthesize
+ * @copyright 2024 ISB Bayern
+ * @author    Philipp Memmel
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['adddescription'] = 'Google Synthesize, often in the context of "Google Text-to-Speech", is a tool for converting text into spoken language.';
-$string['cachedef_googlesynthesizevoices'] = 'Cache for storing available voices for the google synthesize service';
-$string['pluginname'] = 'Google Synthesize';
-$string['privacy:metadata'] = 'The local ai_manager tool subplugin "Google Synthesize" does not store any personal data.';
+defined('MOODLE_INTERNAL') || die();
+
+$definitions = [
+        'googlesynthesizevoices' => [
+                'mode' => cache_store::MODE_APPLICATION,
+                'simplekeys' => true,
+                'simpledata' => false,
+                'canuselocalstore' => false,
+        ],
+];

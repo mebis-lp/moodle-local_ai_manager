@@ -159,8 +159,8 @@ abstract class base_connector {
      */
     public function make_request(array $data): request_response {
         $client = new http_client([
-            'timeout' => get_config('local_ai_manager', 'requesttimeout'),
-            'verify' => !empty(get_config('local_ai_manager', 'verifyssl')),
+                'timeout' => get_config('local_ai_manager', 'requesttimeout'),
+                'verify' => !empty(get_config('local_ai_manager', 'verifyssl')),
         ]);
 
         $options['headers'] = $this->get_headers();
@@ -177,7 +177,8 @@ abstract class base_connector {
             $return = request_response::create_from_error(
                     $response->getStatusCode(),
                     get_string('error_sendingrequestfailed', 'local_ai_manager'),
-                    $response->getBody(),
+                    $response->getBody()->getContents(),
+                    $response->getBody()
             );
         }
         return $return;
@@ -231,7 +232,8 @@ abstract class base_connector {
         if (method_exists($exception, 'getResponse') && !empty($exception->getResponse())) {
             $debuginfo .= $exception->getResponse()->getBody()->getContents();
         }
-        return request_response::create_from_error($exception->getCode(), $message, $debuginfo);
+        return request_response::create_from_error($exception->getCode(), $message, $debuginfo,
+                $exception->getResponse()->getBody());
     }
 
     /**

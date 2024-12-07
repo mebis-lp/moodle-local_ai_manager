@@ -24,5 +24,8 @@
  */
 
 $string['adddescription'] = 'Gemini, Google DeepMind\'s AI model, combines advanced language models (LLMs) with tools and multimodal capabilities.';
+$string['googlebackend'] = 'Google Backend to use';
+$string['googlebackendgoogleai'] = 'Google AI';
+$string['googlebackendvertexai'] = 'Vertex AI';
 $string['pluginname'] = 'Gemini';
 $string['privacy:metadata'] = 'The local ai_manager tool subplugin "Gemini" does not store any personal data.';

@@ -30,6 +30,7 @@ Currently supported AI tools:
 - OpenAI Dall-E (also via Azure)
 - Google Gemini
 - Google Synthesize (text to speech)
+- Google Imagen 3 (via Vertex AI)
 - Ollama
 
 Currently available AI purposes:
