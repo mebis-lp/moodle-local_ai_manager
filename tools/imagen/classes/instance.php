@@ -33,6 +33,8 @@ class instance extends base_instance {
     #[\Override]
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
         aitool_option_vertexai::extend_form_definition($mform);
+        // Condition is always true, but there does not seem to be an easy way to always hide an element.
+        $mform->hideIf('apikey', 'connector', 'imagen');
     }
 
     #[\Override]
