@@ -21,6 +21,7 @@ use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 use local_ai_manager\local\aitool_option_vertexai_authhandler;
+use local_ai_manager\local\userinfo;
 
 /**
  * Web service to check and update the Google Vertex AI cache status.
@@ -55,6 +56,7 @@ class vertex_cache_status extends external_api {
      * @return array associative array containing the result of the request
      */
     public static function execute(string $serviceaccountinfo, ?bool $newstatus = null): array {
+        global $USER;
         [
                 'serviceaccountinfo' => $serviceaccountinfo,
                 'newstatus' => $newstatus,
@@ -63,7 +65,8 @@ class vertex_cache_status extends external_api {
                         'serviceaccountinfo' => $serviceaccountinfo,
                         'newstatus' => $newstatus,
                 ]);
-        $context = \context_system::instance();
+        $tenant = userinfo::get_tenant_for_user($USER->id);
+        $context = $tenant->get_context();
         self::validate_context($context);
         require_capability('local/ai_manager:managevertexcache', $context);
 

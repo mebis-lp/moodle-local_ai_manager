@@ -29,6 +29,7 @@ $string['addnavigationentrydesc'] = 'Aktivieren Sie diese Option, wenn die Konfi
 $string['ai_info_table_row_highlighted'] = 'Die in der Tabelle markierten KI-Tools sind diejenigen, die Sie gerade in dem Plugin nutzen, wovon aus Sie auf diese Seite gelangt sind.';
 $string['ai_manager:manage'] = 'AI-Manager-Einstellungen für einen Tenant vornehmen';
 $string['ai_manager:managetenants'] = 'AI-Manager-Einstellungen für alle Tenants vornehmen';
+$string['ai_manager:managevertexcache'] = 'Abrufen und Verändern der Konfiguration des Google Vertex-AI-Caching-Status';
 $string['ai_manager:use'] = 'AI-Manager benutzen';
 $string['ai_manager:viewstatistics'] = 'Statistiken sehen';
 $string['ai_manager:viewusage'] = 'Verbrauch sehen';
