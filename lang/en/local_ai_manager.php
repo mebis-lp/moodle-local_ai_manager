@@ -29,6 +29,7 @@ $string['addnavigationentrydesc'] = 'Enable if the AI manager configuration shou
 $string['ai_info_table_row_highlighted'] = 'The highlighted AI tools are the ones which are being used by the plugin you were using when clicking the link to this page.';
 $string['ai_manager:manage'] = 'Configure AI manager settings for a tenant';
 $string['ai_manager:managetenants'] = 'Configure AI manager settings for all tenants';
+$string['ai_manager:managevertexcache'] = 'Get and change the configuration of the Google Vertex AI caching status';
 $string['ai_manager:use'] = 'Use ai_manager';
 $string['ai_manager:viewstatistics'] = 'View statistics';
 $string['ai_manager:viewusage'] = 'View usage information';
