@@ -16,8 +16,6 @@
 
 namespace local_ai_manager\local;
 
-use flexible_table;
-use html_writer;
 use local_ai_manager\base_purpose;
 use moodle_url;
 use stdClass;

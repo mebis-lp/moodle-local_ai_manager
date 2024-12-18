@@ -17,7 +17,6 @@
 namespace local_ai_manager\event;
 
 use local_ai_manager\local\prompt_response;
-use stdClass;
 
 /**
  * An event fired when the request to an external AI endpoint has been successful.
