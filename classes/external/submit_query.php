@@ -21,7 +21,6 @@ use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 use local_ai_manager\local\connector_factory;
-use stdClass;
 
 /**
  * Web service to submit a query to an AI tool.

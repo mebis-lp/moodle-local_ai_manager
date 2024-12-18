@@ -16,13 +16,8 @@
 
 namespace local_ai_manager;
 
-use core\http_client;
 use core_plugin_manager;
-use local_ai_manager\local\prompt_response;
-use local_ai_manager\local\request_response;
-use local_ai_manager\local\unit;
 use local_ai_manager\local\userinfo;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * Base class for purpose subplugins.

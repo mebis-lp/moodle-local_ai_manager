@@ -29,7 +29,7 @@ namespace local_ai_manager\plugininfo;
 
 use coding_exception;
 use cache_exception;
-use core\plugininfo\base, core_plugin_manager, moodle_url;
+use core\plugininfo\base, core_plugin_manager;
 use dml_exception;
 
 /**

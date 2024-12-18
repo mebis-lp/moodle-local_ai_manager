@@ -16,8 +16,6 @@
 
 namespace local_ai_manager\local;
 
-use flexible_table;
-use html_writer;
 use local_ai_manager\base_purpose;
 use moodle_url;
 use stdClass;
@@ -94,7 +92,7 @@ class userstats_table extends table_sql {
             $from = '{local_ai_manager_request_log} rl '
                     . 'LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid '
                     . 'JOIN {user} u ON u.id = rl.userid';
-            $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id';
+            $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id, lastname, firstname, locked';
             $params = [
                     'tenant' => $tenant->get_sql_identifier(),
                     'purpose' => $purpose,
@@ -107,7 +105,7 @@ class userstats_table extends table_sql {
         } else {
             $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount';
             $from = '{local_ai_manager_request_log} rl LEFT JOIN {user} u ON rl.userid = u.id';
-            $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id';
+            $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id, lastname, firstname';
             $params = ['tenant' => $tenant->get_sql_identifier()];
             $this->set_count_sql(
                     "SELECT COUNT(DISTINCT u.id) FROM " . $from . " WHERE u." . $tenantfield . " = :tenant",

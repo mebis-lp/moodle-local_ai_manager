@@ -16,7 +16,6 @@
 
 namespace local_ai_manager\local;
 
-use local_ai_manager\base_connector;
 use stdClass;
 
 /**

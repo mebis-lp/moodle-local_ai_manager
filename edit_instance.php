@@ -45,6 +45,7 @@ if (!empty($del)) {
     if (empty($id)) {
         throw new moodle_exception('You have to specify the id of the instance to delete');
     }
+    require_sesskey();
 
     $instance = $factory->get_connector_instance_by_id($id);
     if ($instance) {
@@ -91,7 +92,8 @@ if ($editinstanceform->is_cancelled()) {
             [
                     'heading' => $OUTPUT->heading(get_string('configureaitool', 'local_ai_manager')),
                     'showdeletebutton' => !empty($id),
-                    'deleteurl' => new moodle_url('/local/ai_manager/edit_instance.php', ['id' => $id, 'del' => 1]),
+                    'deleteurl' => new moodle_url('/local/ai_manager/edit_instance.php',
+                            ['id' => $id, 'del' => 1, 'sesskey' => sesskey()]),
             ]);
     $editinstanceform->set_data($connectorinstance->get_formdata());
     echo html_writer::start_div('w-100');
