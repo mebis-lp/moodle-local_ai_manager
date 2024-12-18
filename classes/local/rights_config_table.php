@@ -118,11 +118,12 @@ class rights_config_table extends table_sql {
         $this->sortable(true, 'lastname');
 
         $this->set_sql($usertableextend->get_fields(), $usertableextend->get_from(),
-                $usertableextend->get_where() . ' GROUP BY u.id',
+                $usertableextend->get_where() . ' GROUP BY u.id, role, locked, ui.confirmed',
                 $usertableextend->get_params());
         // We need to use this because we are using "GROUP BY" which is not being expected by the sql table.
         $this->set_count_sql("SELECT COUNT(*) FROM (SELECT " . $usertableextend->get_fields() . " FROM "
-                . $usertableextend->get_from() . " WHERE " . $usertableextend->get_where() . " GROUP BY u.id) AS subquery",
+                . $usertableextend->get_from() . " WHERE " . $usertableextend->get_where() .
+                " GROUP BY u.id, role, locked, ui.confirmed) AS subquery",
                 $usertableextend->get_params());
         parent::setup();
     }
