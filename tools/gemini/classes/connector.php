@@ -93,7 +93,7 @@ class connector extends \local_ai_manager\base_connector {
                         $role = 'user';
                         break;
                     default:
-                        throw new \moodle_exception('Bad message format');
+                        throw new \moodle_exception('exception_badmessageformat', 'local_ai_manager');
                 }
                 $messages[] = [
                         'role' => $role,

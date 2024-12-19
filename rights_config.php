@@ -52,10 +52,10 @@ if ($rightsconfigform->is_cancelled()) {
         $user = \core_user::get_user($userid);
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         if (!$user) {
-            throw new moodle_exception('User with userid ' . $userid . ' does not exist!');
+            throw new moodle_exception('exception_usernotexists', 'local_ai_manager', '', '', 'User ID: ' . $userid);
         }
         if ($user->{$tenantfield} !== $tenant->get_sql_identifier()) {
-            throw new moodle_exception('You must not change the status of the user with the id ' . $userid);
+            throw new moodle_exception('exception_changestatusnotallowed', 'local_ai_manager', '', '', 'User ID: ' . $userid);
         }
         $userinfo = new userinfo($userid);
         if (isset($data->lockusers)) {

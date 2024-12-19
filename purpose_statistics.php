@@ -39,7 +39,7 @@ $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 require_capability('local/ai_manager:viewuserstatistics', $tenant->get_context());
 
 if (!in_array($purpose, \local_ai_manager\base_purpose::get_all_purposes())) {
-    throw new moodle_exception('Invalid purpose specified.');
+    throw new moodle_exception('exception_invalidpurpose', 'local_ai_manager');
 }
 
 echo $OUTPUT->header();

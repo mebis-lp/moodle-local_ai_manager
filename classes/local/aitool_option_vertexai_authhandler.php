@@ -115,7 +115,7 @@ class aitool_option_vertexai_authhandler {
         if (empty($cachedauthinfo) || json_decode($cachedauthinfo)->expires < $clock->time()) {
             $authinfo = $this->retrieve_access_token();
             if (!empty($authinfo['error'])) {
-                throw new \moodle_exception('Error retrieving access token', '', '', '', $authinfo['error']);
+                throw new \moodle_exception('exception_retrievingaccesstoken', 'local_ai_manager', '', '', $authinfo['error']);
             }
             $cachedauthinfo = json_encode($authinfo);
             $authcache->set($this->instanceid, $cachedauthinfo);
@@ -191,7 +191,8 @@ class aitool_option_vertexai_authhandler {
         $response = $client->get('https://europe-west3-aiplatform.googleapis.com/v1beta1/projects/' . $projectid . '/cacheConfig',
                 $options);
         if ($response->getStatusCode() !== 200) {
-            throw new \moodle_exception('Error retrieving cache status', '', '', '', $response->getBody()->getContents());
+            throw new \moodle_exception('exception_retrievingcachestatus', 'local_ai_manager', '', '',
+                    $response->getBody()->getContents());
         } else {
             $result = json_decode($response->getBody()->getContents(), true);
             return !array_key_exists('disableCache', $result);
