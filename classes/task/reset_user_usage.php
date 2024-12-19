@@ -18,7 +18,6 @@ namespace local_ai_manager\task;
 
 use local_ai_manager\local\config_manager;
 use local_ai_manager\local\tenant;
-use local_ai_manager\local\userinfo;
 
 /**
  * Cleanup task for cleaning up broken tasks which left locks and entries behind in redis and the database.

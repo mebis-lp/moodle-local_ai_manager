@@ -43,8 +43,9 @@ $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
 
 if (!empty($del)) {
     if (empty($id)) {
-        throw new moodle_exception('You have to specify the id of the instance to delete');
+        throw new moodle_exception('exception_instanceidmissing', 'local_ai_manager');
     }
+    require_sesskey();
 
     $instance = $factory->get_connector_instance_by_id($id);
     if ($instance) {
@@ -53,7 +54,7 @@ if (!empty($del)) {
         $returnurl = new moodle_url('/local/ai_manager/tenant_config.php', ['tenant' => $tenant->get_identifier()]);
     }
     if (!$accessmanager->can_manage_connectorinstance($instance)) {
-        throw new moodle_exception('You must not edit this AI tool instance');
+        throw new moodle_exception('exception_editinstancedenied', 'local_ai_manager');
     }
     $instance->delete();
 
@@ -63,12 +64,12 @@ if (!empty($del)) {
 if (!empty($id)) {
     $connectorinstance = $factory->get_connector_instance_by_id($id);
     if (!$accessmanager->can_manage_connectorinstance($connectorinstance)) {
-        throw new moodle_exception('You must not edit this AI tool instance');
+        throw new moodle_exception('exception_editinstancedenied', 'local_ai_manager');
     }
     $connectorname = $connectorinstance->get_connector();
 } else {
     if (empty($connectorname) || !in_array($connectorname, \local_ai_manager\plugininfo\aitool::get_enabled_plugins())) {
-        throw new moodle_exception('No valid connector specified');
+        throw new moodle_exception('exception_novalidconnector', 'local_ai_manager');
     }
     $connectorinstance = $factory->get_new_instance($connectorname);
 }
@@ -91,7 +92,8 @@ if ($editinstanceform->is_cancelled()) {
             [
                     'heading' => $OUTPUT->heading(get_string('configureaitool', 'local_ai_manager')),
                     'showdeletebutton' => !empty($id),
-                    'deleteurl' => new moodle_url('/local/ai_manager/edit_instance.php', ['id' => $id, 'del' => 1]),
+                    'deleteurl' => new moodle_url('/local/ai_manager/edit_instance.php',
+                            ['id' => $id, 'del' => 1, 'sesskey' => sesskey()]),
             ]);
     $editinstanceform->set_data($connectorinstance->get_formdata());
     echo html_writer::start_div('w-100');

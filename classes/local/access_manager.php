@@ -35,7 +35,7 @@ class access_manager {
      * @param tenant $tenant the tenant the access manager should use
      */
     public function __construct(
-            /** @var tenant $tenant the tenant the access manager should use */
+        /** @var tenant $tenant the tenant the access manager should use */
             private readonly tenant $tenant
     ) {
     }
@@ -50,8 +50,7 @@ class access_manager {
             // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
             // TODO Make a clean require_capability_exception out of this.
             // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
-            throw new \moodle_exception('You do not have the rights to manage the AI tools or the tenant is not allowed'
-                    . ' to use them');
+            throw new \moodle_exception('exception_notenantmanagerrights', 'local_ai_manager');
         }
     }
 
@@ -101,7 +100,7 @@ class access_manager {
     public function require_tenant_member(): void {
         global $USER;
         if (!$this->tenant->is_tenant_allowed()) {
-            throw new \moodle_exception('Tenant is not allowed.');
+            throw new \moodle_exception('exception_tenantnotallowed', 'local_ai_manager');
         }
         if ($this->tenant->is_default_tenant() && has_capability('local/ai_manager:use', $this->tenant->get_context())) {
             return;
@@ -112,8 +111,7 @@ class access_manager {
 
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         if (empty($USER->{$tenantfield}) || $USER->{$tenantfield} !== $this->tenant->get_sql_identifier()) {
-            throw new \moodle_exception('You must not access information for the tenant '
-                    . $this->tenant->get_identifier() . '!');
+            throw new \moodle_exception('exception_tenantaccessdenied', 'local_ai_manager', '', $this->tenant->get_identifier());
         }
     }
 

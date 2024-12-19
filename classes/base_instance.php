@@ -591,7 +591,7 @@ class base_instance {
         if (empty($this->id)) {
             $this->load();
             if (empty($this->id)) {
-                throw new \moodle_exception('Instance with id ' . $this->id . ' does not exist');
+                throw new \moodle_exception('exception_instancenotexists', 'local_ai_manager', '', $this->id);
             }
         }
 
