@@ -58,13 +58,16 @@ if ($rightsconfigform->is_cancelled()) {
             throw new moodle_exception('exception_changestatusnotallowed', 'local_ai_manager', '', '', 'User ID: ' . $userid);
         }
         $userinfo = new userinfo($userid);
-        if (isset($data->lockusers)) {
-            $userinfo->set_locked(true);
-        } else if (isset($data->unlockusers)) {
-            $userinfo->set_locked(false);
-        } else if (isset($data->changerole) && isset($data->role)) {
-            $role = intval($data->role);
-            $userinfo->set_role($role);
+        switch ($data->action) {
+            case rights_config_form::ACTION_CHANGE_LOCK_STATE:
+                $userinfo->set_locked($data->lockstate === rights_config_form::ACTIONOPTION_CHANGE_LOCK_STATE_LOCKED);
+                break;
+            case rights_config_form::ACTION_ASSIGN_ROLE:
+                $role = intval($data->role);
+                $userinfo->set_role($role);
+                break;
+            default:
+                throw new \coding_exception('Unknown action: ' . $data->action);
         }
         $userinfo->store();
     }
