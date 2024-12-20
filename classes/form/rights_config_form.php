@@ -35,6 +35,16 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class rights_config_form extends \moodleform {
 
+    /** @var string Constant for defining the action "assign role". */
+    const ACTION_ASSIGN_ROLE = 'assignrole';
+
+    /** @var string Constant for defining the action "change lock status". */
+    const ACTION_CHANGE_LOCK_STATE = 'changelockstate';
+    /** @var string Constant for defining the action option "locked" for the action {@see self::ACTION_CHANGE_LOCK_STATE}. */
+    const ACTIONOPTION_CHANGE_LOCK_STATE_LOCKED = 'locked';
+    /** @var string Constant for defining the action option "unlocked" for the action {@see self::ACTION_CHANGE_LOCK_STATE}. */
+    const ACTIONOPTION_CHANGE_LOCK_STATE_UNLOCKED = 'unlocked';
+
     /**
      * Form definition.
      */
@@ -48,19 +58,33 @@ class rights_config_form extends \moodleform {
         $mform->addElement('hidden', 'userids', '', ['id' => 'rights-table-userids']);
         $mform->setType('userids', PARAM_TEXT);
 
-        $roleelementsarray = [];
-        $roleelementsarray[] = $mform->createElement('select', 'role', '', [
+        $actionselectsgroup[] = $mform->createElement('select', 'action', '',
+                [
+                        self::ACTION_ASSIGN_ROLE => get_string('assignrole', 'local_ai_manager'),
+                        self::ACTION_CHANGE_LOCK_STATE => get_string('changelockstate', 'local_ai_manager'),
+                ]);
+
+        $actionselectsgroup[] = $mform->createElement('select', 'role', '', [
                 userinfo::ROLE_BASIC => get_string(userinfo::get_role_as_string(userinfo::ROLE_BASIC), 'local_ai_manager'),
                 userinfo::ROLE_EXTENDED => get_string(userinfo::get_role_as_string(userinfo::ROLE_EXTENDED), 'local_ai_manager'),
                 userinfo::ROLE_UNLIMITED => get_string(userinfo::get_role_as_string(userinfo::ROLE_UNLIMITED), 'local_ai_manager'),
                 userinfo::ROLE_DEFAULT => get_string('defaultrole', 'local_ai_manager'),
         ]);
-        $roleelementsarray[] = $mform->createElement('submit', 'changerole', get_string('assignrole', 'local_ai_manager'));
-        $mform->addGroup($roleelementsarray, 'buttonarrayrole', '', [' '], false);
+        $mform->hideif('role', 'action', 'neq', self::ACTION_ASSIGN_ROLE);
+
+        $actionselectsgroup[] = $mform->createElement('select', 'lockstate', '',
+                [
+                        self::ACTIONOPTION_CHANGE_LOCK_STATE_LOCKED => get_string('lock', 'local_ai_manager'),
+                        self::ACTIONOPTION_CHANGE_LOCK_STATE_UNLOCKED => get_string('unlock', 'local_ai_manager'),
+                ]
+        );
+        $mform->hideif('lockstate', 'action', 'neq', self::ACTION_CHANGE_LOCK_STATE);
+
+        $mform->addGroup($actionselectsgroup, 'actiongroup', get_string('executebulkuseractions', 'local_ai_manager') . ':', [' '],
+                false);
 
         $buttonarray = [];
-        $buttonarray[] = $mform->createElement('submit', 'lockusers', get_string('lockuser', 'local_ai_manager'));
-        $buttonarray[] = $mform->createElement('submit', 'unlockusers', get_string('unlockuser', 'local_ai_manager'));
+        $buttonarray[] = $mform->createElement('submit', 'executeaction', get_string('executeaction', 'local_ai_manager'));
         $buttonarray[] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
