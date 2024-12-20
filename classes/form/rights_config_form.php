@@ -45,6 +45,13 @@ class rights_config_form extends \moodleform {
     /** @var string Constant for defining the action option "unlocked" for the action {@see self::ACTION_CHANGE_LOCK_STATE}. */
     const ACTIONOPTION_CHANGE_LOCK_STATE_UNLOCKED = 'unlocked';
 
+    /** @var string Constant for defining the action "change confirm status of terms of use". */
+    const ACTION_CHANGE_CONFIRM_STATE = 'changeconfirmstate';
+    /** @var string Constant for defining the action option "confirm" for the action {@see self::ACTION_CHANGE_CONFIRM_STATUS}. */
+    const ACTIONOPTION_CHANGE_CONFIRM_STATE_CONFIRM = 'confirm';
+    /** @var string Constant for defining the action option "confirm" for the action {@see self::ACTION_CHANGE_CONFIRM_STATUS}. */
+    const ACTIONOPTION_CHANGE_CONFIRM_STATE_UNCONFIRM = 'unconfirm';
+
     /**
      * Form definition.
      */
@@ -62,6 +69,7 @@ class rights_config_form extends \moodleform {
                 [
                         self::ACTION_ASSIGN_ROLE => get_string('assignrole', 'local_ai_manager'),
                         self::ACTION_CHANGE_LOCK_STATE => get_string('changelockstate', 'local_ai_manager'),
+                        self::ACTION_CHANGE_CONFIRM_STATE => get_string('changeconfirmstate', 'local_ai_manager'),
                 ]);
 
         $actionselectsgroup[] = $mform->createElement('select', 'role', '', [
@@ -79,6 +87,14 @@ class rights_config_form extends \moodleform {
                 ]
         );
         $mform->hideif('lockstate', 'action', 'neq', self::ACTION_CHANGE_LOCK_STATE);
+
+        $actionselectsgroup[] = $mform->createElement('select', 'confirmstate', '',
+                [
+                        self::ACTIONOPTION_CHANGE_CONFIRM_STATE_CONFIRM => get_string('confirmed', 'local_ai_manager'),
+                        self::ACTIONOPTION_CHANGE_CONFIRM_STATE_UNCONFIRM => get_string('unconfirmed', 'local_ai_manager'),
+                ]
+        );
+        $mform->hideif('confirmstate', 'action', 'neq', self::ACTION_CHANGE_CONFIRM_STATE);
 
         $mform->addGroup($actionselectsgroup, 'actiongroup', get_string('executebulkuseractions', 'local_ai_manager') . ':', [' '],
                 false);

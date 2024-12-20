@@ -66,6 +66,9 @@ if ($rightsconfigform->is_cancelled()) {
                 $role = intval($data->role);
                 $userinfo->set_role($role);
                 break;
+            case rights_config_form::ACTION_CHANGE_CONFIRM_STATE:
+                $userinfo->set_confirmed($data->confirmstate === rights_config_form::ACTIONOPTION_CHANGE_CONFIRM_STATE_CONFIRM);
+                break;
             default:
                 throw new \coding_exception('Unknown action: ' . $data->action);
         }
