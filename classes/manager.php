@@ -113,7 +113,9 @@ class manager {
         }
 
         $context = !empty($options['contextid']) ? context::instance_by_id($options['contextid']) : context_system::instance();
-        require_capability('local/ai_manager:use', $context);
+        if (!has_capability('local/ai_manager:use', $context)) {
+            return prompt_response::create_from_error(403, get_string('error_http403nocapability', 'local_ai_manager'), '');
+        }
 
         try {
             $options = $this->sanitize_options($options);

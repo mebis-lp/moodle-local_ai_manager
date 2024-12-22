@@ -71,6 +71,7 @@ $string['endpoint'] = 'API endpoint';
 $string['error_http400'] = 'Error sanitizing passed options';
 $string['error_http403blocked'] = 'Your ByCS admin has blocked access to the AI tools for you';
 $string['error_http403disabled'] = 'Your ByCS admin has not enabled the AI tools feature';
+$string['error_http403nocapability'] = 'You do not have the capability to use the AI manager ("local/ai_manager:use")';
 $string['error_http403notconfirmed'] = 'You have not yet confirmed the terms of use';
 $string['error_http403usertype'] = 'Your ByCS admin has disabled this purpose for your user type';
 $string['error_http409'] = 'The itemid {$a} is already taken';
