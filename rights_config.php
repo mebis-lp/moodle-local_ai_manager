@@ -69,6 +69,9 @@ if ($rightsconfigform->is_cancelled()) {
             case rights_config_form::ACTION_CHANGE_CONFIRM_STATE:
                 $userinfo->set_confirmed($data->confirmstate === rights_config_form::ACTIONOPTION_CHANGE_CONFIRM_STATE_CONFIRM);
                 break;
+            case rights_config_form::ACTION_CHANGE_SCOPE:
+                $userinfo->set_scope(intval($data->scope));
+                break;
             default:
                 throw new \coding_exception('Unknown action: ' . $data->action);
         }

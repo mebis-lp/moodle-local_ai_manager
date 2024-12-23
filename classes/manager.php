@@ -140,6 +140,20 @@ class manager {
             return prompt_response::create_from_error(403, get_string('error_http403notconfirmed', 'local_ai_manager'), '');
         }
 
+        if ($userinfo->get_scope() === userinfo::SCOPE_COURSES_ONLY) {
+            if (empty($options['contextid'])) {
+                throw new \coding_exception('The "contextid" is missing in the passed options, '
+                        . 'but is required if the user\'s scope is set to "courses only"');
+            }
+            $contextid = $options['contextid'];
+            $context = context::instance_by_id($contextid);
+            $parentcoursecontext = ai_manager_utils::find_closest_parent_course_context($context);
+            if (is_null($parentcoursecontext)) {
+                // That means we are not in a subcontext of a course context.
+                return prompt_response::create_from_error(403, get_string('error_http403coursesonly', 'local_ai_manager'), '');
+            }
+        }
+
         if (intval($this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) === 0) {
             return prompt_response::create_from_error(403, get_string('error_http403usertype', 'local_ai_manager'), '');
         }

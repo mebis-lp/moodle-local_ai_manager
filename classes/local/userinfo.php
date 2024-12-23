@@ -41,6 +41,12 @@ class userinfo {
     /** @var int This is not really a role, but is being used to signal that the default role for a user should be assigned. */
     public const ROLE_DEFAULT = -1;
 
+    /** @var int Constant identifying that the scope for using AI tools of this user is not limited. */
+    public const SCOPE_EVERYWHERE = 1;
+
+    /** @var int Constant identifying that the scope for using AI tools of this user restricted to courses. */
+    public const SCOPE_COURSES_ONLY = 2;
+
     /** @var false|stdClass The database record or false if there is none (yet) */
     private false|stdClass $record;
 
@@ -53,13 +59,16 @@ class userinfo {
     /** @var bool The confirmed state of the user */
     private bool $confirmed;
 
+    /** @var int The scope of the user, one of {@see self::SCOPE_EVERYWHERE} or {@see self::SCOPE_COURSES_ONLY}. */
+    private int $scope;
+
     /**
      * Create a userinfo object.
      *
      * @param int $userid The userid to create the userinfo object for
      */
     public function __construct(
-            /** @var int $userid The userid to create the userinfo object for */
+        /** @var int $userid The userid to create the userinfo object for */
             private readonly int $userid
     ) {
         $this->load();
@@ -74,6 +83,7 @@ class userinfo {
         $this->role = !empty($this->record->role) ? $this->record->role : $this->get_default_role();
         $this->locked = !empty($this->record->locked);
         $this->confirmed = !empty($this->record->confirmed);
+        $this->scope = !empty($this->record->scope) ? $this->record->scope : $this->get_default_scope();
     }
 
     /**
@@ -132,6 +142,7 @@ class userinfo {
         $newrecord->role = $this->role;
         $newrecord->locked = $this->locked ? 1 : 0;
         $newrecord->confirmed = $this->confirmed ? 1 : 0;
+        $newrecord->scope = $this->scope;
         $newrecord->timemodified = time();
         if ($this->record) {
             $newrecord->id = $this->record->id;
@@ -205,6 +216,38 @@ class userinfo {
      */
     public function is_confirmed(): bool {
         return $this->confirmed;
+    }
+
+    /**
+     * Sets the scope of the user.
+     *
+     * @param int $scope The scope the user should have, has to be one of {@see self::SCOPE_EVERYWHERE} or
+     *         {@see self::SCOPE_COURSES_ONLY}
+     * @throws \coding_exception if a wrong scope has been passed
+     */
+    public function set_scope(int $scope): void {
+        if (!in_array($scope, [self::SCOPE_EVERYWHERE, self::SCOPE_COURSES_ONLY])) {
+            throw new \coding_exception('Wrong scope specified, use one of SCOPE_EVERYWHERE or SCOPE_COURSES_ONLY');
+        }
+        $this->scope = $scope;
+    }
+
+    /**
+     * Returns the default scope of a user.
+     *
+     * @return int the default scope of a user that has not been assigned a scope yet
+     */
+    public function get_default_scope() {
+        return $this->get_default_role() === self::ROLE_BASIC ? self::SCOPE_COURSES_ONLY : self::SCOPE_EVERYWHERE;
+    }
+
+    /**
+     * Getter for the scope.
+     *
+     * @return int one of {@see self::SCOPE_EVERYWHERE} or {@see self::SCOPE_COURSES_ONLY}
+     */
+    public function get_scope(): int {
+        return $this->scope;
     }
 
     /**

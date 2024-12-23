@@ -16,6 +16,7 @@
 
 namespace local_ai_manager;
 
+use context;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
@@ -206,5 +207,25 @@ class ai_manager_utils {
                 'purposes' => $purposes,
                 'tools' => $tools,
         ];
+    }
+
+    /**
+     * Determines the closest course parent context based on the past context.
+     *
+     * Will return null if the context has no parent course context.
+     *
+     * @param context $context The context to find the closest parent course context for
+     * @return context|null The closest parent course context or null if there is not course parent context
+     */
+    public static function find_closest_parent_course_context(context $context): ?context {
+        if ($context->contextlevel < CONTEXT_COURSE) {
+            // There can't be a course context in a context with contextlevel below course context,
+            // because these are CONTEXT_SYSTEM, CONTEXT_USER, CONTEXT_COURSECAT.
+            return null;
+        }
+        if ($context->contextlevel === CONTEXT_COURSE) {
+            return $context;
+        }
+        return self::find_closest_parent_course_context($context->get_parent_context());
     }
 }

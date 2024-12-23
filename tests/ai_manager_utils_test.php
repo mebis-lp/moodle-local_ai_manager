@@ -86,4 +86,60 @@ final class ai_manager_utils_test extends \advanced_testcase {
         $this->assertEquals(1, ai_manager_utils::get_next_free_itemid('mod_ai', 23));
         $this->assertEquals(11, ai_manager_utils::get_next_free_itemid('block_ai_chat', 23));
     }
+
+    /**
+     * Tests the function to calculate the closest parent course context.
+     *
+     * @covers \local_ai_manager\ai_manager_utils::find_closest_parent_course_context
+     */
+    public function test_find_closest_parent_course_context(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        $course2 = $this->getDataGenerator()->create_course();
+        $coursecat = $this->getDataGenerator()->create_category();
+        $subcoursecat = $this->getDataGenerator()->create_category(['parent' => $coursecat->id]);
+        $pagecoursemodule = $this->getDataGenerator()->get_plugin_generator('mod_page')->create_instance(
+                ['course' => $course->id]
+        );
+        $pagecoursemodule2 = $this->getDataGenerator()->get_plugin_generator('mod_page')->create_instance(
+                ['course' => $course2->id]
+        );
+        $blockusercontext = $this->getDataGenerator()->create_block('html',
+                ['parentcontextid' => \context_user::instance($user->id)->id]);
+        $blocksystemcontext = $this->getDataGenerator()->create_block('html',
+                ['parentcontextid' => \context_system::instance()->id]);
+        $blockcoursecontext = $this->getDataGenerator()->create_block('html',
+                ['parentcontextid' => \context_course::instance($course->id)->id]);
+        $blockcoursemodulecontext = $this->getDataGenerator()->create_block('html',
+                ['parentcontextid' => \context_module::instance($pagecoursemodule->cmid)->id]);
+
+        $coursecontext = \context_course::instance($course->id);
+        $course2context = \context_course::instance($course2->id);
+        $coursecatcontext = \context_coursecat::instance($coursecat->id);
+        $subcoursecatcontext = \context_coursecat::instance($subcoursecat->id);
+        $pagecoursemodulecontext = \context_module::instance($pagecoursemodule->cmid);
+        $pagecoursemodule2context = \context_module::instance($pagecoursemodule2->cmid);
+        $blockusercontextcontext = \context_block::instance($blockusercontext->id);
+        $blocksystemcontextcontext = \context_block::instance($blocksystemcontext->id);
+        $blockcoursecontextcontext = \context_block::instance($blockcoursecontext->id);
+        $blockcoursemodulecontextcontext = \context_block::instance($blockcoursemodulecontext->id);
+
+        $this->assertEquals($coursecontext->id, ai_manager_utils::find_closest_parent_course_context($coursecontext)->id);
+        $this->assertNull(ai_manager_utils::find_closest_parent_course_context($coursecatcontext));
+        $this->assertNull(ai_manager_utils::find_closest_parent_course_context($subcoursecatcontext));
+        $this->assertEquals($coursecontext->id, ai_manager_utils::find_closest_parent_course_context($pagecoursemodulecontext)->id);
+        $this->assertNotEquals($coursecontext->id,
+                ai_manager_utils::find_closest_parent_course_context($pagecoursemodule2context)->id);
+        $this->assertEquals($course2context->id,
+                ai_manager_utils::find_closest_parent_course_context($pagecoursemodule2context)->id);
+        $this->assertNull(ai_manager_utils::find_closest_parent_course_context($blockusercontextcontext));
+        $this->assertNull(ai_manager_utils::find_closest_parent_course_context($blocksystemcontextcontext));
+        $this->assertNull(ai_manager_utils::find_closest_parent_course_context($blocksystemcontextcontext));
+        $this->assertEquals($coursecontext->id,
+                ai_manager_utils::find_closest_parent_course_context($blockcoursecontextcontext)->id);
+        $this->assertEquals($coursecontext->id,
+                ai_manager_utils::find_closest_parent_course_context($blockcoursemodulecontextcontext)->id);
+    }
 }

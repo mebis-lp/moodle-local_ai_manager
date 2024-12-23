@@ -52,6 +52,9 @@ class rights_config_form extends \moodleform {
     /** @var string Constant for defining the action option "confirm" for the action {@see self::ACTION_CHANGE_CONFIRM_STATUS}. */
     const ACTIONOPTION_CHANGE_CONFIRM_STATE_UNCONFIRM = 'unconfirm';
 
+    /** @var string Constant for defining the action "change usage scope". */
+    const ACTION_CHANGE_SCOPE = 'changescope';
+
     /**
      * Form definition.
      */
@@ -70,6 +73,7 @@ class rights_config_form extends \moodleform {
                         self::ACTION_ASSIGN_ROLE => get_string('assignrole', 'local_ai_manager'),
                         self::ACTION_CHANGE_LOCK_STATE => get_string('changelockstate', 'local_ai_manager'),
                         self::ACTION_CHANGE_CONFIRM_STATE => get_string('changeconfirmstate', 'local_ai_manager'),
+                        self::ACTION_CHANGE_SCOPE => get_string('changescope', 'local_ai_manager'),
                 ]);
 
         $actionselectsgroup[] = $mform->createElement('select', 'role', '', [
@@ -95,6 +99,14 @@ class rights_config_form extends \moodleform {
                 ]
         );
         $mform->hideif('confirmstate', 'action', 'neq', self::ACTION_CHANGE_CONFIRM_STATE);
+
+        $actionselectsgroup[] = $mform->createElement('select', 'scope', '',
+                [
+                        userinfo::SCOPE_COURSES_ONLY => get_string('scope_courses', 'local_ai_manager'),
+                        userinfo::SCOPE_EVERYWHERE => get_string('scope_everywhere', 'local_ai_manager'),
+                ]
+        );
+        $mform->hideif('scope', 'action', 'neq', self::ACTION_CHANGE_SCOPE);
 
         $mform->addGroup($actionselectsgroup, 'actiongroup', get_string('executebulkuseractions', 'local_ai_manager') . ':', [' '],
                 false);
