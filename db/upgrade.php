@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\local\userinfo;
+
 /**
  * Define upgrade steps to be performed to upgrade the plugin from the old version to the current one.
  *
@@ -176,6 +178,28 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
 
         // AI manager savepoint reached.
         upgrade_plugin_savepoint(true, 2024120200, 'local', 'ai_manager');
+    }
+
+    if ($oldversion < 2025010701) {
+
+        // Define field scope to be added to local_ai_manager_userinfo.
+        $table = new xmldb_table('local_ai_manager_userinfo');
+        $field = new xmldb_field('scope', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'confirmed');
+
+        // Conditionally launch add field scope.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $userids = $DB->get_fieldset('local_ai_manager_userinfo', 'userid');
+        foreach ($userids as $userid) {
+            // This will set the correct default value for the "scope" and update the record afterwards.
+            $userinfo = new userinfo($userid);
+            $userinfo->store();
+        }
+
+        // AI manager savepoint reached.
+        upgrade_plugin_savepoint(true, 2025010701, 'local', 'ai_manager');
     }
 
     return true;

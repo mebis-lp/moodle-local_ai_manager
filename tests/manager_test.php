@@ -74,6 +74,40 @@ final class manager_test extends \advanced_testcase {
         $userinfo = new userinfo($user->id);
         $userinfo->set_locked($configuration['locked']);
         $userinfo->set_confirmed($configuration['confirmed']);
+
+        $userinfo->set_scope($configuration['scopecourses'] ? userinfo::SCOPE_COURSES_ONLY : userinfo::SCOPE_EVERYWHERE);
+
+        // Setup some objects for checking contexts.
+        $course = $this->getDataGenerator()->create_course();
+        switch ($configuration['context']) {
+            case 'course':
+                $contextid = \context_course::instance($course->id)->id;
+                break;
+            case 'block_in_course':
+                $block = $this->getDataGenerator()->create_block('html',
+                        ['parentcontextid' => \context_course::instance($course->id)->id]);
+                $contextid = \context_block::instance($block->id)->id;
+                break;
+            case 'user':
+                $contextid = \context_user::instance($user->id)->id;
+                break;
+            case 'site':
+                $contextid = SYSCONTEXTID;
+                break;
+            case 'block_systemcontext':
+                $block = $this->getDataGenerator()->create_block('html',
+                        ['parentcontextid' => SYSCONTEXTID]);
+                $contextid = \context_block::instance($block->id)->id;
+                break;
+            case 'block_usercontext':
+                $block = $this->getDataGenerator()->create_block('html',
+                        ['parentcontextid' => \context_user::instance($user->id)->id]);
+                $contextid = \context_block::instance($block->id)->id;
+                break;
+            default:
+                $contextid = null;
+        }
+
         $userinfo->set_role(userinfo::ROLE_BASIC);
         $userinfo->store();
 
@@ -111,7 +145,11 @@ final class manager_test extends \advanced_testcase {
 
         // Now we finally finished our setup. Call the perform_request method and check the result.
 
-        $result = $manager->perform_request('Random string that is irrelevant');
+        $options = [];
+        if (!is_null($contextid)) {
+            $options['contextid'] = $contextid;
+        }
+        $result = $manager->perform_request('Random string that is irrelevant', $options);
         $this->assertEquals($expectedcode, $result->get_code());
         if ($result->get_code() == 200) {
             $this->assertTrue(str_contains($result->get_content(), $message));
@@ -135,6 +173,8 @@ final class manager_test extends \advanced_testcase {
                 'tenantenabled' => true,
                 'locked' => false,
                 'confirmed' => true,
+                'scopecourses' => false,
+                'context' => null,
             // That means that there are more than 0 requests. 0 requests would mean that this role is locked.
                 'maxrequests' => 10,
                 'currentusage' => 5,
@@ -153,27 +193,58 @@ final class manager_test extends \advanced_testcase {
                 'tenantnotallowed' => [
                         'configuration' => [...$defaultoptions, 'tenantallowed' => false],
                         'expectedcode' => 403,
-                        'message' => 'Your ByCS admin has not enabled the AI tools feature',
+                        'message' => 'Your tenant manager has not enabled the AI tools feature',
                 ],
                 'tenantnotenabled' => [
                         'configuration' => [...$defaultoptions, 'tenantenabled' => false],
                         'expectedcode' => 403,
-                        'message' => 'Your ByCS admin has not enabled the AI tools feature',
+                        'message' => 'Your tenant manager has not enabled the AI tools feature',
                 ],
                 'userlocked' => [
                         'configuration' => [...$defaultoptions, 'locked' => true],
                         'expectedcode' => 403,
-                        'message' => 'Your ByCS admin has blocked access to the AI tools for you',
+                        'message' => 'Your tenant manager has blocked access to the AI tools for you',
                 ],
                 'usernotconfirmed' => [
                         'configuration' => [...$defaultoptions, 'confirmed' => false],
                         'expectedcode' => 403,
                         'message' => 'You have not yet confirmed the terms of use',
                 ],
+                'userscopecourses_course' => [
+                        'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'course'],
+                        'expectedcode' => 200,
+                        'message' => 'Test result',
+                ],
+                'userscopecourses_block_in_course' => [
+                        'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'block_in_course'],
+                        'expectedcode' => 200,
+                        'message' => 'Test result',
+                ],
+                'userscopecourses_user' => [
+                        'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'user'],
+                        'expectedcode' => 403,
+                        'message' => 'You do not have the permission to use AI tool outside courses',
+                ],
+                'userscopecourses_site' => [
+                        'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'site'],
+                        'expectedcode' => 403,
+                        'message' => 'You do not have the permission to use AI tool outside courses',
+                ],
+                'userscopecourses_block_systemcontext' => [
+                        'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'block_systemcontext'],
+                        'expectedcode' => 403,
+                        'message' => 'You do not have the permission to use AI tool outside courses',
+                ],
+                'userscopecourses_block_usercontext' => [
+                    // This for example are blocks you added to your own dashboard. They have user context.
+                        'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'block_usercontext'],
+                        'expectedcode' => 403,
+                        'message' => 'You do not have the permission to use AI tool outside courses',
+                ],
                 'purposedisabledforrole' => [
                         'configuration' => [...$defaultoptions, 'maxrequests' => 0],
                         'expectedcode' => 403,
-                        'message' => 'Your ByCS admin has disabled this purpose for your user type',
+                        'message' => 'Your tenant manager has disabled this purpose for your user type',
                 ],
                 'usagelimitreached' => [
                         'configuration' => [...$defaultoptions, 'currentusage' => $defaultoptions['maxrequests'] + 1],
