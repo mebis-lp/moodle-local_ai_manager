@@ -152,9 +152,9 @@ final class manager_test extends \advanced_testcase {
         $result = $manager->perform_request('Random string that is irrelevant', $options);
         $this->assertEquals($expectedcode, $result->get_code());
         if ($result->get_code() == 200) {
-            $this->assertTrue(str_contains($result->get_content(), $message));
+            $this->assertEquals($result->get_content(), $message);
         } else {
-            $this->assertTrue(str_contains($result->get_errormessage(), $message));
+            $this->assertEquals($result->get_errormessage(), $message);
         }
     }
 
@@ -188,27 +188,27 @@ final class manager_test extends \advanced_testcase {
                 'userhasnocapability' => [
                         'configuration' => [...$defaultoptions, 'hasusecapability' => false],
                         'expectedcode' => 403,
-                        'message' => 'You do not have the capability to use the AI manager',
+                        'message' => get_string('error_http403nocapability', 'local_ai_manager'),
                 ],
                 'tenantnotallowed' => [
                         'configuration' => [...$defaultoptions, 'tenantallowed' => false],
                         'expectedcode' => 403,
-                        'message' => 'Your tenant manager has not enabled the AI tools feature',
+                        'message' => get_string('error_http403disabled', 'local_ai_manager'),
                 ],
                 'tenantnotenabled' => [
                         'configuration' => [...$defaultoptions, 'tenantenabled' => false],
                         'expectedcode' => 403,
-                        'message' => 'Your tenant manager has not enabled the AI tools feature',
+                        'message' => get_string('error_http403disabled', 'local_ai_manager'),
                 ],
                 'userlocked' => [
                         'configuration' => [...$defaultoptions, 'locked' => true],
                         'expectedcode' => 403,
-                        'message' => 'Your tenant manager has blocked access to the AI tools for you',
+                        'message' => get_string('error_http403blocked', 'local_ai_manager'),
                 ],
                 'usernotconfirmed' => [
                         'configuration' => [...$defaultoptions, 'confirmed' => false],
                         'expectedcode' => 403,
-                        'message' => 'You have not yet confirmed the terms of use',
+                        'message' => get_string('error_http403notconfirmed', 'local_ai_manager'),
                 ],
                 'userscopecourses_course' => [
                         'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'course'],
@@ -223,33 +223,38 @@ final class manager_test extends \advanced_testcase {
                 'userscopecourses_user' => [
                         'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'user'],
                         'expectedcode' => 403,
-                        'message' => 'You do not have the permission to use AI tool outside courses',
+                        'message' => get_string('error_http403coursesonly', 'local_ai_manager'),
                 ],
                 'userscopecourses_site' => [
                         'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'site'],
                         'expectedcode' => 403,
-                        'message' => 'You do not have the permission to use AI tool outside courses',
+                        'message' => get_string('error_http403coursesonly', 'local_ai_manager'),
                 ],
                 'userscopecourses_block_systemcontext' => [
                         'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'block_systemcontext'],
                         'expectedcode' => 403,
-                        'message' => 'You do not have the permission to use AI tool outside courses',
+                        'message' => get_string('error_http403coursesonly', 'local_ai_manager'),
                 ],
                 'userscopecourses_block_usercontext' => [
                     // This for example are blocks you added to your own dashboard. They have user context.
                         'configuration' => [...$defaultoptions, 'scopecourses' => true, 'context' => 'block_usercontext'],
                         'expectedcode' => 403,
-                        'message' => 'You do not have the permission to use AI tool outside courses',
+                        'message' => get_string('error_http403coursesonly', 'local_ai_manager'),
                 ],
                 'purposedisabledforrole' => [
                         'configuration' => [...$defaultoptions, 'maxrequests' => 0],
                         'expectedcode' => 403,
-                        'message' => 'Your tenant manager has disabled this purpose for your user type',
+                        'message' => get_string('error_http403usertype', 'local_ai_manager'),
                 ],
                 'usagelimitreached' => [
                         'configuration' => [...$defaultoptions, 'currentusage' => $defaultoptions['maxrequests'] + 1],
                         'expectedcode' => 429,
-                        'message' => 'You have reached the maximum amount of requests',
+                        'message' => get_string('error_http429', 'local_ai_manager',
+                                [
+                                        'count' => $defaultoptions['maxrequests'],
+                                    // This is the default value for an unlimited account.
+                                        'period' => format_time(DAYSECS),
+                                ]),
                 ],
         ];
     }
