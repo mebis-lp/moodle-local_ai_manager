@@ -141,6 +141,10 @@ final class manager_test extends \advanced_testcase {
         \core\di::set(config_manager::class, $configmanager);
         \core\di::set(connector_factory::class, $connectorfactory);
 
+        // We disable the hook here so we have a defined setup for this unit test.
+        // The hook callbacks should be tested whereever the callback is being implemented.
+        $this->redirectHook(\local_ai_manager\hook\additional_user_restriction::class, fn() => null);
+
         $manager = new manager('chat');
 
         // Now we finally finished our setup. Call the perform_request method and check the result.
@@ -152,6 +156,7 @@ final class manager_test extends \advanced_testcase {
         } else {
             $this->assertEquals($result->get_errormessage(), $message);
         }
+        $this->stopHookRedirections();
     }
 
     /**
