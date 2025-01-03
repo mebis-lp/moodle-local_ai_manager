@@ -228,4 +228,19 @@ class ai_manager_utils {
         }
         return self::find_closest_parent_course_context($context->get_parent_context());
     }
+
+    /**
+     * Helper function to add a category to a (course edit) form.
+     *
+     * This can be called by other AI plugins using the {@see \core_course\hook\after_form_definition} hook to extend
+     * the course edit form. Calling this function will add an AI tools category below which the plugins can add their
+     * mform elements. This function will only add a category if there does not exist one yet.
+     *
+     * @param \MoodleQuickForm $mform the mform object to add the heading to
+     */
+    public static function add_ai_tools_category_to_mform(\MoodleQuickForm $mform): void {
+        if (!$mform->elementExists('aitoolsheader')) {
+            $mform->addElement('header', 'aitoolsheader', get_string('aicourseeditheader', 'local_ai_manager'));
+        }
+    }
 }
