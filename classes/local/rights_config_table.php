@@ -94,6 +94,9 @@ class rights_config_table extends table_sql {
             if (!empty($roleuserids)) {
                 [$insql, $roleparams] = $DB->get_in_or_equal($roleuserids, SQL_PARAMS_NAMED);
                 $rolewhere = ' AND u.id ' . $insql;
+            } else {
+                // We could not find any user with the roles in the filter, so we need to return no entries.
+                $rolewhere = ' AND FALSE ';
             }
         }
 
