@@ -70,6 +70,7 @@ $string['empty_api_key'] = 'Empty API Key';
 $string['enable_ai_integration'] = 'Enable AI integration';
 $string['endpoint'] = 'API endpoint';
 $string['error_http400'] = 'Error sanitizing passed options';
+$string['error_http400contextmissing'] = 'Context is missing';
 $string['error_http403blocked'] = 'Your tenant manager has blocked access to the AI tools for you';
 $string['error_http403coursesonly'] = 'You do not have the permission to use AI tool outside courses.';
 $string['error_http403disabled'] = 'Your tenant manager has not enabled the AI tools feature';
