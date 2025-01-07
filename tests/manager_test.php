@@ -105,7 +105,7 @@ final class manager_test extends \advanced_testcase {
                 $contextid = \context_block::instance($block->id)->id;
                 break;
             default:
-                $contextid = null;
+                $contextid = 0;
         }
 
         $userinfo->set_role(userinfo::ROLE_BASIC);
@@ -145,11 +145,7 @@ final class manager_test extends \advanced_testcase {
 
         // Now we finally finished our setup. Call the perform_request method and check the result.
 
-        $options = [];
-        if (!is_null($contextid)) {
-            $options['contextid'] = $contextid;
-        }
-        $result = $manager->perform_request('Random string that is irrelevant', $options);
+        $result = $manager->perform_request('Random string that is irrelevant', 'block_ai_chat', $contextid);
         $this->assertEquals($expectedcode, $result->get_code());
         if ($result->get_code() == 200) {
             $this->assertEquals($result->get_content(), $message);

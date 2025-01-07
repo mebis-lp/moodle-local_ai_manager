@@ -26,6 +26,7 @@ use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
 use local_ai_manager\manager;
+use local_ai_manager\request_options;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -50,7 +51,8 @@ class connector extends base_connector {
     }
 
     #[\Override]
-    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+    public function get_prompt_data(string $prompttext, request_options $requestoptions): array {
+        $options = $requestoptions->get_options();
         $promptdata = [
                 'instances' => [
                         [
@@ -61,7 +63,7 @@ class connector extends base_connector {
                         'sampleCount' => 1,
                         'safetySetting' => 'block_few',
                         'language' => 'en',
-                        'aspectRatio' => $requestoptions['sizes'][0],
+                        'aspectRatio' => $options['sizes'][0],
                 ],
         ];
 
@@ -81,13 +83,13 @@ class connector extends base_connector {
     }
 
     #[\Override]
-    public function make_request(array $data): request_response {
+    public function make_request(array $data, request_options $requestoptions): request_response {
         // Currently, imagen does not support many languages. So we first translate the prompt into English and hardcode the
         // language to "English" later on in the request options.
         $translatemanager = new manager('translate');
         $translaterequestresult = $translatemanager->perform_request(
                 'Translate the following words into English, only return the translated text: '
-                . $data['instances'][0]['prompt']);
+                . $data['instances'][0]['prompt'], $requestoptions->get_component(), $requestoptions->get_context()->id);
         if ($translaterequestresult->get_code() !== 200) {
             return request_response::create_from_error($translaterequestresult->get_code(),
                     get_string('err_translationfailed', 'aitool_imagen'), $translaterequestresult->get_debuginfo());
@@ -107,7 +109,7 @@ class connector extends base_connector {
         } catch (\moodle_exception $exception) {
             return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
         }
-        $requestresponse = parent::make_request($data);
+        $requestresponse = parent::make_request($data, $requestoptions);
         // We keep track of the time the cached access token expires. However, due latency, different clocks
         // on different servers etc. we could end up sending a request with an actually expired access token.
         // In this case we refresh our access token and re-submit the request ONE TIME.
@@ -117,14 +119,15 @@ class connector extends base_connector {
             } catch (\moodle_exception $exception) {
                 return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
             }
-            $requestresponse = parent::make_request($data);
+            $requestresponse = parent::make_request($data, $requestoptions);
         }
         return $requestresponse;
     }
 
     #[\Override]
-    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+    public function execute_prompt_completion(StreamInterface $result, request_options $requestoptions): prompt_response {
         global $USER;
+        $options = $requestoptions->get_options();
         $content = json_decode($result->getContents(), true);
         if (empty($content['predictions']) || !array_key_exists('bytesBase64Encoded', $content['predictions'][0])) {
             return prompt_response::create_from_error(400,
