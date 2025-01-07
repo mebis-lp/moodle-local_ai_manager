@@ -95,10 +95,10 @@ abstract class base_connector {
      * Retrieves the data for the prompt based on the prompt text.
      *
      * @param string $prompttext the prompt text
-     * @param array $requestoptions the options of the request
+     * @param request_options $requestoptions the request_options object of the request
      * @return array the prompt data
      */
-    abstract public function get_prompt_data(string $prompttext, array $requestoptions): array;
+    abstract public function get_prompt_data(string $prompttext, request_options $requestoptions): array;
 
     /**
      * Function to handle the result after the request has been made.
@@ -106,10 +106,10 @@ abstract class base_connector {
      * This function extracts the data from the request result and puts it into a prompt_response object.
      *
      * @param StreamInterface $result the result of the request
-     * @param array $options the request options
+     * @param request_options $requestoptions the request options
      * @return prompt_response the prompt response object containing the extracted data
      */
-    abstract public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response;
+    abstract public function execute_prompt_completion(StreamInterface $result, request_options $requestoptions): prompt_response;
 
     /**
      * Defines if the connector uses the first customvalue attribute.
@@ -154,10 +154,13 @@ abstract class base_connector {
      * if really necessary.
      *
      * @param array $data The data to send with the request.
-     * @return array The response from the request.
+     * @param request_options $requestoptions The request options of the request.
+     *  Should only be necessary to be used in special cases (if for example there is being done another request inside this
+     *         function, for example if a prompt is being translated before the "real" request is being called)
+     * @return request_response The response from the request.
      * @throws \moodle_exception If the API key is empty.
      */
-    public function make_request(array $data): request_response {
+    public function make_request(array $data, request_options $requestoptions): request_response {
         $client = new http_client([
                 'timeout' => get_config('local_ai_manager', 'requesttimeout'),
                 'verify' => !empty(get_config('local_ai_manager', 'verifyssl')),

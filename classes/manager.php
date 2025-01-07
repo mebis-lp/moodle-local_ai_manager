@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Helper
- *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_ai_manager;
 
 use context;
@@ -102,21 +93,31 @@ class manager {
      * Get the prompt completion from the LLM.
      *
      * @param string $prompttext The prompt text.
+     * @param string $component The component from which the request is being done
+     * @param int $contextid The context id of the context from which the request is being done, use 0 for system context
      * @param array $options Options to be used during processing.
      * @return prompt_response The generated prompt response object
      */
-    public function perform_request(string $prompttext, array $options = []): prompt_response {
+    public function perform_request(string $prompttext, string $component, int $contextid, array $options = []): prompt_response {
         global $DB, $USER;
 
         if ($options === null) {
             $options = [];
         }
+        try {
+            $context = $contextid === 0 ? \context_system::instance() : context::instance_by_id($contextid);
+        } catch (\moodle_exception $exception) {
+            return prompt_response::create_from_error(400, get_string('error_http400contextmissing', 'local_ai_manager'),
+                    $exception->getMessage());
+        }
+        $requestoptions = new request_options($this->purpose, $context, $component, $options);
 
-        $context = !empty($options['contextid']) ? context::instance_by_id($options['contextid']) : context_system::instance();
-        require_capability('local/ai_manager:use', $context);
+        if (!has_capability('local/ai_manager:use', $context)) {
+            return prompt_response::create_from_error(403, get_string('error_http403nocapability', 'local_ai_manager'), '');
+        }
 
         try {
-            $options = $this->sanitize_options($options);
+            $requestoptions->sanitize_options();
         } catch (\Exception $exception) {
             return prompt_response::create_from_error(
                     400,
@@ -136,6 +137,14 @@ class manager {
 
         if (!$userinfo->is_confirmed()) {
             return prompt_response::create_from_error(403, get_string('error_http403notconfirmed', 'local_ai_manager'), '');
+        }
+
+        if ($userinfo->get_scope() === userinfo::SCOPE_COURSES_ONLY) {
+            $parentcoursecontext = ai_manager_utils::find_closest_parent_course_context($context);
+            if (is_null($parentcoursecontext)) {
+                // That means we are not in a subcontext of a course context.
+                return prompt_response::create_from_error(403, get_string('error_http403coursesonly', 'local_ai_manager'), '');
+            }
         }
 
         if (intval($this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) === 0) {
@@ -158,11 +167,10 @@ class manager {
             );
         }
 
-        $requestoptions = $this->purpose->get_request_options($options);
         $promptdata = $this->connector->get_prompt_data($prompttext, $requestoptions);
         $starttime = microtime(true);
         try {
-            $requestresult = $this->connector->make_request($promptdata);
+            $requestresult = $this->connector->make_request($promptdata, $requestoptions);
         } catch (\Exception $exception) {
             // This hopefully very rarely happens, because we catch exceptions already inside the make_request method.
             // So we do not do any more beautifying of exceptions here.
@@ -180,15 +188,17 @@ class manager {
             get_ai_response_failed::create_from_prompt_response($promptdata, $promptresponse, $duration)->trigger();
             return $promptresponse;
         }
-        $promptcompletion = $this->connector->execute_prompt_completion($requestresult->get_response(), $options);
+        $promptcompletion = $this->connector->execute_prompt_completion($requestresult->get_response(), $requestoptions);
         if (!empty($promptcompletion->get_errormessage())) {
             get_ai_response_failed::create_from_prompt_response($promptdata, $promptcompletion, $duration)->trigger();
             return $promptcompletion;
         }
-        if (!empty($options['forcenewitemid']) && !empty($options['component']) &&
-                !empty($options['contextid'] && !empty($options['itemid']))) {
+        // Check if an itemid already exists if the option 'forcenewitemid' is being used.
+        // This is to avoid race conditions and to ensure that a new itemid is being used for logging if the plugin needs unique
+        // itemids.
+        if (!empty($options['forcenewitemid']) && !empty($options['itemid'])) {
             if ($DB->record_exists('local_ai_manager_request_log',
-                    ['component' => $options['component'], 'contextid' => $options['contextid'], 'itemid' => $options['itemid']])) {
+                    ['component' => $component, 'contextid' => $context->id, 'itemid' => $options['itemid']])) {
                 $existingitemid = $options['itemid'];
                 unset($options['itemid']);
                 $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions, $options);
@@ -212,13 +222,10 @@ class manager {
      * @param prompt_response $promptcompletion The prompt response object from which information will be extracted and stored
      *  in the log table
      * @param float $executiontime the duration that the request has taken
-     * @param array $requestoptions complete options of the whole request
-     * @param array $options part of $requestoptions, contains the options directly passed to the manager
      * @return int the record id of the log record which has been stored to the database
      */
     public function log_request(string $prompttext, prompt_response $promptcompletion, float $executiontime,
-            array $requestoptions = [],
-            array $options = []): int {
+            request_options $requestoptions): int {
         global $DB, $USER;
 
         // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
@@ -241,17 +248,13 @@ class manager {
         $data->prompttext = $prompttext;
         $data->promptcompletion = $promptcompletion->get_content();
         $data->duration = $executiontime;
-        if (!empty($requestoptions)) {
-            $data->requestoptions = json_encode($requestoptions);
+        if (!empty($requestoptions->get_options())) {
+            $data->requestoptions = json_encode($requestoptions->get_options());
         }
-        if (array_key_exists('component', $options)) {
-            $data->component = $options['component'];
-        }
-        if (array_key_exists('contextid', $options)) {
-            $data->contextid = intval($options['contextid']);
-        }
-        if (array_key_exists('itemid', $options)) {
-            $data->itemid = intval($options['itemid']);
+        $data->component = $requestoptions->get_component();
+        $data->contextid = $requestoptions->get_context()->id;
+        if (array_key_exists('itemid', $requestoptions->get_options())) {
+            $data->itemid = intval($requestoptions->get_options()['itemid']);
         }
         $data->timecreated = time();
         $recordid = $DB->insert_record('local_ai_manager_request_log', $data);
@@ -266,35 +269,5 @@ class manager {
         $userusage->set_currentusage($userusage->get_currentusage() + 1);
         $userusage->store();
         return $recordid;
-    }
-
-    /**
-     * Helper function that sanitizes the options sent to the manager against the options defined in the purpose class.
-     *
-     * @param array $options the options which are being sent to the manager
-     * @return array the sanitized options
-     * @throws \coding_exception if validation is failing
-     */
-    private function sanitize_options(array $options): array {
-        foreach ($options as $key => $value) {
-            if (!array_key_exists($key, $this->purpose->get_available_purpose_options())) {
-                throw new \coding_exception('Option ' . $key . ' is not allowed for the purpose ' .
-                        $this->purpose->get_plugin_name());
-            }
-            if (is_array($this->purpose->get_available_purpose_options()[$key])) {
-                if (!in_array($value[0], array_map(fn($valueobject) => $valueobject['key'],
-                        $this->purpose->get_available_purpose_options()[$key]))) {
-                    throw new \coding_exception('Value ' . $value[0] . ' for option ' . $key . ' is not allowed for the purpose ' .
-                            $this->purpose->get_plugin_name());
-                }
-            } else {
-                if ($this->purpose->get_available_purpose_options()[$key] === base_purpose::PARAM_ARRAY) {
-                    array_walk_recursive($value, fn($text) => clean_param($text, PARAM_NOTAGS));
-                } else {
-                    $options[$key] = clean_param($value, $this->purpose->get_available_purpose_options()[$key]);
-                }
-            }
-        }
-        return $options;
     }
 }
