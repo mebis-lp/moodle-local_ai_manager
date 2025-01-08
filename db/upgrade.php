@@ -202,5 +202,58 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025010701, 'local', 'ai_manager');
     }
 
+    if ($oldversion < 2025012200) {
+        // Instance table.
+        $table = new xmldb_table('local_ai_manager_instance');
+        $field = new xmldb_field('tenant', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'name');
+        $dbman->change_field_precision($table, $field);
+
+        // Config table.
+        $table = new xmldb_table('local_ai_manager_config');
+        // Remove indexes first to be sure.
+        $index = new xmldb_index('tenant', XMLDB_INDEX_NOTUNIQUE, ['tenant']);
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        $index = new xmldb_index('configkey_tenant', XMLDB_INDEX_UNIQUE, ['configkey', 'tenant']);
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        // Change precision of tenant field.
+        $field = new xmldb_field('tenant', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'configvalue');
+        $dbman->change_field_precision($table, $field);
+        // Reapply indexes.
+        $index = new xmldb_index('tenant', XMLDB_INDEX_NOTUNIQUE, ['tenant']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        // We also change this index to unique.
+        $index = new xmldb_index('configkey_tenant', XMLDB_INDEX_UNIQUE, ['configkey', 'tenant']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Add tenant field to request log table and do update step.
+        // Define field tenant to be added to local_ai_manager_request_log.
+        $table = new xmldb_table('local_ai_manager_request_log');
+        $field = new xmldb_field('tenant', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'userid');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $rs = $DB->get_recordset('local_ai_manager_request_log');
+        foreach ($rs as $record) {
+            // We intentionally access the DB directly, because we want the record, even if it is suspended, deleted etc.
+            $user = $DB->get_record('user', ['id' => $record->userid]);
+            $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
+            $record->tenant = trim($user->{$tenantfield});
+            $DB->update_record('local_ai_manager_request_log', $record);
+        }
+        $rs->close();
+
+        upgrade_plugin_savepoint(true, 2025012200, 'local', 'ai_manager');
+    }
+
     return true;
 }
