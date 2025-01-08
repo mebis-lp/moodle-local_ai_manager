@@ -227,6 +227,7 @@ class manager {
 
         $data = new stdClass();
         $data->userid = $USER->id;
+        $data->tenant = $this->configmanager->get_tenant()->get_identifier();
         $data->value = $promptcompletion->get_usage()->value;
         $data->connector = $this->connector->get_instance()->get_connector();
         if ($this->connector->has_customvalue1()) {
