@@ -38,9 +38,12 @@ class submit_query extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'purpose' => new external_value(PARAM_TEXT, 'The purpose of the prompt.', VALUE_REQUIRED),
-            'prompt' => new external_value(PARAM_RAW, 'The prompt', VALUE_REQUIRED),
-            'options' => new external_value(PARAM_RAW, 'Options object JSON stringified', VALUE_DEFAULT, ''),
+                'purpose' => new external_value(PARAM_TEXT, 'The purpose of the prompt.', VALUE_REQUIRED),
+                'prompt' => new external_value(PARAM_RAW, 'The prompt', VALUE_REQUIRED),
+                'component' => new external_value(PARAM_ALPHANUMEXT, 'The component name', VALUE_REQUIRED),
+                'contextid' => new external_value(PARAM_INT, 'The context id of the context from which the request is being done',
+                        VALUE_REQUIRED),
+                'options' => new external_value(PARAM_RAW, 'Options object JSON stringified', VALUE_DEFAULT, ''),
         ]);
     }
 
@@ -52,27 +55,31 @@ class submit_query extends external_api {
      * @param string $options additional options which should be passed to the request to the AI tool
      * @return array associative array containing the result of the request
      */
-    public static function execute(string $purpose, string $prompt, string $options): array {
+    public static function execute(string $purpose, string $prompt, string $component, int $contextid, string $options): array {
         [
-            'purpose' => $purpose,
-            'prompt' => $prompt,
-            'options' => $options,
+                'purpose' => $purpose,
+                'prompt' => $prompt,
+                'component' => $component,
+                'contextid' => $contextid,
+                'options' => $options,
         ] = self::validate_parameters(self::execute_parameters(), [
-            'purpose' => $purpose,
-            'prompt' => $prompt,
-            'options' => $options,
+                'purpose' => $purpose,
+                'prompt' => $prompt,
+                'component' => $component,
+                'contextid' => $contextid,
+                'options' => $options,
         ]);
         if (!empty($options)) {
             $options = json_decode($options, true);
         }
-        $context = !empty($options['contextid']) ? \context::instance_by_id($options['contextid']) : \context_system::instance();
+        $context = $contextid === 0 ? \context_system::instance() : \context::instance_by_id($contextid);
         self::validate_context($context);
         // We do not check the 'local/ai_manager:use' capability here, because this is being done inside manager::perform_request.
 
         try {
             $aimanager = new \local_ai_manager\manager($purpose);
 
-            $result = $aimanager->perform_request($prompt, $options);
+            $result = $aimanager->perform_request($prompt, $component, $contextid, $options);
 
             if ($result->get_code() !== 200) {
                 $error = ['message' => $result->get_errormessage()];
@@ -99,12 +106,12 @@ class submit_query extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(
-            [
-                'code' => new external_value(PARAM_INT, 'Return code of process.'),
-                'string' => new external_value(PARAM_TEXT, 'Return string of process.'),
-                'result' => new external_value(PARAM_RAW, 'The query result'),
-            ],
-            'Result of a query'
+                [
+                        'code' => new external_value(PARAM_INT, 'Return code of process.'),
+                        'string' => new external_value(PARAM_TEXT, 'Return string of process.'),
+                        'result' => new external_value(PARAM_RAW, 'The query result'),
+                ],
+                'Result of a query'
         );
     }
 }

@@ -57,7 +57,7 @@ class rights_config_table extends table_sql {
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
-        $columns = ['checkbox', 'lastname', 'firstname', 'role', 'locked', 'confirmed'];
+        $columns = ['checkbox', 'lastname', 'firstname', 'role', 'locked', 'confirmed', 'scope'];
         $checkboxheader = html_writer::div('', 'rights-table-selection_info', ['id' => 'rights-table-selection_info']);
         $checkboxheader .= html_writer::empty_tag('input', ['type' => 'checkbox', 'id' => 'rights-table-selectall_checkbox']);
         $headers = [
@@ -67,6 +67,7 @@ class rights_config_table extends table_sql {
                 get_string('role', 'local_ai_manager'),
                 get_string('locked', 'local_ai_manager'),
                 get_string('confirmed', 'local_ai_manager'),
+                get_string('scope', 'local_ai_manager'),
         ];
 
         $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
@@ -100,7 +101,7 @@ class rights_config_table extends table_sql {
             }
         }
 
-        $fields = 'u.id as id, lastname, firstname, role, locked, ui.confirmed';
+        $fields = 'u.id as id, lastname, firstname, role, locked, ui.confirmed, ui.scope';
         $from =
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
         $where = 'u.deleted != 1 AND u.suspended != 1 AND ' . $tenantfield . ' = :tenant' . $rolewhere;
@@ -117,16 +118,17 @@ class rights_config_table extends table_sql {
         $this->no_sorting('role');
         $this->no_sorting('locked');
         $this->no_sorting('confirmed');
+        $this->no_sorting('scope');
         $this->collapsible(false);
         $this->sortable(true, 'lastname');
 
         $this->set_sql($usertableextend->get_fields(), $usertableextend->get_from(),
-                $usertableextend->get_where() . ' GROUP BY u.id, role, locked, ui.confirmed',
+                $usertableextend->get_where() . ' GROUP BY u.id, role, locked, ui.confirmed, ui.scope',
                 $usertableextend->get_params());
         // We need to use this because we are using "GROUP BY" which is not being expected by the sql table.
         $this->set_count_sql("SELECT COUNT(*) FROM (SELECT " . $usertableextend->get_fields() . " FROM "
                 . $usertableextend->get_from() . " WHERE " . $usertableextend->get_where() .
-                " GROUP BY u.id, role, locked, ui.confirmed) AS subquery",
+                " GROUP BY u.id, role, locked, ui.confirmed, ui.scope) AS subquery",
                 $usertableextend->get_params());
         parent::setup();
     }
@@ -171,6 +173,28 @@ class rights_config_table extends table_sql {
             return '<i class="fa fa-unlock local_ai_manager-green"></i>';
         } else {
             return '<i class="fa fa-lock local_ai_manager-red"></i>';
+        }
+    }
+
+    /**
+     * Get the icon representing the user scope.
+     *
+     * @param stdClass $value the object containing the information of the current row
+     * @return string the resulting string for the confirmed column
+     */
+    public function col_scope($value) {
+        $userinfo = new userinfo($value->id);
+        $scope = empty($value->scope) ? $userinfo->get_default_scope() : intval($value->scope);
+        switch ($scope) {
+            case userinfo::SCOPE_EVERYWHERE:
+                return '<i class="fa fa-globe local_ai_manager-green" title="' .
+                        get_string('scope_everywhere', 'local_ai_manager') . '"></i>';
+            case userinfo::SCOPE_COURSES_ONLY:
+                return '<i class="fa fa-graduation-cap local_ai_manager-red" title="' .
+                        get_string('scope_courses', 'local_ai_manager') . '"></i>';
+            default:
+                // Should not happen.
+                return 'No scope';
         }
     }
 

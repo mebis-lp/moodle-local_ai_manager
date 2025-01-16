@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/ai_manager/db" VERSION="20241105" COMMENT="XMLDB file for Moodle local/ai_manager"
+<XMLDB PATH="local/ai_manager/db" VERSION="20240701" COMMENT="XMLDB file for Moodle local/ai_manager"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -76,6 +76,7 @@
         <FIELD NAME="role" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="locked" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="confirmed" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="scope" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Defines if the user is allowed to use AI tools outside courses"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
