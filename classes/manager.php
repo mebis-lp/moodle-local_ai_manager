@@ -21,6 +21,7 @@ use context_system;
 use core_plugin_manager;
 use local_ai_manager\event\get_ai_response_failed;
 use local_ai_manager\event\get_ai_response_succeeded;
+use local_ai_manager\hook\additional_user_restriction;
 use local_ai_manager\local\config_manager;
 use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\prompt_response;
@@ -145,6 +146,16 @@ class manager {
                 // That means we are not in a subcontext of a course context.
                 return prompt_response::create_from_error(403, get_string('error_http403coursesonly', 'local_ai_manager'), '');
             }
+        }
+
+        // Provide an additional hook for further limiting access.
+        $restrictionhook = new additional_user_restriction($userinfo, $context, $this->purpose);
+        \core\di::get(\core\hook\manager::class)->dispatch($restrictionhook);
+        if (!$restrictionhook->is_allowed()) {
+            return prompt_response::create_from_error(
+                    $restrictionhook->get_code(),
+                    $restrictionhook->get_message(),
+                    $restrictionhook->get_debuginfo());
         }
 
         if (intval($this->configmanager->get_max_requests($this->purpose, $userinfo->get_role())) === 0) {

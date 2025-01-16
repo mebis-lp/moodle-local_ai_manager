@@ -36,6 +36,7 @@ $string['ai_manager:viewusage'] = 'View usage information';
 $string['ai_manager:viewusernames'] = 'View non anonymized usernames in statistics';
 $string['ai_manager:viewuserstatistics'] = 'View statistics of single users';
 $string['aiadministrationlink'] = 'AI tools administration';
+$string['aicourseeditheader'] = 'AI functionalities';
 $string['aiinfotitle'] = 'AI tools in your tenant';
 $string['aiisbeingused'] = 'You are using an AI tool. The entered data will be sent to an external AI tool.';
 $string['aitool'] = 'AI tool';
