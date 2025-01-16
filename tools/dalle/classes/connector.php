@@ -21,6 +21,7 @@ use local_ai_manager\base_instance;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use local_ai_manager\request_options;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -42,11 +43,12 @@ class connector extends base_connector {
     }
 
     #[\Override]
-    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+    public function get_prompt_data(string $prompttext, request_options $requestoptions): array {
+        $options = $requestoptions->get_options();
         $defaultimagesize = $this->instance->get_model() === 'dall-e-2' ? '256x256' : '1024x1024';
         $parameters = [
                 'prompt' => $prompttext,
-                'size' => empty($requestoptions['sizes'][0]) ? $defaultimagesize : $requestoptions['sizes'][0],
+                'size' => empty($options['sizes'][0]) ? $defaultimagesize : $options['sizes'][0],
                 'response_format' => 'b64_json',
         ];
         if (!$this->instance->azure_enabled()) {
@@ -76,8 +78,9 @@ class connector extends base_connector {
     }
 
     #[\Override]
-    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+    public function execute_prompt_completion(StreamInterface $result, request_options $requestoptions): prompt_response {
         global $USER;
+        $options = $requestoptions->get_options();
         $content = json_decode($result->getContents(), true);
         $fs = get_file_storage();
         $fileinfo = [

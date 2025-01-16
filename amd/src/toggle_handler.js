@@ -22,25 +22,33 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-export const init = (inputid) => {
-    const toggleContainer = document.getElementById(inputid);
+export const init = (inputSelector) => {
+    const toggleContainer = document.querySelector(inputSelector);
     if (toggleContainer) {
         const toggle = toggleContainer.querySelector('input');
 
         toggleContainer.addEventListener('click', () => {
+            // Click event will fire before status is being updated, so we have to invert 0 and 1 here.
+            toggleContainer.dataset.checked = toggle.checked ? '0' : '1';
             toggle.checked = !toggle.checked;
             toggle.dispatchEvent(new Event('change'));
         });
 
-        toggle.addEventListener('change', () => {
-            // New state incoming.
-            if (!toggle.checked) {
-                window.location.replace(toggle.dataset.targetwhenchecked);
-            } else {
-                window.location.replace(toggle.dataset.targetwhennotchecked);
-            }
-            return false;
-        });
+        // To make the toggle also usable without directly loading a page on changing the state
+        // we only add the listener here if both target attributes are set and not empty.
+        const useUrlsOnChange = toggle.dataset.targetwhenchecked && toggle.dataset.targetwhenchecked.length > 0
+            && toggle.dataset.targetwhennotchecked && toggle.dataset.targetwhennotchecked.length > 0;
+        if (useUrlsOnChange) {
+            toggle.addEventListener('change', () => {
+                // New state incoming.
+                if (!toggle.checked) {
+                    window.location.replace(toggle.dataset.targetwhenchecked);
+                } else {
+                    window.location.replace(toggle.dataset.targetwhennotchecked);
+                }
+                return false;
+            });
+        }
     }
 };
 

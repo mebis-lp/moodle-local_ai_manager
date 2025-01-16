@@ -19,6 +19,7 @@ namespace aitool_openaitts;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use local_ai_manager\request_options;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -39,10 +40,11 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+    public function get_prompt_data(string $prompttext, request_options $requestoptions): array {
+        $options = $requestoptions->get_options();
         $data = [
                 'input' => $prompttext,
-                'voice' => empty($requestoptions['voices'][0]) ? 'alloy' : $requestoptions['voices'][0],
+                'voice' => empty($options['voices'][0]) ? 'alloy' : $options['voices'][0],
         ];
         if (!$this->instance->azure_enabled()) {
             // If azure is enabled, the model will be preconfigured in the azure resource, so we do not need to send it.
@@ -75,8 +77,9 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+    public function execute_prompt_completion(StreamInterface $result, request_options $requestoptions): prompt_response {
         global $USER;
+        $options = $requestoptions->get_options();
         $fs = get_file_storage();
         $fileinfo = [
                 'contextid' => \context_user::instance($USER->id)->id,
