@@ -65,6 +65,98 @@ class ai_manager_utils {
     }
 
     /**
+     * Retrieves the entries from the request_log table and structures it for delivering them to the "view prompts" table.
+     *
+     * External function that delivers this data: @param int $contextid The main context id the prompts should be retrieved
+     *
+     * @param int $userid the id of the user to retrieve the prompts
+     * @param int $time the time since when the prompts should be retrieved
+     * @return array complex structured array containing the prompts
+     * @see \local_ai_manager\external\get_prompts .
+     *
+     */
+    public static function get_structured_entries_by_context(int $contextid, int $userid = 0, int $time = 0): array {
+        global $DB;
+
+        $maincontext = \context::instance_by_id($contextid);
+        $tenant = \core\di::get(tenant::class);
+        if ($tenant->get_context()->id === $maincontext->id) {
+            $contextids = $DB->get_fieldset('local_ai_manager_request_log', 'DISTINCT contextid',
+                    ['tenant' => $tenant->get_sql_identifier(), 'userid' => $userid]);
+            // We now filter: We keep log entries for contexts that do not exist anymore, and we only keep contexts that
+            // do not belong to a course.
+            $contextids = array_filter($contextids, function($contextid) {
+                $context = \context::instance_by_id($contextid, IGNORE_MISSING);
+                return !$context || is_null(ai_manager_utils::find_closest_parent_course_context($context));
+            });
+        } else if ($maincontext->contextlevel === CONTEXT_COURSE) {
+            $contextids = array_map(fn($context) => $context->id, $maincontext->get_child_contexts());
+        }
+
+        if (empty($contextids)) {
+            return [];
+        }
+
+        [$insql, $inparams] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED);
+
+        $params = $inparams;
+        if (!empty($userid)) {
+            $params['userid'] = $userid;
+        }
+
+        $timesql = '';
+        if (!empty($time)) {
+            $timesql = " AND timecreated > :time";
+            $params['time'] = $time;
+        }
+        $sql = "SELECT * FROM {local_ai_manager_request_log} WHERE userid = :userid AND contextid " . $insql . $timesql .
+                " ORDER BY timecreated DESC";
+        $records = $DB->get_records_sql($sql, $params);
+        if (empty($records)) {
+            return [];
+        }
+
+        $entries = [];
+        $sequencenumber = 1;
+        foreach ($records as $record) {
+            $context = \context::instance_by_id($record->contextid, IGNORE_MISSING);
+            $contextname = empty($context) ? get_string('contextdeleted', 'local_ai_manager') : $context->get_context_name();
+
+            $promptobject = [
+                    'sequencenumber' => $sequencenumber,
+                    'prompt' => format_text($record->prompttext, FORMAT_MARKDOWN),
+                    'promptshortened' => self::shorten_prompt(format_text($record->prompttext, FORMAT_MARKDOWN)),
+                    'promptcompletion' => format_text($record->promptcompletion, FORMAT_MARKDOWN),
+                    'promptcompletionshortened' => self::shorten_prompt(format_text($record->promptcompletion, FORMAT_MARKDOWN)),
+                    'date' => $record->timecreated,
+            ];
+
+            if (in_array($record->purpose, ['imggen', 'tts'])) {
+                $promptobject['promptcompletion'] =
+                        '| ' . get_string('promptcompletitionfilesnotavailable', 'local_ai_manager') . ' |';
+                $promptobject['promptcompletionshortened'] = $promptobject['promptcompletion'];
+            }
+
+            if (array_key_exists($record->contextid, $entries)) {
+                $promptobject['firstprompt'] = false;
+                $entries[$record->contextid]['prompts'][] = $promptobject;
+            } else {
+                $promptobject['firstprompt'] = true;
+                $entries[$record->contextid] = [
+                        'contextid' => $record->contextid,
+                        'contextdisplayname' => $contextname,
+                        'prompts' => [$promptobject],
+                ];
+            }
+            $sequencenumber++;
+        }
+        foreach ($entries as $key => $value) {
+            $entries[$key]['promptscount'] = count($value['prompts']);
+        }
+        return $entries;
+    }
+
+    /**
      * API function to mark log entries as deleted.
      *
      * @param string $component the component which has logged the records
@@ -241,6 +333,36 @@ class ai_manager_utils {
     public static function add_ai_tools_category_to_mform(\MoodleQuickForm $mform): void {
         if (!$mform->elementExists('aitoolsheader')) {
             $mform->addElement('header', 'aitoolsheader', get_string('aicourseeditheader', 'local_ai_manager'));
+        }
+    }
+
+    /**
+     * Small helper function to generate a shortened (preview) version of a prompt or prompt completion.
+     *
+     * @param string $prompt the prompt to shorten
+     * @return string the shortened prompt with HTML tags being stripped
+     */
+    private static function shorten_prompt(string $prompt): string {
+        $prompt = strip_tags($prompt);
+        $length = strlen($prompt);
+        $shortened = substr($prompt, 0, 50);
+        return strlen($shortened) === $length ? $prompt : $shortened . '...';
+    }
+
+    /**
+     * Utility function to retrieve a good display name for a context in the local_ai_manager.
+     *
+     * Will usually return the context name. If the context is the tenant context, the tenant name will be returned.
+     *
+     * @param context $context the context to retrieve the name for
+     * @param ?tenant $tenant the tenant to retrieve the name from if the context is the tenant context
+     * @return string the context display name
+     */
+    public static function get_context_displayname(\context $context, ?tenant $tenant = null): string {
+        if (!is_null($tenant) && $tenant->get_context()->id === $context->id) {
+            return get_string('tenant', 'local_ai_manager') . ': ' . $tenant->get_fullname();
+        } else {
+            return $context->get_context_name();
         }
     }
 }

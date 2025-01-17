@@ -26,9 +26,12 @@
         "quotaconfigactive": false,
         "rightsconfigactive": false,
         "statisticsactive": false,
+        "userstatisticsactive": false,
+        "purposestatisticsactive": false,
         "statisticsoverviewactive": false,
         "showstatistics": true,
         "showuserstatistics": true,
+        "showviewprompts": true,
         "statisticspurposes": [
             {
                 "pluginname": "chat",
@@ -89,11 +92,17 @@
                         {{#str}} statisticsoverview, local_ai_manager {{/str}}
                         </a>
                         {{#showuserstatistics}}
-                        <a class="dropdown-item{{#active}} active active_tree_node{{/active}}"{{!
+                        <a class="dropdown-item{{#userstatisticsactive}} active active_tree_node{{/userstatisticsactive}}"{{!
                                }} href="{{config.wwwroot}}/local/ai_manager/user_statistics.php?tenant={{tenantidentifier}}">
                         {{#str}} userstatistics, local_ai_manager{{/str}}
-                        {{/showuserstatistics}}
                         </a>
+                        {{/showuserstatistics}}
+                        {{#showviewprompts}}
+                        <a class="dropdown-item{{#viewpromptsactive}} active active_tree_node{{/viewpromptsactive}}"{{!
+                           }} href="{{config.wwwroot}}/local/ai_manager/view_prompts.php?tenant={{tenantidentifier}}">
+                        {{#str}} viewprompts, local_ai_manager{{/str}}
+                        </a>
+                        {{/showviewprompts}}
                         <div class="dropdown-divider"></div>
                         {{#statisticspurposes}}
                             <a class="dropdown-item{{#active}} active active_tree_node{{/active}}"{{!
