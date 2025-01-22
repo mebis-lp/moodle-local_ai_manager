@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/ai_manager/db" VERSION="20240701" COMMENT="XMLDB file for Moodle local/ai_manager"
+<XMLDB PATH="local/ai_manager/db" VERSION="20250122" COMMENT="XMLDB file for Moodle local/ai_manager"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -8,7 +8,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="tenant" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="tenant" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="connector" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="endpoint" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="apikey" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
@@ -31,20 +31,21 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="configkey" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="The key for the configuration"/>
         <FIELD NAME="configvalue" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Value for the config key"/>
-        <FIELD NAME="tenant" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="String identifier of the tenant the config key-value-pair belongs to"/>
+        <FIELD NAME="tenant" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="String identifier of the tenant the config key-value-pair belongs to"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="tenant" UNIQUE="false" FIELDS="tenant"/>
-        <INDEX NAME="configkey_tenant" UNIQUE="false" FIELDS="configkey, tenant"/>
+        <INDEX NAME="configkey_tenant" UNIQUE="true" FIELDS="configkey, tenant"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="local_ai_manager_request_log" COMMENT="Table to log the used tokens">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="tenant" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
         <FIELD NAME="customvalue1" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
         <FIELD NAME="customvalue2" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="3"/>
