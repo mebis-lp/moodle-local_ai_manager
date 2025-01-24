@@ -45,6 +45,7 @@ class connector extends \local_ai_manager\base_connector {
                 'singleprompt' => $textmodels,
                 'translate' => $textmodels,
                 'itt' => ['gemini-1.5-pro', 'gemini-1.5-flash'],
+                'genai' => $textmodels,
         ];
     }
 
