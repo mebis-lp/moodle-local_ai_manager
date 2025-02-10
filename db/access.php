@@ -141,4 +141,14 @@ $capabilities = [
                         'manager' => CAP_ALLOW,
                 ],
         ],
+        'local/ai_manager:viewpromptsdates' => [
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_PREVENT,
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
 ];

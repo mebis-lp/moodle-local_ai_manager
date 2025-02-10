@@ -55,6 +55,8 @@ export const init = (tableWrapperId) => {
             templateContext.heading =
                 await getString('promptsmodalheading', 'local_ai_manager', {contextDisplayName, userDisplayName});
             templateContext.promptsobjects = resultObject.result;
+            templateContext.promptsdatesavailable =
+                templateContext.promptsobjects.reduce((acc, cur) => acc || cur.viewpromptsdates, false);
             templateContext.noprompts = templateContext.promptsobjects.length === 0;
             templateContext.classes = 'local_ai_manager-prompts_view_modal';
             const modal = await Modal.create({
@@ -81,6 +83,8 @@ const registerTimeselectorListener = (modal, contextId, userId) => {
     timeselector.addEventListener('change', async() => {
         const resultObject = await getPrompts(contextId, userId, timeselector.value);
         templateContext.promptsobjects = resultObject.result;
+        templateContext.promptsdatesavailable =
+            templateContext.promptsobjects.reduce((acc, cur) => acc || cur.viewpromptsdates, false);
         templateContext.noprompts = templateContext.promptsobjects.length === 0;
 
         const {html, js} = await Templates.renderForPromise('local_ai_manager/promptsmodal_table', {...templateContext});

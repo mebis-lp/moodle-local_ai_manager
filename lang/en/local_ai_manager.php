@@ -32,6 +32,7 @@ $string['ai_manager:managetenants'] = 'Configure AI manager settings for all ten
 $string['ai_manager:managevertexcache'] = 'Get and change the configuration of the Google Vertex AI caching status';
 $string['ai_manager:use'] = 'Use ai_manager';
 $string['ai_manager:viewprompts'] = 'View prompts of users';
+$string['ai_manager:viewpromptsdates'] = 'View timestamps of the prompts of users';
 $string['ai_manager:viewstatistics'] = 'View statistics';
 $string['ai_manager:viewtenantprompts'] = 'View prompts of users that have been used on tenant context (outside courses)';
 $string['ai_manager:viewusage'] = 'View usage information';

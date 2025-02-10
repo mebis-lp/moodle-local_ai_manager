@@ -35,7 +35,9 @@
                 <th class="local_ai_manager-prompts_view_table-context">{{#str}}context, local_ai_manager{{/str}}</th>
                 <th class="local_ai_manager-prompts_view_table-prompt">{{#str}}prompt, local_ai_manager{{/str}}</th>
                 <th class="local_ai_manager-prompts_view_table-promptcompletion">{{#str}}airesponse, local_ai_manager{{/str}}</th>
-                <th class="local_ai_manager-prompts_view_table-date">{{#str}}date{{/str}}</th>
+                {{#promptsdatesavailable}}
+                    <th class="local_ai_manager-prompts_view_table-date">{{#str}}date{{/str}}</th>
+                {{/promptsdatesavailable}}
             </tr>
             {{#promptsobjects}}
                 {{#prompts}}
@@ -73,7 +75,9 @@
                                 </div>
                             </div>
                         </td>
-                        <td>{{#userdate}}{{date}}, {{#str}} strftimedatetimeshort, core_langconfig {{/str}}{{/userdate}}</td>
+                        {{#viewpromptsdates}}
+                            <td>{{#userdate}}{{date}}, {{#str}} strftimedatetimeshort, core_langconfig {{/str}}{{/userdate}}</td>
+                        {{/viewpromptsdates}}
                     </tr>
                 {{/prompts}}
             {{/promptsobjects}}

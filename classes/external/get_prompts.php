@@ -130,6 +130,8 @@ class get_prompts extends external_api {
                                         ),
                                         'promptscount' => new external_value(PARAM_INT, 'The number of prompts in this context',
                                                 VALUE_REQUIRED),
+                                        'viewpromptsdates' => new external_value(PARAM_BOOL,
+                                                'If the data object contains prompts dates', VALUE_REQUIRED),
                                 ], 'The prompt object'),
                         ),
                 ],

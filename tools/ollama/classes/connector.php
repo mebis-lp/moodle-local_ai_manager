@@ -114,6 +114,6 @@ class connector extends \local_ai_manager\base_connector {
 
     #[\Override]
     public function allowed_mimetypes(): array {
-        return ['image/png', 'image/jpg'];
+        return ['image/png', 'image/jpg', 'image/jpeg'];
     }
 }

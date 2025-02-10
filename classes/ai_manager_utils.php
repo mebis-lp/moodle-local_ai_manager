@@ -120,15 +120,15 @@ class ai_manager_utils {
         $sequencenumber = 1;
         foreach ($records as $record) {
             $context = \context::instance_by_id($record->contextid, IGNORE_MISSING);
-            $contextname = empty($context) ? get_string('contextdeleted', 'local_ai_manager') : $context->get_context_name();
-
+            $contextname = $context ? $context->get_context_name() : get_string('contextdeleted', 'local_ai_manager');
+            $canviewpromptsdates = $context ? has_capability('local/ai_manager:viewpromptsdates', $context) : false;
             $promptobject = [
                     'sequencenumber' => $sequencenumber,
                     'prompt' => format_text($record->prompttext, FORMAT_MARKDOWN),
                     'promptshortened' => self::shorten_prompt(format_text($record->prompttext, FORMAT_MARKDOWN)),
                     'promptcompletion' => format_text($record->promptcompletion, FORMAT_MARKDOWN),
                     'promptcompletionshortened' => self::shorten_prompt(format_text($record->promptcompletion, FORMAT_MARKDOWN)),
-                    'date' => $record->timecreated,
+                    'date' => $canviewpromptsdates ? $record->timecreated : 0,
             ];
 
             if (in_array($record->purpose, ['imggen', 'tts'])) {
@@ -146,6 +146,7 @@ class ai_manager_utils {
                         'contextid' => $record->contextid,
                         'contextdisplayname' => $contextname,
                         'prompts' => [$promptobject],
+                        'viewpromptsdates' => $canviewpromptsdates,
                 ];
             }
             $sequencenumber++;
