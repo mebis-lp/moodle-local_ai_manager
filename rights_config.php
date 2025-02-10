@@ -130,7 +130,7 @@ if ($rightsconfigform->is_cancelled()) {
     $uniqid = 'rights-config-table-' . uniqid();
     $rightstable =
             new rights_config_table($uniqid, $tenant, $PAGE->url, $hookfilterids, $rolefilterids);
-    $rightstable->out(100, false);
+    $rightstable->out(2, false);
     $rightsconfigform->display();
     $PAGE->requires->js_call_amd('local_ai_manager/rights_config_table', 'init', ['id' => $uniqid]);
 }
