@@ -51,17 +51,19 @@ class context_selector_form extends \moodleform {
         $maincontextoptions = [];
         foreach ($enrolledcourses as $course) {
             $coursecontext = \context_course::instance($course->id);
-            $maincontextoptions[$coursecontext->id] = ai_manager_utils::get_context_displayname($coursecontext, $tenant);
+            if (has_capability('local/ai_manager:viewprompts', $coursecontext)) {
+                $maincontextoptions[$coursecontext->id] = ai_manager_utils::get_context_displayname($coursecontext, $tenant);
+            }
         }
 
         $maincontextselect =
-                $mform->createElement('select', 'maincontext', get_string('choosecontext', 'local_ai_manager'), [],
+                $mform->createElement('select', 'contextid', get_string('choosecontext', 'local_ai_manager'), [],
                         ['onchange' => 'this.form.requestSubmit()']);
         foreach ($maincontextoptions as $key => $value) {
             $maincontextselect->addOption($value, $key);
         }
 
-        if ($accessmanager->is_tenant_member() && has_capability('local/ai_manager:viewprompts', $tenant->get_context())) {
+        if ($accessmanager->is_tenant_member() && has_capability('local/ai_manager:viewtenantprompts', $tenant->get_context())) {
             // Add a placeholder.
             $maincontextselect->addOption('', '', ['disabled' => 'disabled']);
             $maincontextselect->addOption(ai_manager_utils::get_context_displayname($tenant->get_context(), $tenant),

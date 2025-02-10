@@ -344,9 +344,9 @@ class ai_manager_utils {
      */
     private static function shorten_prompt(string $prompt): string {
         $prompt = strip_tags($prompt);
-        $length = strlen($prompt);
-        $shortened = substr($prompt, 0, 50);
-        return strlen($shortened) === $length ? $prompt : $shortened . '...';
+        $length = mb_strlen($prompt);
+        $shortened = mb_substr($prompt, 0, 50);
+        return mb_strlen($shortened) === $length ? $prompt : $shortened . '...';
     }
 
     /**

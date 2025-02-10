@@ -69,7 +69,11 @@ class get_prompts extends external_api {
 
         $context = \context::instance_by_id($contextid);
         self::validate_context($context);
-        require_capability('local/ai_manager:viewprompts', $context);
+        if ($context->contextlevel === CONTEXT_COURSE) {
+            require_capability('local/ai_manager:viewprompts', $context);
+        } else {
+            require_capability('local/ai_manager:viewtenantprompts', $context);
+        }
 
         try {
             $return = ['code' => 200, 'string' => 'ok',

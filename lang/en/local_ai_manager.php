@@ -33,6 +33,7 @@ $string['ai_manager:managevertexcache'] = 'Get and change the configuration of t
 $string['ai_manager:use'] = 'Use ai_manager';
 $string['ai_manager:viewprompts'] = 'View prompts of users';
 $string['ai_manager:viewstatistics'] = 'View statistics';
+$string['ai_manager:viewtenantprompts'] = 'View prompts of users that have been used on tenant context (outside courses)';
 $string['ai_manager:viewusage'] = 'View usage information';
 $string['ai_manager:viewusernames'] = 'View non anonymized usernames in statistics';
 $string['ai_manager:viewuserstatistics'] = 'View statistics of single users';

@@ -54,9 +54,11 @@ $accessmanager->require_tenant_member();
 $context = empty($contextid) ? $tenant->get_context() : \context::instance_by_id($contextid);
 if ($context->contextlevel === CONTEXT_COURSE) {
     $PAGE->set_course(get_course($context->instanceid));
+    require_capability('local/ai_manager:viewprompts', $context);
+} else {
+    require_capability('local/ai_manager:viewtenantprompts', $context);
 }
 
-require_capability('local/ai_manager:viewprompts', $context);
 
 $url = new moodle_url('/local/ai_manager/view_prompts.php');
 $PAGE->set_url($url);
@@ -82,24 +84,16 @@ $contextselectorform = new context_selector_form(null, ['maincontext' => $contex
 if ($contextselectorform->is_cancelled()) {
     redirect($returnurl);
 } else {
-    if ($contextselectorform->get_data()) {
-        $context = \context::instance_by_id($contextselectorform->get_data()->maincontext);
-        $returnurl->param('contextid', $context->id);
-        $returnurl->remove_params(['tenant']);
-        redirect($returnurl);
-    }
-
     echo $OUTPUT->header();
-    if ($accessmanager->is_tenant_manager()) {
+    if ($accessmanager->is_tenant_manager() && $context->id === $tenant->get_context()->id) {
         $tenantnavbar = new tenantnavbar('view_prompts.php');
         echo $OUTPUT->render($tenantnavbar);
     }
 
-    $contextselectorform->set_data(['maincontext' => $context->id]);
+    $contextselectorform->set_data(['contextid' => $context->id]);
     $contextselectorform->display();
 
     // Render View prompts table.
-
     echo html_writer::start_div('',
             [
                     'id' => 'local_ai_manager-viewprompts',
