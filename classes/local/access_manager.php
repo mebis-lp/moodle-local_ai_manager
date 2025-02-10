@@ -93,6 +93,20 @@ class access_manager {
     }
 
     /**
+     * Utility function to check if the current user belongs to the currently active tenant.
+     *
+     * This function will not check any capabilities, only the membership.
+     *
+     * @return bool true if the user belongs to the tenant, false otherwise
+     */
+    public function is_tenant_member(): bool {
+        global $USER;
+        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
+
+        return $USER->{$tenantfield} === $this->tenant->get_sql_identifier();
+    }
+
+    /**
      * Requires the current user to be a member of the currently set tenant.
      *
      * @throws \moodle_exception if the tenant is not allowed or the user must not use this tenant

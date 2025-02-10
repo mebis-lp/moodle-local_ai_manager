@@ -154,3 +154,24 @@ body.limitcontentwidth #page-content {
 #page-local-ai_manager-edit_instance [data-name="vertexcachestatus"] {
     width: 100%;
 }
+
+.modal-dialog.local_ai_manager-prompts_view_modal {
+    max-width: 95%;
+}
+
+.local_ai_manager-prompts_view_modal table {
+    table-layout: fixed;
+}
+
+.local_ai_manager-prompts_view_table-context {
+    width: 15%;
+}
+
+.local_ai_manager-prompts_view_table-prompt,
+.local_ai_manager-prompts_view_table-promptcompletion {
+    width: 35%;
+}
+
+.local_ai_manager-prompts_view_table-date {
+    width: 12%;
+}

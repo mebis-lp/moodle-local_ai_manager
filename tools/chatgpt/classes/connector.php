@@ -19,6 +19,7 @@ namespace aitool_chatgpt;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use local_ai_manager\request_options;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -50,7 +51,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+    public function execute_prompt_completion(StreamInterface $result, request_options $requestoptions): prompt_response {
         // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
         /* TODO error handling: check if answer contains "stop", then the LLM will have successfully done something.
             If not, we need to do some error handling and return prompt_response::create_from_error(...
@@ -69,10 +70,11 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+    public function get_prompt_data(string $prompttext, request_options $requestoptions): array {
+        $options = $requestoptions->get_options();
         $messages = [];
-        if (array_key_exists('conversationcontext', $requestoptions)) {
-            foreach ($requestoptions['conversationcontext'] as $message) {
+        if (array_key_exists('conversationcontext', $options)) {
+            foreach ($options['conversationcontext'] as $message) {
                 switch ($message['sender']) {
                     case 'user':
                         $role = 'user';
@@ -92,7 +94,7 @@ class connector extends \local_ai_manager\base_connector {
                 ];
             }
             $messages[] = ['role' => 'user', 'content' => $prompttext];
-        } else if (array_key_exists('image', $requestoptions)) {
+        } else if (array_key_exists('image', $options)) {
             $messages[] = [
                     'role' => 'user',
                     'content' => [
@@ -103,7 +105,7 @@ class connector extends \local_ai_manager\base_connector {
                             [
                                     'type' => 'image_url',
                                     'image_url' => [
-                                            'url' => $requestoptions['image'],
+                                            'url' => $options['image'],
                                     ],
                             ],
                     ],

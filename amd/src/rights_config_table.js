@@ -31,7 +31,8 @@ export const selectors = {
     CHECKBOX: 'input[data-userid]',
     SELECTALLCHECKBOX: '#rights-table-selectall_checkbox',
     SELECTIONINFO: '#rights-table-selection_info',
-    USERIDS_INPUT_FIELD: '#rights-table-userids'
+    USERIDS_INPUT_FIELD: '#rights-table-userids',
+    EXECUTE_BUTTON: '#id_executeaction'
 };
 
 /**
@@ -135,4 +136,5 @@ const updateSelectionCountInfo = async() => {
     const selectionCountInfoTarget = table.querySelector(selectors.SELECTIONINFO);
     const infoText = await getString('selecteduserscount', 'local_ai_manager', checkedCheckboxesCount());
     selectionCountInfoTarget.innerHTML = infoText;
+    document.querySelector(selectors.EXECUTE_BUTTON).disabled = checkedCheckboxesCount() === 0;
 };

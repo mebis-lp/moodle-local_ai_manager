@@ -61,5 +61,11 @@ $functions = [
                 'ajax' => true,
                 'capabilities' => '',
         ],
-
+        'local_ai_manager_get_prompts' => [
+                'classname' => 'local_ai_manager\external\get_prompts',
+                'description' => 'Fetch the prompts of a user in a given context',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local_ai_manager:viewprompts',
+        ],
 ];

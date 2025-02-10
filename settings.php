@@ -97,5 +97,14 @@ if ($hassiteconfig) {
                 new lang_string('aiwarningurldesc', 'local_ai_manager'),
                 ''
         ));
+
+        $roles = get_all_roles(\context_system::instance());
+        $roles = role_fix_names($roles, null, ROLENAME_BOTH, true);
+        $settings->add(new admin_setting_configmultiselect('local_ai_manager/privilegedroles',
+                get_string('privilegedroles', 'local_ai_manager'),
+                get_string('privilegedrolesdesc', 'local_ai_manager'),
+                ['manager'],
+                $roles
+        ));
     }
 }
