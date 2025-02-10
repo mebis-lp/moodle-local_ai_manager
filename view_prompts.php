@@ -105,7 +105,6 @@ if ($contextselectorform->is_cancelled()) {
                     'id' => 'local_ai_manager-viewprompts',
                     'data-contextid' => $context->id,
                     'data-contextdisplayname' => ai_manager_utils::get_context_displayname($context, $tenant),
-                    'data-userdisplayname' => fullname($USER),
             ]
     );
 

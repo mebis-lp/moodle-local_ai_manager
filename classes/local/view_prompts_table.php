@@ -53,7 +53,7 @@ class view_prompts_table extends table_sql {
             moodle_url $baseurl,
             \context $context
     ) {
-        global $DB, $PAGE;
+        global $DB;
         parent::__construct($uniqid);
         $this->set_attribute('id', $uniqid);
         $this->define_baseurl($baseurl);
@@ -120,8 +120,15 @@ class view_prompts_table extends table_sql {
     public function other_cols($column, $row) {
         if ($column === 'viewprompts') {
             if (!in_array($row->id, $this->excludeduserids)) {
-                return '<button data-view-prompts="' . $row->id .
-                        '" class="btn btn-icon"><i class="fa fa-search-plus"></i></button>';
+                return \core\output\html_writer::tag(
+                        'button',
+                        \core\output\html_writer::tag('i', '', ['class' => 'fa fa-search-plus']),
+                        [
+                                'class' => 'btn btn-icon',
+                                'data-view-prompts-userid' => $row->id,
+                                'data-view-prompts-userdisplayname' => $row->firstname . ' ' . $row->lastname,
+                        ]
+                );
             } else {
                 return '';
             }

@@ -32,12 +32,12 @@ const templateContext = {};
 
 export const init = (tableWrapperId) => {
     const table = document.getElementById(tableWrapperId);
-    table.querySelectorAll('[data-view-prompts]').forEach(viewLink => {
+    table.querySelectorAll('[data-view-prompts-userid]').forEach(viewLink => {
         viewLink.addEventListener('click', async() => {
-            const userId = viewLink.dataset.viewPrompts;
+            const userId = viewLink.dataset.viewPromptsUserid;
             const contextId = table.dataset.contextid;
             const contextDisplayName = table.dataset.contextdisplayname;
-            const userDisplayName = table.dataset.userdisplayname;
+            const userDisplayName = viewLink.dataset.viewPromptsUserdisplayname;
 
             const currentTime = new Date();
             const lastDay = Math.floor(new Date(currentTime.getTime() - 24 * 60 * 60 * 1000).getTime() / 1000);
