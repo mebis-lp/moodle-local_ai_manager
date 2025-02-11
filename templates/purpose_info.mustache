@@ -61,9 +61,7 @@
         <h4>{{#str}}privacy_terms_heading, local_ai_manager{{/str}}</h4>
         {{#showtermsofuse}}
             <p class="alert alert-info">{{#str}}privacy_terms_description, local_ai_manager{{/str}}</p>
-            <div class="border border-dark m-3 p-3">
-                {{{termsofuse}}}
-            </div>
+            {{> local_ai_manager/termsofuse}}
         {{/showtermsofuse}}
         {{^showtermsofuse}}
             <p>{{#str}}privacy_terms_missing, local_ai_manager{{/str}}</p>
