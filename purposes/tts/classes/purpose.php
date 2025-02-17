@@ -72,6 +72,8 @@ class purpose extends base_purpose {
 
     #[\Override]
     public function get_additional_request_options(array $options): array {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
         if (empty($options['itemid'])) {
             $options['itemid'] = file_get_unused_draft_itemid();
         }
