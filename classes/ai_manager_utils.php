@@ -82,15 +82,10 @@ class ai_manager_utils {
         $tenant = \core\di::get(tenant::class);
         if ($tenant->get_context()->id === $maincontext->id) {
             $contextids = $DB->get_fieldset('local_ai_manager_request_log', 'DISTINCT contextid',
-                    ['tenant' => $tenant->get_sql_identifier(), 'userid' => $userid]);
-            // We now filter: We keep log entries for contexts that do not exist anymore, and we only keep contexts that
-            // do not belong to a course.
-            $contextids = array_filter($contextids, function($contextid) {
-                $context = \context::instance_by_id($contextid, IGNORE_MISSING);
-                return !$context || is_null(ai_manager_utils::find_closest_parent_course_context($context));
-            });
+                    ['tenant' => $tenant->get_sql_identifier(), 'userid' => $userid, 'coursecontextid' => SYSCONTEXTID]);
         } else if ($maincontext->contextlevel === CONTEXT_COURSE) {
-            $contextids = array_map(fn($context) => $context->id, $maincontext->get_child_contexts());
+            $contextids = $DB->get_fieldset('local_ai_manager_request_log', 'DISTINCT contextid',
+                    ['userid' => $userid, 'coursecontextid' => $maincontext->id]);
         }
 
         if (empty($contextids)) {

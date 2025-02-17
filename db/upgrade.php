@@ -255,5 +255,35 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025012200, 'local', 'ai_manager');
     }
 
+    if ($oldversion < 2025021700) {
+
+        $table = new xmldb_table('local_ai_manager_request_log');
+        $field = new xmldb_field('coursecontextid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'contextid');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $rs = $DB->get_recordset('local_ai_manager_request_log');
+        foreach ($rs as $record) {
+            $context = context::instance_by_id($record->contextid, IGNORE_MISSING);
+            if (!$context) {
+                $record->coursecontextid = SYSCONTEXTID;
+            } else {
+                $closestparentcontext = \local_ai_manager\ai_manager_utils::find_closest_parent_course_context($context);
+                if (is_null($closestparentcontext)) {
+                    $record->coursecontextid = SYSCONTEXTID;
+                } else {
+                    $record->coursecontextid = $closestparentcontext->id;
+                }
+            }
+            $DB->update_record('local_ai_manager_request_log', $record);
+        }
+        $rs->close();
+
+        // Ai_manager savepoint reached.
+        upgrade_plugin_savepoint(true, 2025021700, 'local', 'ai_manager');
+    }
+
     return true;
 }

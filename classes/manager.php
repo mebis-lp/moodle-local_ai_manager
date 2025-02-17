@@ -265,6 +265,9 @@ class manager {
         }
         $data->component = $requestoptions->get_component();
         $data->contextid = $requestoptions->get_context()->id;
+        $context = \context_helper::instance_by_id($data->contextid);
+        $coursecontext = ai_manager_utils::find_closest_parent_course_context($context);
+        $data->coursecontextid = $coursecontext ? $coursecontext->id : SYSCONTEXTID;
         if (array_key_exists('itemid', $requestoptions->get_options())) {
             $data->itemid = intval($requestoptions->get_options()['itemid']);
         }
