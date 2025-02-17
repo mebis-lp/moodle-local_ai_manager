@@ -65,6 +65,14 @@ class purpose extends base_purpose {
     }
 
     #[\Override]
+    public function get_additional_request_options(array $options): array {
+        if (empty($options['itemid'])) {
+            $options['itemid'] = file_get_unused_draft_itemid();
+        }
+        return $options;
+    }
+
+    #[\Override]
     public function format_output(string $output): string {
         // We do not want any formatting.
         // The clean_param is only to be extra safe, there shouldn't be any tags in the output anyway.

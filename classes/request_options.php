@@ -42,7 +42,7 @@ class request_options {
             /** @var array additional request options for the AI request */
             private array $options = []
     ) {
-        $this->options = $this->purpose->get_request_options($this->options);
+        $this->options = $this->purpose->get_request_options($options);
     }
 
     /**
