@@ -47,10 +47,8 @@ if (!empty($purpose)) {
             . get_string('pluginname', 'aipurpose_' . $purpose), 4, 'text-center');
 }
 
-$tenantfield = get_config('local_ai_manager', 'tenantcolumn');
 $recordscount =
-        $DB->count_records_sql("SELECT COUNT(*) FROM {local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id"
-                . " WHERE u." . $tenantfield . " = :tenant",
+        $DB->count_records_sql("SELECT COUNT(*) FROM {local_ai_manager_request_log} WHERE tenant = :tenant",
                 ['tenant' => $tenant->get_sql_identifier()]);
 
 if ($recordscount !== 0) {
