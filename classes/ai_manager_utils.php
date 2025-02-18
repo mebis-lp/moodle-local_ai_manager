@@ -291,6 +291,7 @@ class ai_manager_utils {
                 'userlocked' => $userinfo->is_locked(),
                 'userconfirmed' => $userinfo->is_confirmed(),
                 'role' => userinfo::get_role_as_string($userinfo->get_role()),
+                'scope' => $userinfo->get_scope(),
                 'aiwarningurl' => $aiwarningurl,
                 'purposes' => $purposes,
                 'tools' => $tools,
