@@ -138,6 +138,11 @@ class base_purpose {
      * @return string the formatted output
      */
     public function format_output(string $output): string {
+        // We need to additionally escape some sequences so mathjax filter can be applied properly in the frontend.
+        $output = str_replace('\\(', '\\\\(', $output);
+        $output = str_replace('\\)', '\\\\)', $output);
+        $output = str_replace('\\[', '\\\\[', $output);
+        $output = str_replace('\\]', '\\\\]', $output);
         return format_text($output, FORMAT_MARKDOWN, ['filter' => false]);
     }
 }
