@@ -135,14 +135,6 @@ body.limitcontentwidth #page-content {
     margin: 0;
 }
 
-.local_ai_manager-info-warning .local_ai_manager-info-warning-link {
-    color: #a4a5ac;
-}
-
-.dark .local_ai_manager-info-warning .local_ai_manager-info-warning-link {
-    color: #60616d;
-}
-
 .local_ai_manager-caching_enabled {
     color: #f00;
 }
