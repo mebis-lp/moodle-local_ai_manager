@@ -52,7 +52,7 @@ class confirm_ai_usage_form extends \moodleform {
             $mform->addElement('advcheckbox', 'dataprocessing', get_string('consentdataprocessing', 'local_ai_manager'));
         }
 
-        $this->add_action_buttons();
+        $this->add_action_buttons(false, get_string('confirm', 'local_ai_manager'));
     }
 
     #[\Override]

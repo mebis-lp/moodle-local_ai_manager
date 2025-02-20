@@ -45,7 +45,6 @@ $PAGE->set_pagelayout('admin');
 
 $strtitle = get_string('confirmaitoolsusage_heading', 'local_ai_manager');
 $PAGE->set_title($strtitle);
-$PAGE->set_heading($strtitle);
 $PAGE->navbar->add($strtitle);
 $PAGE->set_secondary_navigation(false);
 
