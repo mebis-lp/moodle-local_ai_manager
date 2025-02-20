@@ -266,6 +266,12 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
 
         $rs = $DB->get_recordset('local_ai_manager_request_log');
         foreach ($rs as $record) {
+            if (empty($record->contextid)) {
+                // This should not really happen. But there might be plugins that did not properly send a context id before it was
+                // required.
+                $record->contextid = SYSCONTEXTID;
+                $record->coursecontextid = SYSCONTEXTID;
+            }
             $context = context::instance_by_id($record->contextid, IGNORE_MISSING);
             if (!$context) {
                 $record->coursecontextid = SYSCONTEXTID;
