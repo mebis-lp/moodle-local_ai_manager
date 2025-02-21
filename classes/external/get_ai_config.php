@@ -100,6 +100,8 @@ class get_ai_config extends external_api {
                 new external_value(PARAM_BOOL, 'If user has confirmed to use the AI tools', VALUE_REQUIRED);
         $singlestructuredefinition['role'] =
                 new external_value(PARAM_TEXT, 'The user\'s role in the context of the AI manager', VALUE_REQUIRED);
+        $singlestructuredefinition['scope'] =
+                new external_value(PARAM_INT, 'The user\'s scope', VALUE_REQUIRED);
         $singlestructuredefinition['aiwarningurl'] =
                 new external_value(PARAM_URL, 'The URL which should be shown to the user to warn about AI results', VALUE_REQUIRED);
         return new external_single_structure(

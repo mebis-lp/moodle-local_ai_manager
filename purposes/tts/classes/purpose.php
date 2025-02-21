@@ -60,7 +60,7 @@ class purpose extends base_purpose {
                 throw new coding_exception('You must not define the option ' . $key . ' in the connector class');
             }
         }
-        $returnoptions = ['filename' => PARAM_TEXT] + $connectoroptions;
+        $returnoptions = ['filename' => PARAM_TEXT, 'itemid' => PARAM_INT] + $connectoroptions;
         foreach ($allowedoptionkeys as $key => $value) {
             if (!array_key_exists($key, $returnoptions)) {
                 $returnoptions[$key] = $value;
@@ -68,6 +68,16 @@ class purpose extends base_purpose {
         }
 
         return $returnoptions;
+    }
+
+    #[\Override]
+    public function get_additional_request_options(array $options): array {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+        if (empty($options['itemid'])) {
+            $options['itemid'] = file_get_unused_draft_itemid();
+        }
+        return $options;
     }
 
     #[\Override]

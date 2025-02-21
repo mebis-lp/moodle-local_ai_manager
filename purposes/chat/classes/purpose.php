@@ -38,7 +38,7 @@ use local_ai_manager\base_purpose;
 class purpose extends base_purpose {
 
     #[\Override]
-    public function get_request_options(array $options): array {
+    public function get_additional_request_options(array $options): array {
         if (array_key_exists('conversationcontext', $options)) {
             return ['conversationcontext' => $options['conversationcontext']];
         }

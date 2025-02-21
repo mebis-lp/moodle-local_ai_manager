@@ -16,6 +16,7 @@
 
 namespace local_ai_manager;
 
+use context;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
@@ -61,6 +62,94 @@ class ai_manager_utils {
         }
         $records = $DB->get_records('local_ai_manager_request_log', $params, 'timecreated ASC');
         return !empty($records) ? $records : [];
+    }
+
+    /**
+     * Retrieves the entries from the request_log table and structures it for delivering them to the "view prompts" table.
+     *
+     * External function that delivers this data: @param int $contextid The main context id the prompts should be retrieved
+     *
+     * @param int $userid the id of the user to retrieve the prompts
+     * @param int $time the time since when the prompts should be retrieved
+     * @return array complex structured array containing the prompts
+     * @see \local_ai_manager\external\get_prompts .
+     *
+     */
+    public static function get_structured_entries_by_context(int $contextid, int $userid = 0, int $time = 0): array {
+        global $DB;
+
+        $maincontext = \context::instance_by_id($contextid);
+        $tenant = \core\di::get(tenant::class);
+        if ($tenant->get_context()->id === $maincontext->id) {
+            $contextids = $DB->get_fieldset('local_ai_manager_request_log', 'DISTINCT contextid',
+                    ['tenant' => $tenant->get_sql_identifier(), 'userid' => $userid, 'coursecontextid' => SYSCONTEXTID]);
+        } else if ($maincontext->contextlevel === CONTEXT_COURSE) {
+            $contextids = $DB->get_fieldset('local_ai_manager_request_log', 'DISTINCT contextid',
+                    ['userid' => $userid, 'coursecontextid' => $maincontext->id]);
+        }
+
+        if (empty($contextids)) {
+            return [];
+        }
+
+        [$insql, $inparams] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED);
+
+        $params = $inparams;
+        if (!empty($userid)) {
+            $params['userid'] = $userid;
+        }
+
+        $timesql = '';
+        if (!empty($time)) {
+            $timesql = " AND timecreated > :time";
+            $params['time'] = $time;
+        }
+        $sql = "SELECT * FROM {local_ai_manager_request_log} WHERE userid = :userid AND contextid " . $insql . $timesql .
+                " ORDER BY timecreated DESC";
+        $records = $DB->get_records_sql($sql, $params);
+        if (empty($records)) {
+            return [];
+        }
+
+        $entries = [];
+        $sequencenumber = 1;
+        foreach ($records as $record) {
+            $context = \context::instance_by_id($record->contextid, IGNORE_MISSING);
+            $contextname = $context ? $context->get_context_name() : get_string('contextdeleted', 'local_ai_manager');
+            $canviewpromptsdates = $context ? has_capability('local/ai_manager:viewpromptsdates', $context) : false;
+            $promptobject = [
+                    'sequencenumber' => $sequencenumber,
+                    'prompt' => format_text($record->prompttext, FORMAT_MARKDOWN),
+                    'promptshortened' => self::shorten_prompt(format_text($record->prompttext, FORMAT_MARKDOWN)),
+                    'promptcompletion' => format_text($record->promptcompletion, FORMAT_MARKDOWN),
+                    'promptcompletionshortened' => self::shorten_prompt(format_text($record->promptcompletion, FORMAT_MARKDOWN)),
+                    'date' => $canviewpromptsdates ? $record->timecreated : 0,
+            ];
+
+            if (in_array($record->purpose, ['imggen', 'tts'])) {
+                $promptobject['promptcompletion'] =
+                        '| ' . get_string('promptcompletitionfilesnotavailable', 'local_ai_manager') . ' |';
+                $promptobject['promptcompletionshortened'] = $promptobject['promptcompletion'];
+            }
+
+            if (array_key_exists($record->contextid, $entries)) {
+                $promptobject['firstprompt'] = false;
+                $entries[$record->contextid]['prompts'][] = $promptobject;
+            } else {
+                $promptobject['firstprompt'] = true;
+                $entries[$record->contextid] = [
+                        'contextid' => $record->contextid,
+                        'contextdisplayname' => $contextname,
+                        'prompts' => [$promptobject],
+                        'viewpromptsdates' => $canviewpromptsdates,
+                ];
+            }
+            $sequencenumber++;
+        }
+        foreach ($entries as $key => $value) {
+            $entries[$key]['promptscount'] = count($value['prompts']);
+        }
+        return $entries;
     }
 
     /**
@@ -202,9 +291,75 @@ class ai_manager_utils {
                 'userlocked' => $userinfo->is_locked(),
                 'userconfirmed' => $userinfo->is_confirmed(),
                 'role' => userinfo::get_role_as_string($userinfo->get_role()),
+                'scope' => $userinfo->get_scope(),
                 'aiwarningurl' => $aiwarningurl,
                 'purposes' => $purposes,
                 'tools' => $tools,
         ];
+    }
+
+    /**
+     * Determines the closest course parent context based on the past context.
+     *
+     * Will return null if the context has no parent course context.
+     *
+     * @param context $context The context to find the closest parent course context for
+     * @return context|null The closest parent course context or null if there is not course parent context
+     */
+    public static function find_closest_parent_course_context(context $context): ?context {
+        if ($context->contextlevel < CONTEXT_COURSE) {
+            // There can't be a course context in a context with contextlevel below course context,
+            // because these are CONTEXT_SYSTEM, CONTEXT_USER, CONTEXT_COURSECAT.
+            return null;
+        }
+        if ($context->contextlevel === CONTEXT_COURSE) {
+            return $context;
+        }
+        return self::find_closest_parent_course_context($context->get_parent_context());
+    }
+
+    /**
+     * Helper function to add a category to a (course edit) form.
+     *
+     * This can be called by other AI plugins using the {@see \core_course\hook\after_form_definition} hook to extend
+     * the course edit form. Calling this function will add an AI tools category below which the plugins can add their
+     * mform elements. This function will only add a category if there does not exist one yet.
+     *
+     * @param \MoodleQuickForm $mform the mform object to add the heading to
+     */
+    public static function add_ai_tools_category_to_mform(\MoodleQuickForm $mform): void {
+        if (!$mform->elementExists('aitoolsheader')) {
+            $mform->addElement('header', 'aitoolsheader', get_string('aicourseeditheader', 'local_ai_manager'));
+        }
+    }
+
+    /**
+     * Small helper function to generate a shortened (preview) version of a prompt or prompt completion.
+     *
+     * @param string $prompt the prompt to shorten
+     * @return string the shortened prompt with HTML tags being stripped
+     */
+    private static function shorten_prompt(string $prompt): string {
+        $prompt = strip_tags($prompt);
+        $length = mb_strlen($prompt);
+        $shortened = mb_substr($prompt, 0, 50);
+        return mb_strlen($shortened) === $length ? $prompt : $shortened . '...';
+    }
+
+    /**
+     * Utility function to retrieve a good display name for a context in the local_ai_manager.
+     *
+     * Will usually return the context name. If the context is the tenant context, the tenant name will be returned.
+     *
+     * @param context $context the context to retrieve the name for
+     * @param ?tenant $tenant the tenant to retrieve the name from if the context is the tenant context
+     * @return string the context display name
+     */
+    public static function get_context_displayname(\context $context, ?tenant $tenant = null): string {
+        if (!is_null($tenant) && $tenant->get_context()->id === $context->id) {
+            return get_string('tenant', 'local_ai_manager') . ': ' . $tenant->get_fullname();
+        } else {
+            return $context->get_context_name();
+        }
     }
 }

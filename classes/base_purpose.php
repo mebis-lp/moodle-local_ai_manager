@@ -38,7 +38,28 @@ class base_purpose {
      * @param array $options the current options which can be filtered/manipulated etc.
      * @return array the eventually manipulated options array
      */
-    public function get_request_options(array $options): array {
+    final public function get_request_options(array $options): array {
+        $newoptions = [];
+        if (!empty($options['itemid'])) {
+            $newoptions['itemid'] = $options['itemid'];
+        }
+        if (!empty($options['forcenewitemid'])) {
+            $newoptions['forcenewitemid'] = $options['forcenewitemid'];
+        }
+        return $newoptions + $this->get_additional_request_options($options);
+    }
+
+    /**
+     * Function that can be used by subclasses to manipulate the options being sent in a request.
+     *
+     * Subclasses can override this function and manipulate the options being sent in a request to the
+     * needs of the specific purpose. The default is to just use all options. The options are being sanitized before
+     * by using {@see self::get_available_purpose_options}.
+     *
+     * @param array $options the options being sent in the request
+     * @return array the manipulated options
+     */
+    public function get_additional_request_options(array $options): array {
         return $options;
     }
 
@@ -84,8 +105,6 @@ class base_purpose {
      */
     final public function get_available_purpose_options(): array {
         $options = [];
-        $options['component'] = PARAM_TEXT;
-        $options['contextid'] = PARAM_INT;
         $options['itemid'] = PARAM_INT;
         $options['forcenewitemid'] = PARAM_BOOL;
         $additionalpurposeoptions = $this->get_additional_purpose_options();
@@ -119,6 +138,11 @@ class base_purpose {
      * @return string the formatted output
      */
     public function format_output(string $output): string {
+        // We need to additionally escape some sequences so mathjax filter can be applied properly in the frontend.
+        $output = str_replace('\\(', '\\\\(', $output);
+        $output = str_replace('\\)', '\\\\)', $output);
+        $output = str_replace('\\[', '\\\\[', $output);
+        $output = str_replace('\\]', '\\\\]', $output);
         return format_text($output, FORMAT_MARKDOWN, ['filter' => false]);
     }
 }

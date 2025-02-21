@@ -61,14 +61,13 @@ class statistics_overview_table extends table_sql {
         $this->collapsible(false);
 
         $fields = 'modelinfo, connector, COUNT(modelinfo) AS requestcount, SUM(value) AS userusage';
-        $from = '{local_ai_manager_request_log} rl JOIN {user} u ON rl.userid = u.id';
-        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
+        $from = '{local_ai_manager_request_log}';
         $tenant = \core\di::get(tenant::class);
-        $where = 'u.' . $tenantfield . ' = :tenant GROUP BY modelinfo, connector';
+        $where = 'tenant = :tenant GROUP BY modelinfo, connector';
         $params = ['tenant' => $tenant->get_sql_identifier()];
         $this->set_sql($fields, $from, $where, $params);
-        $this->set_count_sql('SELECT COUNT(DISTINCT modelinfo) FROM {local_ai_manager_request_log} rl'
-                . ' JOIN {user} u ON rl.userid = u.id WHERE u.' . $tenantfield . ' = :tenant',
+        $this->set_count_sql(
+                "SELECT COUNT(DISTINCT modelinfo) FROM {local_ai_manager_request_log} WHERE tenant = :tenant",
                 $params);
 
         parent::setup();

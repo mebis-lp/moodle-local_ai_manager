@@ -1,6 +1,10 @@
 {
+    "subplugintypes": {
+        "aitool": "tools",
+        "aipurpose": "purposes"
+    },
     "plugintypes": {
-        "aitool": "local\/ai_manager\/tools",
-        "aipurpose": "local\/ai_manager\/purposes"
+        "aitool": "local/ai_manager/tools",
+        "aipurpose": "local/ai_manager/purposes"
     }
 }

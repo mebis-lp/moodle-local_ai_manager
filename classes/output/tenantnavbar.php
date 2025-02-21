@@ -60,15 +60,18 @@ class tenantnavbar implements renderable, \templatable {
         $data->quotaconfigactive = $this->relativeactiveurl === 'quota_config.php';
         $data->rightsconfigactive = $this->relativeactiveurl === 'rights_config.php';
         $data->statisticsoverviewactive = $this->relativeactiveurl === 'statistics.php';
+        $data->userstatisticsactive = $this->relativeactiveurl === 'user_statistics.php';
+        $data->viewpromptsactive = $this->relativeactiveurl === 'view_prompts.php';
 
         $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_context());
         $data->showuserstatistics = has_capability('local/ai_manager:viewuserstatistics', $tenant->get_context());
+        $data->showviewprompts = has_capability('local/ai_manager:viewprompts', $tenant->get_context());
         $statisticspurposes = [];
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $statisticspurposes[] = [
                     'pluginname' => $purpose,
                     'fullname' => get_string('pluginname', 'aipurpose_' . $purpose),
-                    'active' => $this->relativeactiveurl === 'statistics.php?purpose=' . $purpose,
+                    'active' => $this->relativeactiveurl === 'purpose_statistics.php?purpose=' . $purpose,
             ];
         }
         $data->statisticspurposes = $statisticspurposes;

@@ -21,6 +21,7 @@ use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use local_ai_manager\request_options;
 use Locale;
 use Psr\Http\Message\StreamInterface;
 
@@ -47,7 +48,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function make_request(array $data): request_response {
+    public function make_request(array $data, request_options $requestoptions): request_response {
         $client = new http_client([
                 'timeout' => get_config('local_ai_manager', 'requesttimeout'),
         ]);
@@ -72,9 +73,10 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+    public function execute_prompt_completion(StreamInterface $result, request_options $requestoptions): prompt_response {
         global $USER;
 
+        $options = $requestoptions->get_options();
         $content = json_decode($result->getContents(), true);
 
         $fs = get_file_storage();
@@ -98,14 +100,15 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+    public function get_prompt_data(string $prompttext, request_options $requestoptions): array {
+        $options = $requestoptions->get_options();
         return [
                 'input' => [
                         'text' => $prompttext,
                 ],
                 'voice' => [
-                        'ssmlGender' => $requestoptions['gender'][0],
-                        'languageCode' => $requestoptions['languages'][0],
+                        'ssmlGender' => $options['gender'][0],
+                        'languageCode' => $options['languages'][0],
                 ],
                 'audioConfig' => [
                         'audioEncoding' => 'MP3',

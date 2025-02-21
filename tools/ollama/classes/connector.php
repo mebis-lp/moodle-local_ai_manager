@@ -19,6 +19,7 @@ namespace aitool_ollama;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use local_ai_manager\request_options;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -51,7 +52,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+    public function execute_prompt_completion(StreamInterface $result, request_options $requestoptions): prompt_response {
 
         $content = json_decode($result->getContents(), true);
 
@@ -66,10 +67,11 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+    public function get_prompt_data(string $prompttext, request_options $requestoptions): array {
+        $options = $requestoptions->get_options();
         $messages = [];
-        if (array_key_exists('conversationcontext', $requestoptions)) {
-            foreach ($requestoptions['conversationcontext'] as $message) {
+        if (array_key_exists('conversationcontext', $options)) {
+            foreach ($options['conversationcontext'] as $message) {
                 switch ($message['sender']) {
                     case 'user':
                         $role = 'user';
@@ -89,11 +91,11 @@ class connector extends \local_ai_manager\base_connector {
                 ];
             }
             $messages[] = ['role' => 'user', 'content' => $prompttext];
-        } else if (array_key_exists('image', $requestoptions)) {
+        } else if (array_key_exists('image', $options)) {
             $messages[] = [
                     'role' => 'user',
                     'content' => $prompttext,
-                    'images' => [explode(',', $requestoptions['image'])[1]],
+                    'images' => [explode(',', $options['image'])[1]],
             ];
         } else {
             $messages[] = ['role' => 'user', 'content' => $prompttext];
@@ -112,6 +114,6 @@ class connector extends \local_ai_manager\base_connector {
 
     #[\Override]
     public function allowed_mimetypes(): array {
-        return ['image/png', 'image/jpg'];
+        return ['image/png', 'image/jpg', 'image/jpeg'];
     }
 }

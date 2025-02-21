@@ -21,6 +21,7 @@ use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
+use local_ai_manager\request_options;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -54,7 +55,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function execute_prompt_completion(StreamInterface $result, array $options = []): prompt_response {
+    public function execute_prompt_completion(StreamInterface $result, request_options $requestoptions): prompt_response {
         // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
         /* TODO error handling: check if answer contains "stop", then the LLM will have successfully done something.
             If not, we need to do some error handling and return prompt_response::create_from_error(...
@@ -77,10 +78,11 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function get_prompt_data(string $prompttext, array $requestoptions): array {
+    public function get_prompt_data(string $prompttext, request_options $requestoptions): array {
+        $options = $requestoptions->get_options();
         $messages = [];
-        if (array_key_exists('conversationcontext', $requestoptions)) {
-            foreach ($requestoptions['conversationcontext'] as $message) {
+        if (array_key_exists('conversationcontext', $options)) {
+            foreach ($options['conversationcontext'] as $message) {
                 switch ($message['sender']) {
                     case 'user':
                         $role = 'user';
@@ -108,17 +110,17 @@ class connector extends \local_ai_manager\base_connector {
                             ['text' => $prompttext],
                     ],
             ];
-        } else if (array_key_exists('image', $requestoptions)) {
+        } else if (array_key_exists('image', $options)) {
             $messages[] = [
                     'role' => 'user',
                     'parts' => [
                             ['text' => $prompttext],
                             [
                                     'inline_data' => [
-                                            'mime_type' => mime_content_type($requestoptions['image']),
+                                            'mime_type' => mime_content_type($options['image']),
                                         // Gemini API expects the plain base64 encoded string,
                                         // without the leading data url metadata.
-                                            'data' => explode(',', $requestoptions['image'])[1],
+                                            'data' => explode(',', $options['image'])[1],
                                     ],
                             ],
                     ],
@@ -164,7 +166,7 @@ class connector extends \local_ai_manager\base_connector {
     }
 
     #[\Override]
-    public function make_request(array $data): request_response {
+    public function make_request(array $data, request_options $requestoptions): request_response {
         if ($this->instance->get_customfield2() === instance::GOOGLE_BACKEND_VERTEXAI) {
             $vertexaiauthhandler =
                     new aitool_option_vertexai_authhandler($this->instance->get_id(), $this->instance->get_customfield3());
@@ -173,7 +175,7 @@ class connector extends \local_ai_manager\base_connector {
             } catch (\moodle_exception $exception) {
                 return request_response::create_from_error(0, $exception->getMessage(), $exception->getTraceAsString());
             }
-            $requestresponse = parent::make_request($data);
+            $requestresponse = parent::make_request($data, $requestoptions);
             // We keep track of the time the cached access token expires. However, due latency, different clocks
             // on different servers etc. we could end up sending a request with an actually expired access token.
             // In this case we refresh our access token and re-submit the request ONE TIME.
@@ -185,7 +187,7 @@ class connector extends \local_ai_manager\base_connector {
                 }
             }
         }
-        return parent::make_request($data);
+        return parent::make_request($data, $requestoptions);
     }
 
     #[\Override]

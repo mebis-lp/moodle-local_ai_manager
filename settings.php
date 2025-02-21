@@ -84,11 +84,43 @@ if ($hassiteconfig) {
                 '60'
         ));
 
-        $settings->add(new admin_setting_configtextarea(
+        $settings->add(new admin_setting_confightmleditor(
                 'local_ai_manager/termsofuse',
                 new lang_string('termsofusesetting', 'local_ai_manager'),
                 new lang_string('termsofusesettingdesc', 'local_ai_manager'),
-                ''
+                '',
+                PARAM_RAW,
+                60,
+                20
+        ));
+
+        $roles = get_all_roles(\context_system::instance());
+        $roles = role_fix_names($roles, null, ROLENAME_BOTH, true);
+        $settings->add(new admin_setting_configmultiselect('local_ai_manager/legalroles',
+                get_string('legalroles', 'local_ai_manager'),
+                get_string('legalrolesdesc', 'local_ai_manager'),
+                ['manager'],
+                $roles
+        ));
+
+        $settings->add(new admin_setting_confightmleditor(
+                'local_ai_manager/termsofuselegal',
+                new lang_string('termsofuselegalsetting', 'local_ai_manager'),
+                new lang_string('termsofuselegalsettingdesc', 'local_ai_manager'),
+                '',
+                PARAM_RAW,
+                60,
+                20
+        ));
+
+        $settings->add(new admin_setting_confightmleditor(
+                'local_ai_manager/dataprocessing',
+                new lang_string('dataprocessingsetting', 'local_ai_manager'),
+                new lang_string('dataprocessingsettingdesc', 'local_ai_manager'),
+                '',
+                PARAM_RAW,
+                60,
+                20
         ));
 
         $settings->add(new admin_setting_configtext(
@@ -96,6 +128,15 @@ if ($hassiteconfig) {
                 new lang_string('aiwarningurl', 'local_ai_manager'),
                 new lang_string('aiwarningurldesc', 'local_ai_manager'),
                 ''
+        ));
+
+        $roles = get_all_roles(\context_system::instance());
+        $roles = role_fix_names($roles, null, ROLENAME_BOTH, true);
+        $settings->add(new admin_setting_configmultiselect('local_ai_manager/privilegedroles',
+                get_string('privilegedroles', 'local_ai_manager'),
+                get_string('privilegedrolesdesc', 'local_ai_manager'),
+                ['manager'],
+                $roles
         ));
     }
 }

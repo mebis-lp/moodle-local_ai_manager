@@ -39,6 +39,9 @@ class userstats_table extends table_sql {
     /** @var bool if the names of the user should be shown (otherwise they will be anonymized). */
     private bool $shownames;
 
+    /** @var array stores the privileged role ids: Users with these role assignments have to be anonymized. */
+    private array $privilegedroles;
+
     /**
      * Constructor.
      *
@@ -86,29 +89,27 @@ class userstats_table extends table_sql {
         $this->collapsible(false);
         $this->sortable(true, 'lastname');
 
-        $tenantfield = get_config('local_ai_manager', 'tenantcolumn');
         if (!empty($purpose)) {
-            $fields = 'u.id as id, lastname, firstname, locked, COUNT(value) AS requestcount, SUM(value) AS tokens';
+            $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount, SUM(value) AS tokens';
             $from = '{local_ai_manager_request_log} rl '
-                    . 'LEFT JOIN {local_ai_manager_userinfo} ui ON rl.userid = ui.userid '
-                    . 'JOIN {user} u ON u.id = rl.userid';
-            $where = $tenantfield . ' = :tenant AND purpose = :purpose GROUP BY u.id, lastname, firstname, locked';
+                    . 'LEFT JOIN {user} u ON u.id = rl.userid';
+            $where = 'rl.tenant = :tenant AND purpose = :purpose GROUP BY u.id, lastname, firstname';
             $params = [
                     'tenant' => $tenant->get_sql_identifier(),
                     'purpose' => $purpose,
             ];
             $this->set_count_sql(
-                    "SELECT COUNT(DISTINCT rl.userid) FROM " . $from . " "
-                    . "WHERE " . $tenantfield . " = :tenant AND purpose = :purpose",
+                    "SELECT COUNT(DISTINCT userid) FROM {local_ai_manager_request_log}"
+                    . " WHERE tenant = :tenant AND purpose = :purpose",
                     $params
             );
         } else {
             $fields = 'u.id as id, lastname, firstname, COUNT(value) AS requestcount';
             $from = '{local_ai_manager_request_log} rl LEFT JOIN {user} u ON rl.userid = u.id';
-            $where = 'u.' . $tenantfield . ' = :tenant GROUP BY u.id, lastname, firstname';
+            $where = 'rl.tenant = :tenant GROUP BY u.id, lastname, firstname';
             $params = ['tenant' => $tenant->get_sql_identifier()];
             $this->set_count_sql(
-                    "SELECT COUNT(DISTINCT u.id) FROM " . $from . " WHERE u." . $tenantfield . " = :tenant",
+                    "SELECT COUNT(DISTINCT userid) FROM {local_ai_manager_request_log} WHERE tenant = :tenant",
                     $params
             );
         }
@@ -116,6 +117,7 @@ class userstats_table extends table_sql {
         parent::setup();
 
         $this->shownames = has_capability('local/ai_manager:viewusernames', $tenant->get_context());
+        $this->privilegedroles = explode(',', get_config('local_ai_manager', 'privilegedroles'));
     }
 
     /**
@@ -125,7 +127,14 @@ class userstats_table extends table_sql {
      * @return string the resulting string for the lastname column
      */
     public function col_lastname(stdClass $value): string {
-        return $this->shownames ? $value->lastname : get_string('anonymized', 'local_ai_manager');
+        $userhasprivilegedrole = is_siteadmin($value->id) ||
+                array_reduce($this->privilegedroles,
+                        fn($acc, $cur) => $acc || user_has_role_assignment($value->id, $cur, SYSCONTEXTID));
+        if (is_siteadmin() || ($this->shownames && !$userhasprivilegedrole)) {
+            return $value->lastname;
+        } else {
+            return get_string('anonymized', 'local_ai_manager');
+        }
     }
 
     /**
@@ -135,7 +144,14 @@ class userstats_table extends table_sql {
      * @return string the resulting string for the firstname column
      */
     public function col_firstname(stdClass $value): string {
-        return $this->shownames ? $value->firstname : get_string('anonymized', 'local_ai_manager');
+        $userhasprivilegedrole = is_siteadmin($value->id) ||
+                array_reduce($this->privilegedroles,
+                        fn($acc, $cur) => $acc || user_has_role_assignment($value->id, $cur, SYSCONTEXTID));
+        if (is_siteadmin() || ($this->shownames && !$userhasprivilegedrole)) {
+            return $value->firstname;
+        } else {
+            return get_string('anonymized', 'local_ai_manager');
+        }
     }
 
     /**

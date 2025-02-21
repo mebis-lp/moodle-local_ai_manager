@@ -122,4 +122,33 @@ $capabilities = [
                         'manager' => CAP_ALLOW,
                 ],
         ],
+        'local/ai_manager:viewprompts' => [
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_COURSE,
+                'archetypes' => [
+                        'student' => CAP_PREVENT,
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                ],
+        ],
+        'local/ai_manager:viewtenantprompts' => [
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_PREVENT,
+                        'teacher' => CAP_PREVENT,
+                        'editingteacher' => CAP_PREVENT,
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
+        'local/ai_manager:viewpromptsdates' => [
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_PREVENT,
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
 ];
