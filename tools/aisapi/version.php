@@ -15,19 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Settings page to be included as tab in ai_managers settings page
+ * Version file for aitool_aisapi.
  *
- * @package    aipurpose_imggen
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    aitool_aisapi
+ * @copyright  2025 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$settings = new admin_settingpage('tab_aipurpose_imggen', get_string('pluginname', 'aipurpose_imggen'));
-
-$name = new lang_string('pluginname', 'aipurpose_imggen');
-$settings->add(new admin_setting_heading('pluginname', $name, ''));
-
-$tabs->add($settings);
+$plugin->version  = 2025022500;
+$plugin->requires = 2023042403;
+$plugin->release = '0.0.1';
+$plugin->component = 'aitool_aisapi';
+$plugin->maturity = MATURITY_ALPHA;

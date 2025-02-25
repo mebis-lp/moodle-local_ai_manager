@@ -29,10 +29,11 @@ global $DB;
 
 if ($hassiteconfig) {
 
-    $ADMIN->add('localplugins', new admin_category('local_ai_manager_settings',
-            new lang_string('pluginname', 'local_ai_manager')));
-    $settings = new admin_settingpage('local_ai_manager', get_string('pluginname', 'local_ai_manager'));
-    $ADMIN->add('localplugins', $settings);
+    $aimanagercategory = new admin_category('local_ai_manager_settings',
+            new lang_string('pluginname', 'local_ai_manager'));
+    $ADMIN->add('localplugins', $aimanagercategory);
+    $settings = new admin_settingpage('local_ai_manager', get_string('basicsettings', 'local_ai_manager'));
+    $ADMIN->add('local_ai_manager_settings', $settings);
 
     if ($ADMIN->fulltree) {
         $settings->add(
@@ -144,5 +145,40 @@ if ($hassiteconfig) {
                 ['manager'],
                 $roles
         ));
+    }
+
+    $aitoolssettingpage =
+            new admin_settingpage('aitoolpluginsmanagement', get_string('subplugintype_aitool_plural', 'local_ai_manager'));
+    $aitoolssettingpage->add(new \core_admin\admin\admin_setting_plugin_manager(
+            'aitool',
+            \local_ai_manager\table\aitools_admin_table::class,
+            'aitools_management',
+            get_string('subplugintype_aitool_plural', 'local_ai_manager')
+    ));
+
+    $aipurposessettingpage =
+            new admin_settingpage('aipurposepluginsmanagement', get_string('subplugintype_aipurpose_plural', 'local_ai_manager'));
+    $aipurposessettingpage->add(new \core_admin\admin\admin_setting_plugin_manager(
+            'aipurpose',
+            \local_ai_manager\table\aipurposes_admin_table::class,
+            'aipurposes_management',
+            get_string('subplugintype_aitool_plural', 'local_ai_manager')
+    ));
+
+    $ADMIN->add('local_ai_manager_settings', $aitoolssettingpage);
+    $ADMIN->add('local_ai_manager_settings', $aipurposessettingpage);
+
+    $ADMIN->add('local_ai_manager_settings', new admin_category('aitoolplugins',
+            new lang_string('aitoolplugins', 'local_ai_manager')));
+    $plugins = \core_plugin_manager::instance()->get_plugins_of_type('aitool');
+    foreach ($plugins as $plugin) {
+        $plugin->load_settings($ADMIN, 'aitoolplugins', $hassiteconfig);
+    }
+
+    $ADMIN->add('local_ai_manager_settings', new admin_category('aipurposeplugins',
+            new lang_string('aipurposeplugins', 'local_ai_manager')));
+    $plugins = \core_plugin_manager::instance()->get_plugins_of_type('aipurpose');
+    foreach ($plugins as $plugin) {
+        $plugin->load_settings($ADMIN, 'aipurposeplugins', $hassiteconfig);
     }
 }
