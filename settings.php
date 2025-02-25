@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+global $DB;
+
 if ($hassiteconfig) {
 
     $ADMIN->add('localplugins', new admin_category('local_ai_manager_settings',
@@ -94,7 +96,13 @@ if ($hassiteconfig) {
                 20
         ));
 
-        $roles = get_all_roles(\context_system::instance());
+        $roleids = get_roles_for_contextlevels(CONTEXT_SYSTEM);
+        if (empty($roleids)) {
+            $roles = [];
+        } else {
+            [$insql, $inparams] = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED);
+            $roles = $DB->get_records_select('role', "id $insql", $inparams, 'shortname');
+        }
         $roles = role_fix_names($roles, null, ROLENAME_BOTH, true);
         $settings->add(new admin_setting_configmultiselect('local_ai_manager/legalroles',
                 get_string('legalroles', 'local_ai_manager'),
@@ -130,8 +138,6 @@ if ($hassiteconfig) {
                 ''
         ));
 
-        $roles = get_all_roles(\context_system::instance());
-        $roles = role_fix_names($roles, null, ROLENAME_BOTH, true);
         $settings->add(new admin_setting_configmultiselect('local_ai_manager/privilegedroles',
                 get_string('privilegedroles', 'local_ai_manager'),
                 get_string('privilegedrolesdesc', 'local_ai_manager'),
