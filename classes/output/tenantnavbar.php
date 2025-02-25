@@ -65,7 +65,7 @@ class tenantnavbar implements renderable, \templatable {
 
         $data->showstatistics = has_capability('local/ai_manager:viewstatistics', $tenant->get_context());
         $data->showuserstatistics = has_capability('local/ai_manager:viewuserstatistics', $tenant->get_context());
-        $data->showviewprompts = has_capability('local/ai_manager:viewprompts', $tenant->get_context());
+        $data->showviewprompts = has_capability('local/ai_manager:viewtenantprompts', $tenant->get_context());
         $statisticspurposes = [];
         foreach (base_purpose::get_all_purposes() as $purpose) {
             $statisticspurposes[] = [
