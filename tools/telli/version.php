@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * Version file for aitool_telli.
  *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    aitool_telli
+ * @copyright  2025 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2025022103;
-$plugin->requires = 2024042200;
-$plugin->release = '1.0';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_BETA;
+$plugin->version  = 2025022500;
+$plugin->requires = 2023042403;
+$plugin->release = '0.0.1';
+$plugin->component = 'aitool_telli';
+$plugin->maturity = MATURITY_ALPHA;
