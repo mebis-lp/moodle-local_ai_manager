@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+global $CFG;
+
 if ($hassiteconfig) {
 
     $settings->add(new admin_setting_configtext('aitool_aisapi/baseurl',
@@ -48,5 +50,14 @@ if ($hassiteconfig) {
                 meta-llama/Meta-Llama-3.1-8B-Instruct
                 mistralai/Mistral-7B-Instruct-v0.3
                 mistralai/Mixtral-8x7B-Instruct-v0.1'
+    ));
+
+    $settings->add(new admin_setting_description('aitool_aisapi/managementsitebutton',
+            get_string('managementpage', 'aitool_aisapi'),
+            '<p><a class="btn btn-secondary" href="' . $CFG->wwwroot . '/local/ai_manager/tools/aisapi/management.php">'
+            . get_string('managementpagelink', 'aitool_aisapi')
+            . '</a></p><p>'
+            . get_string('managementpagelinkdesc', 'aitool_aisapi')
+            . '</p>'
     ));
 }

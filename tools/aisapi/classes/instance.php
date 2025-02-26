@@ -17,7 +17,6 @@
 namespace aitool_aisapi;
 
 use local_ai_manager\base_instance;
-use local_ai_manager\local\aitool_option_azure;
 use local_ai_manager\local\aitool_option_temperature;
 use stdClass;
 
@@ -58,6 +57,8 @@ class instance extends base_instance {
     #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
         $temperature = aitool_option_temperature::extract_temperature_to_store($data);
+        // Necessary to avoid that the endpoint is null which can cause trouble.
+        $this->set_endpoint('');
         $this->set_customfield1($temperature);
 
     }
