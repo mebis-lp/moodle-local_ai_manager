@@ -17,7 +17,6 @@
 namespace aitool_aisapi;
 
 use local_ai_manager\base_instance;
-use local_ai_manager\local\aitool_option_azure;
 use local_ai_manager\local\aitool_option_temperature;
 use stdClass;
 
