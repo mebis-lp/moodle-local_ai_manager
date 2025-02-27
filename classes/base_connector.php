@@ -232,11 +232,11 @@ abstract class base_connector {
             }
         }
         $debuginfo = $exception->getMessage() . '\n' . $exception->getTraceAsString() . '\n';
-        if (method_exists($exception, 'getResponse') && !empty($exception->getResponse())) {
+        $rawresponse = method_exists($exception, 'getResponse') ? $exception->getResponse() : null;
+        if (!empty($rawresponse)) {
             $debuginfo .= $exception->getResponse()->getBody()->getContents();
         }
-        return request_response::create_from_error($exception->getCode(), $message, $debuginfo,
-                $exception->getResponse()->getBody());
+        return request_response::create_from_error($exception->getCode(), $message, $debuginfo, $rawresponse);
     }
 
     /**
