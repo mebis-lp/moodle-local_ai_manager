@@ -15,17 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * aitool_aisapi privacy provider class.
  *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    aitool_aisapi
+ * @copyright  2025 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2025022101;
-$plugin->requires = 2024042200;
-$plugin->release = '1.0';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_BETA;
+namespace aitool_aisapi\privacy;
+
+/**
+ * aitool_aisapi privacy provider class.
+ *
+ * @package    aitool_aisapi
+ * @copyright  2025 ISB Bayern
+ * @author     Philipp Memmel
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}
