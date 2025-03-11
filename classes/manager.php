@@ -18,6 +18,7 @@ namespace local_ai_manager;
 
 use context;
 use context_system;
+use core\clock;
 use core_plugin_manager;
 use local_ai_manager\event\get_ai_response_failed;
 use local_ai_manager\event\get_ai_response_succeeded;
@@ -42,7 +43,7 @@ class manager {
     /** @var base_purpose The purpose which is being used for this request */
     private base_purpose $purpose;
 
-    /** @var base_connector $connector The tool connector object. */
+    /** @var base_connector The tool connector object. */
     private base_connector $connector;
 
     /** @var local\connector_factory the connector factory for retrieving necessary objects */
@@ -50,6 +51,9 @@ class manager {
 
     /** @var config_manager the config manager object */
     private config_manager $configmanager;
+
+    /** @var clock the clock object to retrieve time from. */
+    private clock $clock;
 
     /**
      * Create the manager for a specific purpose.
@@ -68,6 +72,7 @@ class manager {
             throw new \moodle_exception('error_noaitoolassignedforpurpose', 'local_ai_manager', '', $purpose);
         }
         $this->configmanager = \core\di::get(config_manager::class);
+        $this->clock = \core\di::get(clock::class);
     }
 
     /**
@@ -280,7 +285,7 @@ class manager {
         if (array_key_exists('itemid', $requestoptions->get_options())) {
             $data->itemid = intval($requestoptions->get_options()['itemid']);
         }
-        $data->timecreated = time();
+        $data->timecreated = $this->clock->time();
         $recordid = $DB->insert_record('local_ai_manager_request_log', $data);
 
         // Check if we already have a userinfo object for this. If not we need to create one to initially set the correct role.
