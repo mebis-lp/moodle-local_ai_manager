@@ -251,6 +251,14 @@ class userinfo {
     }
 
     /**
+     * Deletes the userinfo record of the user.
+     */
+    public function delete(): void {
+        global $DB;
+        $DB->delete_records('local_ai_manager_userinfo', ['userid' => $this->userid]);
+    }
+
+    /**
      * Helper function to get the tenant for a user.
      *
      * @param int $userid the id of the user to get the tenant for
