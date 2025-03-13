@@ -18,6 +18,7 @@ namespace local_ai_manager;
 
 use core\http_client;
 use core_plugin_manager;
+use GuzzleHttp\Psr7\Response;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
@@ -235,6 +236,9 @@ abstract class base_connector {
         $rawresponse = method_exists($exception, 'getResponse') ? $exception->getResponse() : null;
         if (!empty($rawresponse)) {
             $debuginfo .= $exception->getResponse()->getBody()->getContents();
+        }
+        if ($rawresponse instanceof Response) {
+            $rawresponse = $rawresponse->getBody();
         }
         return request_response::create_from_error($exception->getCode(), $message, $debuginfo, $rawresponse);
     }
