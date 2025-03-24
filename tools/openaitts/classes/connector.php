@@ -89,7 +89,22 @@ class connector extends \local_ai_manager\base_connector {
                 'filepath' => '/',
                 'filename' => $options['filename'],
         ];
-        $file = $fs->create_file_from_string($fileinfo, $result);
+
+
+
+        //$file = $fs->create_file_from_string($fileinfo, $result);
+
+        $tmpdir = make_request_directory();
+        $tempfile = $tmpdir . '/temp.mp3';
+        file_put_contents($tempfile, $result);
+
+        $mp3 = new php_mp3($tempfile);
+        $mp3->striptags();
+        $mp3->mergeBehind($mp3);
+        $mp3->mergeBehind($mp3);
+        $mp3->save($tempfile);;
+
+        $file = $fs->create_file_from_pathname($fileinfo, $tempfile);
 
         $filepath = \moodle_url::make_draftfile_url(
                 $file->get_itemid(),
