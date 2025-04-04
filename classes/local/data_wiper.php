@@ -66,7 +66,12 @@ class data_wiper {
                 ['anonymizedate' => $this->anonymizedate]
         );
         foreach ($rs as $record) {
-            $this->anonymize_request_log_record($record);
+            $anonymizecontext = false;
+            $context = \context::instance_by_id($record->contextid, IGNORE_MISSING);
+            if ($context && $context->contextlevel == CONTEXT_USER && $context->instanceid == $record->userid) {
+                $anonymizecontext = true;
+            }
+            $this->anonymize_request_log_record($record, $anonymizecontext);;
         }
         $rs->close();
     }
@@ -91,13 +96,18 @@ class data_wiper {
      * All personal data will be removed from the record.
      *
      * @param stdClass $record the database record from local_ai_manager_request_log table
+     * @param bool $anonymizecontext if context should also be anonymized, typically only use if it is a user context,
+     *  defaults to false
      */
-    public function anonymize_request_log_record(stdClass $record): void {
+    public function anonymize_request_log_record(stdClass $record, bool $anonymizecontext = false): void {
         global $DB;
         $record->userid = null;
         $record->prompttext = self::ANONYMIZE_STRING;
         $record->promptcompletion = self::ANONYMIZE_STRING;
         $record->requestoptions = self::ANONYMIZE_STRING;
+        if ($anonymizecontext) {
+            $record->contextid = null;
+        }
         $DB->update_record('local_ai_manager_request_log', $record);
     }
 
