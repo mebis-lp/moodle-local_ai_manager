@@ -39,7 +39,6 @@ class usertable_extend {
      * @param tenant $tenant the tenant object
      * @param array $columns the columns array for the table
      * @param array $headers the headers array associated with the columns for the table
-     * @param array $filterids the ids which are selected in the filter by the user
      * @param string $fields the database fields to select for the table
      * @param string $from the "from" clause for the DB query
      * @param string $where the "where" clause for the DB query
@@ -52,8 +51,6 @@ class usertable_extend {
             private array $columns,
             /** @var array $headers the headers array associated with the columns for the table */
             private array $headers,
-            /** @var array $filterids the ids which are selected in the filter by the user */
-            private array $filterids,
             /** @var string $fields the database fields to select for the table */
             private string $fields,
             /** @var string $from the "from" clause for the DB query */
@@ -90,15 +87,6 @@ class usertable_extend {
      */
     public function get_headers(): array {
         return $this->headers;
-    }
-
-    /**
-     * Standard getter
-     *
-     * @return array the ids the user selected in the filter
-     */
-    public function get_filterids(): array {
-        return $this->filterids;
     }
 
     /**

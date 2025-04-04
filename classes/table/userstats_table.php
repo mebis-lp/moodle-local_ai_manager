@@ -14,9 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_ai_manager\local;
+namespace local_ai_manager\table;
 
+use core\context;
+use core_table\dynamic;
 use local_ai_manager\base_purpose;
+use local_ai_manager\local\tenant;
+use local_ai_manager\local\unit;
 use moodle_url;
 use stdClass;
 use table_sql;
@@ -34,7 +38,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class userstats_table extends table_sql {
+class userstats_table extends table_sql implements dynamic {
 
     /** @var bool if the names of the user should be shown (otherwise they will be anonymized). */
     private bool $shownames;
@@ -46,18 +50,18 @@ class userstats_table extends table_sql {
      * Constructor.
      *
      * @param string $uniqid a unique id for the table to use
-     * @param string $purpose the purpose identifier to create the table for
-     * @param tenant $tenant the tenant for which the table should be created
-     * @param moodle_url $baseurl the base url where this table is being rendered
      */
     public function __construct(
             string $uniqid,
-            string $purpose,
-            tenant $tenant,
-            moodle_url $baseurl
     ) {
         parent::__construct($uniqid);
+        $tenant = \core\di::get(tenant::class);
         $this->set_attribute('id', $uniqid);
+        $purpose = optional_param('purpose', '', PARAM_ALPHANUM);
+        $baseurl = empty($purpose)
+                ? new moodle_url('/local/ai_manager/user_statisticss.php', ['tenant' => $tenant->get_identifier()])
+                : new moodle_url('/local/ai_manager/purpose_statistics.php',
+                        ['tenant' => $tenant->get_identifier(), 'purpose' => $purpose]);
         $this->define_baseurl($baseurl);
         // Define the list of columns to show.
         $columns = ['lastname', 'firstname'];
@@ -118,6 +122,9 @@ class userstats_table extends table_sql {
 
         $this->shownames = has_capability('local/ai_manager:viewusernames', $tenant->get_context());
         $this->privilegedroles = explode(',', get_config('local_ai_manager', 'privilegedroles'));
+
+        $filterset = new userstats_table_filterset();
+        $this->set_filterset($filterset);
     }
 
     /**
@@ -162,5 +169,28 @@ class userstats_table extends table_sql {
      */
     public function col_tokens(stdClass $value): string {
         return strval(intval($value->tokens));
+    }
+
+    #[\Override]
+    public function get_context(): context {
+        $tenant = \core\di::get(tenant::class);
+        return $tenant->get_context();
+    }
+
+    #[\Override]
+    public function has_capability(): bool {
+        $tenant = \core\di::get(tenant::class);
+        return has_capability('local/ai_manager:manage', $tenant->get_context());
+    }
+
+    #[\Override]
+    public function guess_base_url(): void {
+        // We already do this in the constructor, but it's required to overwrite this for dynamic table usage.
+        $tenant = \core\di::get(tenant::class);
+        $baseurl = empty($purpose)
+                ? new moodle_url('/local/ai_manager/user_statisticss.php', ['tenant' => $tenant->get_identifier()])
+                : new moodle_url('/local/ai_manager/purpose_statistics.php',
+                        ['tenant' => $tenant->get_identifier(), 'purpose' => $purpose]);
+        $this->define_baseurl($baseurl);
     }
 }

@@ -167,6 +167,7 @@ $string['max_requests_purpose'] = 'Maximum number of requests per time window ({
 $string['max_requests_purpose_heading'] = 'Purpose {$a}';
 $string['medium'] = 'medium';
 $string['model'] = 'Model';
+$string['namepattern'] = 'Name';
 $string['nodata'] = 'No data to show';
 $string['noprompts'] = 'No prompts to show';
 $string['notconfirmed'] = 'Not accepted';

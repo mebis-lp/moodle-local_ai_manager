@@ -23,13 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_ai_manager\form\rights_config_filter_form;
 use local_ai_manager\form\rights_config_form;
-use local_ai_manager\local\rights_config_table;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\tenant_config_output_utils;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\output\tenantnavbar;
+use local_ai_manager\table\rights_config_table;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_login();
@@ -80,57 +79,19 @@ if ($rightsconfigform->is_cancelled()) {
 
     redirect($PAGE->url, get_string('userstatusupdated', 'local_ai_manager'));
 } else {
-
-    // Render and handle external filter provided through a hook.
-    $usertablefilter = new \local_ai_manager\hook\usertable_filter($tenant);
-    \core\di::get(\core\hook\manager::class)->dispatch($usertablefilter);
-    // phpcs:disable moodle.Commenting.TodoComment.MissingInfoInline
-    // TODO: Evtl. add validation possibility in usertable_filter.
-    // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
-
-    $filterform =
-            new rights_config_filter_form(null,
-                    [
-                            'hookfilteroptions' => $usertablefilter->get_filter_options(),
-                            'hookfilterlabel' => $usertablefilter->get_filter_label(),
-                    ]
-            );
-
-    // Get currently stored filter ids from user session.
-    $hookfilterids = $filterform->get_stored_filterids(rights_config_filter_form::FILTER_IDENTIFIER_HOOK_FILTER);
-    $rolefilterids = $filterform->get_stored_filterids(rights_config_filter_form::FILTER_IDENTIFIER_ROLE_FILTER);
-    if (!empty($filterform->get_data())) {
-        if (!empty($filterform->get_data()->resetfilter)) {
-            $filterform->store_filterids(rights_config_filter_form::FILTER_IDENTIFIER_HOOK_FILTER, []);
-            $filterform->store_filterids(rights_config_filter_form::FILTER_IDENTIFIER_ROLE_FILTER, []);
-            redirect($PAGE->url);
-        } else {
-            $hookfilterids = !empty($filterform->get_data()->hookfilterids) ? $filterform->get_data()->hookfilterids : [];
-            $rolefilterids = !empty($filterform->get_data()->rolefilterids) ? $filterform->get_data()->rolefilterids : [];
-        }
-    }
-
-    // Store filterdata in session.
-    $filterform->store_filterids(rights_config_filter_form::FILTER_IDENTIFIER_HOOK_FILTER, $hookfilterids);
-    $filterform->store_filterids(rights_config_filter_form::FILTER_IDENTIFIER_ROLE_FILTER, $rolefilterids);
-
-    // Set default data (if not set already by request).
-    $filterform->set_data(['hookfilterids' => $hookfilterids, 'rolefilterids' => $rolefilterids]);
-
     echo $OUTPUT->header();
 
     $tenantnavbar = new tenantnavbar('rights_config.php');
     echo $OUTPUT->render($tenantnavbar);
     echo $OUTPUT->heading(get_string('rightsconfig', 'local_ai_manager'), 2, 'text-center');
 
-    // Render filter form.
-    $filterform->display();
-
     // Render rights table.
     $uniqid = 'rights-config-table-' . uniqid();
-    $rightstable =
-            new rights_config_table($uniqid, $tenant, $PAGE->url, $hookfilterids, $rolefilterids);
-    $rightstable->out(100, false);
+    $renderable = new \local_ai_manager\output\rights_config_table_filter($tenant->get_context(), $uniqid);
+    $templatecontext = $renderable->export_for_template($OUTPUT);
+    echo $OUTPUT->render_from_template('local_ai_manager/table_filter', $templatecontext);
+    $rightstable = new rights_config_table($uniqid);
+    $rightstable->out(30, false);
     $rightsconfigform->display();
     $PAGE->requires->js_call_amd('local_ai_manager/rights_config_table', 'init', ['id' => $uniqid]);
 }
