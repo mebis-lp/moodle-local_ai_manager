@@ -35,7 +35,7 @@ class connector extends \local_ai_manager\base_connector {
     #[\Override]
     public function get_models_by_purpose(): array {
         return [
-                'tts' => ['tts-1'],
+                'tts' => ['tts-1', 'gpt-4o-mini-tts'],
         ];
     }
 
@@ -48,7 +48,11 @@ class connector extends \local_ai_manager\base_connector {
         ];
         if (!$this->instance->azure_enabled()) {
             // If azure is enabled, the model will be preconfigured in the azure resource, so we do not need to send it.
-            $data['model'] = $this->instance->get_model();
+            //$data['model'] = $this->instance->get_model();
+            $data['model'] = 'gpt-4o-mini-tts';
+            if ($this->instance->get_model() === 'gpt-4o-mini-tts') {
+                $data['instructions'] = 'Shout this text in a very high pitched voice';
+            }
         } else {
             // OpenAI via Azure expects the model to be sent despite being preconfigured in the resource. So we hardcode "tts".
             $data['model'] = 'tts';
