@@ -42,6 +42,7 @@ class connector extends \local_ai_manager\base_connector {
                 'singleprompt' => $chatgptmodels,
                 'translate' => $chatgptmodels,
                 'itt' => ['gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'],
+                'precheck' => $chatgptmodels,
         ];
     }
 

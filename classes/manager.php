@@ -178,6 +178,24 @@ class manager {
             );
         }
 
+        // Allow purpose to manipulate prompt.
+        $prompttext = $this->purpose->manipulate_prompt($prompttext);
+        // Allow purpose to manipulate request options.
+        $requestoptions = $this->purpose->manipulate_requestoptions($requestoptions);
+
+        if (!($this->purpose instanceof \aipurpose_precheck\purpose)
+                && !(array_key_exists('disableprecheck', $options) && $options['disableprecheck'])
+                && $this->factory->get_connector_by_purpose('precheck', $userinfo->get_role()) !== null) {
+            $precheckmanager = new manager('precheck');
+            $precheckresponse = $precheckmanager->perform_request($prompttext, $component, $contextid);
+            if ($precheckresponse->get_code() !== 200) {
+                return $precheckresponse;
+            }
+            if (trim($precheckresponse->get_content()) !== 'OK') {
+                return prompt_response::create_from_error(477, 'PRIVACY CHECK FAILED', 'PRIVACY CHECK FAILED');
+            }
+        }
+
         $promptdata = $this->connector->get_prompt_data($prompttext, $requestoptions);
         $starttime = microtime(true);
         try {
