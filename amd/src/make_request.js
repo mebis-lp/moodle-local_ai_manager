@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 import {call as fetchMany} from 'core/ajax';
+import ModalSaveCancel from 'core/modal_save_cancel';
+import ModalEvents from 'core/modal_events';
 
 /**
  * Call to store input value
@@ -61,5 +63,41 @@ const execMakeRequest = (
  * @returns {mixed}
  */
 export const makeRequest = async(purpose, prompt, component, contextid = 0, options = {}) => {
-    return execMakeRequest(purpose, prompt, component, contextid, JSON.stringify(options));
+    return new Promise((resolve, reject) => {
+        return execMakeRequest(purpose, prompt, component, contextid, JSON.stringify(options))
+            .then((result) => {
+                if (result.code === 477) {
+                    return ModalSaveCancel.create({
+                        title: "PERSONENBEZOGENE DATEN GEFUNDEN",
+                        body: "ES WURDEN PERSONENBEZOGENE DATEN GEFUNDEN. MOECHTEST DU DIESEN PROMPT WIRKLICH ABSCHICKEN?",
+                        large: true,
+                        buttons: {
+                            'save': "ABSCHICKEN",
+                            'cancel': "ABBRECHEN",
+                        },
+                        show: true,
+                    });
+                } else {
+                    return result;
+                }
+            })
+            .then(result => {
+                if (result instanceof ModalSaveCancel) {
+                    result.getRoot().on(ModalEvents.save, () => {
+                        options.disableprecheck = true;
+                        resolve(execMakeRequest(purpose, prompt, component, contextid, JSON.stringify(options)));
+                    });
+                    result.getRoot().on(ModalEvents.cancel, () => {
+                        resolve(null);
+                    });
+                } else {
+                    resolve(result);
+                }
+                return result;
+            })
+            .catch(error => {
+                reject(error);
+                return error;
+            });
+    });
 };

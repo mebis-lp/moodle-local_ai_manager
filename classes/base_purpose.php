@@ -107,6 +107,9 @@ class base_purpose {
         $options = [];
         $options['itemid'] = PARAM_INT;
         $options['forcenewitemid'] = PARAM_BOOL;
+        if (!($this instanceof \aipurpose_precheck\purpose)) {
+            $options['disableprecheck'] = PARAM_BOOL;
+        }
         $additionalpurposeoptions = $this->get_additional_purpose_options();
         foreach (array_keys($additionalpurposeoptions) as $purposeoption) {
             if (in_array($purposeoption, $options)) {
@@ -144,5 +147,13 @@ class base_purpose {
         $output = str_replace('\\[', '\\\\[', $output);
         $output = str_replace('\\]', '\\\\]', $output);
         return format_text($output, FORMAT_MARKDOWN, ['filter' => false]);
+    }
+
+    public function manipulate_prompt(string $prompt): string {
+        return $prompt;
+    }
+
+    public function manipulate_requestoptions(request_options $requestoptions): request_options {
+        return $requestoptions;
     }
 }
