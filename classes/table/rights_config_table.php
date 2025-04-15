@@ -200,13 +200,13 @@ class rights_config_table extends table_sql implements dynamic {
                 continue;
             }
             if ($filterset->get_join_type() === \core\output\datafilter::JOINTYPE_NONE) {
-                $filterwhere .= ' NOT ' . $filterwhere;
+                $filterwhere = ' NOT ' . $filterwhere;
             }
             if ($i !== 0) {
-                if ($filterset->get_join_type() === \core\output\datafilter::JOINTYPE_ANY ||
-                        $filterset->get_join_type() === \core\output\datafilter::JOINTYPE_NONE) {
+                if ($filterset->get_join_type() === \core\output\datafilter::JOINTYPE_ANY) {
                     $filtersql .= ' OR ';
-                } else if ($filterset->get_join_type() === \core\output\datafilter::JOINTYPE_ALL) {
+                } else if ($filterset->get_join_type() === \core\output\datafilter::JOINTYPE_ALL ||
+                        $filterset->get_join_type() === \core\output\datafilter::JOINTYPE_NONE) {
                     $filtersql .= ' AND ';
                 }
             }
