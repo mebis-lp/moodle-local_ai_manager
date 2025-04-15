@@ -24,6 +24,7 @@
 
 import Pending from 'core/pending';
 import {getString} from 'core/str';
+import * as TableEvents from 'core_table/local/dynamic/events';
 
 let table = null;
 
@@ -42,6 +43,22 @@ export const selectors = {
 export const init = (id) => {
     const pendingPromise = new Pending('local_ai_manager/rights_config_table');
     table = document.getElementById(id);
+
+    document.addEventListener(TableEvents.tableContentRefreshed, () => {
+        // Update the table object, because it has been newly created.
+        table = document.getElementById(id);
+        initCheckboxes();
+    });
+
+    initCheckboxes();
+
+    pendingPromise.resolve();
+};
+
+/**
+ * Add the proper listeners to the checkboxes in the table.
+ */
+const initCheckboxes = () => {
     table.querySelectorAll(selectors.CHECKBOX).forEach(checkbox => {
         checkbox.addEventListener('change', event => {
             updateSelectAllCheckboxState();
@@ -59,7 +76,6 @@ export const init = (id) => {
     // In case the browser remembered the state after site reload, we need to set the initial state of user ids dependent on the
     // boxes' current state.
     updateUserIds();
-    pendingPromise.resolve();
 };
 
 /**

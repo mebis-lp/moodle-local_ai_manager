@@ -64,8 +64,8 @@ if ($recordscount !== 0) {
 
     echo html_writer::div(get_string('userwithusageonlyshown', 'local_ai_manager'));
 
-    $table = new \local_ai_manager\local\userstats_table($uniqid, $purpose, $tenant, $baseurl);
-    $table->out(20, false);
+    $table = new \local_ai_manager\table\userstats_table($uniqid);
+    $table->out(30, false);
 } else {
     echo html_writer::div(get_string('nodata', 'local_ai_manager'), 'alert alert-info');
 }
