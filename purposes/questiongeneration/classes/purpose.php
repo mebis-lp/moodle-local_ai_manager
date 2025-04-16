@@ -17,59 +17,28 @@
 /**
  * Purpose genai methods
  *
- * @package    aipurpose_genai
+ * @package    aipurpose_questiongeneration
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aipurpose_genai;
+namespace aipurpose_questiongeneration;
 
 use local_ai_manager\base_purpose;
 
 /**
  * Purpose genai methods
  *
- * @package    aipurpose_genai
+ * @package    aipurpose_questiongeneration
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class purpose extends base_purpose {
 
-    /**
-     * Get the request options.
-     *
-     * @param array $options
-     * @return array
-     */
-    #[\Override]
-    public function get_request_options(array $options): array {
-
-        if (array_key_exists('messages', $options)) {
-            $messages = [];
-            foreach ($options['messages'] as $message) {
-                switch ($message['role']) {
-                    case 'user':
-                        $messages[] = ['sender' => 'user', 'message' => $message['content']];
-                        break;
-                    case 'system':
-                        $messages[] = ['sender' => 'system', 'message' => $message['content']];
-                        break;
-                }
-            }
-            return ['conversationcontext' => $messages];
-        }
-        return [];
-    }
-
-    /**
-     * Get the additional purpose options
-     *
-     * @return array
-     */
     #[\Override]
     public function get_additional_purpose_options(): array {
-        return ['messages' => base_purpose::PARAM_ARRAY];
+        return ['conversationcontext' => base_purpose::PARAM_ARRAY];
     }
 }
