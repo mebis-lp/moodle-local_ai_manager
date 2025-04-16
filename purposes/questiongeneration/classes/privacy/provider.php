@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * aipurpose_genai privacy provider class.
+ * aipurpose_questiongeneration privacy provider class.
  *
- * @package    aipurpose_genai
+ * @package    aipurpose_questiongeneration
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace aipurpose_genai\privacy;
+namespace aipurpose_questiongeneration\privacy;
 
 /**
- * aipurpose_genai privacy provider class.
+ * aipurpose_questiongeneration privacy provider class.
  *
- * @package    aipurpose_genai
+ * @package    aipurpose_questiongeneration
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
