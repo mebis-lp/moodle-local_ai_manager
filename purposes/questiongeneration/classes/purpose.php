@@ -41,4 +41,14 @@ class purpose extends base_purpose {
     public function get_additional_purpose_options(): array {
         return ['conversationcontext' => base_purpose::PARAM_ARRAY];
     }
+
+    public function format_output(string $output): string {
+        // If the LLM returns a code block, remove the code styling.
+        $matches = [];
+        preg_match('/^```[a-zA-Z0-9]*\s*(.*?)\s*```$/s', $output, $matches);
+        if (count($matches) > 1) {
+            $output = $matches[1];
+        }
+        return format_text($output, FORMAT_PLAIN, ['filter' => false]);
+    }
 }
