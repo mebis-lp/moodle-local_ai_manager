@@ -15,17 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * Event handlers.
  *
- * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   local_ai_manager
+ * @copyright 2025 ISB Bayern
+ * @author    Philipp Memmel
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2025040200;
-$plugin->requires = 2024042200;
-$plugin->release = '1.0';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_BETA;
+$observers = [
+        [
+                'eventname' => '\core\event\user_deleted',
+                'callback' => '\local_ai_manager\local\observers::user_deleted',
+        ],
+];
