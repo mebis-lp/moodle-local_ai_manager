@@ -42,6 +42,7 @@ class purpose extends base_purpose {
         return ['conversationcontext' => base_purpose::PARAM_ARRAY];
     }
 
+    #[\Override]
     public function format_output(string $output): string {
         // If the LLM returns a code block, remove the code styling.
         $matches = [];
