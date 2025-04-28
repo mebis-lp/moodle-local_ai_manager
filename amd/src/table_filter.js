@@ -18,7 +18,7 @@
  *
  * Basically copied from core_user/participants_filter.
  *
- * @module     local_ai_manager/tablefilter
+ * @module     local_ai_manager/table_filter
  * @copyright  2025 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
