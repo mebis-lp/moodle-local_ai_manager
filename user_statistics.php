@@ -29,9 +29,11 @@ use local_ai_manager\output\tenantnavbar;
 require_once(dirname(__FILE__) . '/../../config.php');
 require_login();
 
-global $CFG, $DB, $OUTPUT, $PAGE, $USER;
+global $CFG, $DB, $OUTPUT, $PAGE, $SESSION, $USER;
 
 tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/user_statistics.php'));
+// Make sure we do not have a purpose selected in the session when calling this page.
+unset($SESSION->local_ai_manager_statistics_purpose);
 
 $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
 require_capability('local/ai_manager:viewuserstatistics', $tenant->get_context());
