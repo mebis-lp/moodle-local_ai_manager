@@ -41,26 +41,37 @@ class ai_manager_utils {
      * @param int $userid the userid of the user, optional
      * @param int $itemid the itemid, optional
      * @param bool $includedeleted if log entries which are marked as deleted, should be included in the result
+     * @param string $fields Comma separated list of SQL fields to contain in the result, defaults to all fields
+     * @param array $purposes Array of purpose name strings that should be returned. If empty, all purposes will be returned.
      * @return array array of records of the log table
      */
     public static function get_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0,
-            bool $includedeleted = true): array {
+            bool $includedeleted = true, string $fields = '*', array $purposes = []): array {
         global $DB;
+        $select = "component = :component AND contextid = :contextid";
         $params = [
                 'component' => $component,
                 'contextid' => $contextid,
         ];
         if (!empty($userid)) {
+            $select .= " AND userid = :userid";
             $params['userid'] = $userid;
         }
         if (!empty($itemid)) {
+            $select .= " AND itemid = :itemid";
             $params['itemid'] = $itemid;
         }
         if (empty($includedeleted)) {
-            // The column 'deleted' is defined to have the value 0 by default, so we should be safe to use this as query param.
+            $select .= " AND deleted = 0";
+            // The column 'deleted' is defined to have value 0 by default, so we should be safe to use this as a query param.
             $params['deleted'] = 0;
         }
-        $records = $DB->get_records('local_ai_manager_request_log', $params, 'timecreated ASC');
+        if (!empty($purposes)) {
+            [$insql, $inparams] = $DB->get_in_or_equal($purposes, SQL_PARAMS_NAMED);
+            $select .= " AND purpose " . $insql;
+            $params = array_merge($params, $inparams);
+        }
+        $records = $DB->get_records_select('local_ai_manager_request_log', $select, $params, 'timecreated ASC', $fields);
         return !empty($records) ? $records : [];
     }
 
