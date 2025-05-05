@@ -84,6 +84,9 @@ $contextselectorform = new context_selector_form(null, ['maincontext' => $contex
 if ($contextselectorform->is_cancelled()) {
     redirect($returnurl);
 } else {
+    $url = $PAGE->url;
+    $url->param('contextid', $context->id);
+    $PAGE->set_url($url);
     echo $OUTPUT->header();
     if ($accessmanager->is_tenant_manager() && $context->id === $tenant->get_context()->id) {
         $tenantnavbar = new tenantnavbar('view_prompts.php');
