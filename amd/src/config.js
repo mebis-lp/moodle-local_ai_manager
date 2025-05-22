@@ -29,12 +29,16 @@ let aiConfig = null;
 /**
  * Make request for retrieving the purpose configuration for current tenant.
  *
+ * @param {int} contextid the id of the context for which we need the ai configuration
  * @param {string} tenant the tenant identifier or null, if the tenant of the user should be used
+ * @param {array} purposes array of purpose strings
  */
-const fetchAiConfig = (tenant = null) => fetchMany([{
+const fetchAiConfig = (contextid, tenant = null, purposes) => fetchMany([{
     methodname: 'local_ai_manager_get_ai_config',
     args: {
-        tenant
+        contextid,
+        tenant,
+        purposes
     },
 }])[0];
 
@@ -48,11 +52,13 @@ const fetchPurposeOptions = (purpose) => fetchMany([{
 /**
  * Executes the call to store input value.
  *
+ * @param {int} contextid the id of the context for which we need the ai configuration
  * @param {string} tenant the tenant identifier or null, if the tenant of the user should be used
+ * @param {array} purposes array of purpose strings
  */
-export const getAiConfig = async(tenant = null) => {
+export const getAiConfig = async(contextid, tenant = null, purposes = []) => {
     if (aiConfig === null) {
-        aiConfig = await fetchAiConfig(tenant);
+        aiConfig = await fetchAiConfig(contextid, tenant, purposes);
     }
     return aiConfig;
 };

@@ -43,6 +43,20 @@ class get_ai_config extends external_api {
                         'The tenant identifier, only useful to add if the user has access to multiple tenants',
                         VALUE_DEFAULT,
                         null),
+                'contextid' => new external_value(PARAM_INT,
+                        'The id of the current context',
+                        VALUE_DEFAULT,
+                        0),
+                'purposes' => new external_multiple_structure(
+                        new external_value(PARAM_ALPHANUM,
+                                'The purpose string',
+                                VALUE_REQUIRED,
+                        ),
+                        'The purposes to retrieve the config for',
+                        VALUE_DEFAULT,
+                        null,
+
+                ),
         ]);
     }
 
@@ -52,14 +66,23 @@ class get_ai_config extends external_api {
      * @param ?string $tenant the tenant to use, only useful for accounts which can access/manage more than their own tenant
      * @return array associative array containing the result of the request
      */
-    public static function execute(?string $tenant = null): array {
+    public static function execute(?string $tenant = null, int $contextid = 0, ?array $purposes = null): array {
         global $USER;
-        ['tenant' => $tenant] = self::validate_parameters(self::execute_parameters(), ['tenant' => $tenant]);
+        [
+                'tenant' => $tenant,
+                'contextid' => $contextid,
+                'purposes' => $purposes,
+        ] = self::validate_parameters(self::execute_parameters(),
+                [
+                        'tenant' => $tenant,
+                        'contextid' => $contextid,
+                        'purposes' => $purposes,
+                ]
+        );
         $context = \context_system::instance();
         self::validate_context($context);
         require_capability('local/ai_manager:use', $context);
-
-        return ai_manager_utils::get_ai_config($USER, $tenant);
+        return ai_manager_utils::get_ai_config($USER, $contextid, $tenant, $purposes);
     }
 
     /**
@@ -69,19 +92,24 @@ class get_ai_config extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         $singlestructuredefinition = [];
+        $singlestructuredefinition['availability'] = new external_single_structure([
+                        'available' => new external_value(PARAM_ALPHANUM,
+                                'If/How the frontend plugin should show itself is available, can be "available", '
+                                . '"hidden" or "disabled"',
+                                VALUE_REQUIRED),
+                        'errormessage' => new external_value(PARAM_RAW,
+                                'The error message that should be displayed to the user if the AI is not "available"',
+                                VALUE_REQUIRED),
+                ]
+        );
         $singlestructuredefinition['purposes'] = new external_multiple_structure(
                 new external_single_structure([
-                                'purpose' => new external_value(PARAM_ALPHANUM,
-                                        'Name of the tool configured for the purpose',
+                                'purpose' => new external_value(PARAM_ALPHANUM, 'The purpose name', VALUE_REQUIRED),
+                                'available' => new external_value(PARAM_ALPHANUM,
+                                        'if the purpose is available, can be "available", "hidden" or "disabled"',
                                         VALUE_REQUIRED),
-                                'isconfigured' => new external_value(PARAM_BOOL,
-                                        'If there is an AI tool configured for the purpose',
-                                        VALUE_REQUIRED),
-                                'limitreached' => new external_value(PARAM_BOOL,
-                                        'If the user has reached the maximum amount of requests for the purpose',
-                                        VALUE_REQUIRED),
-                                'lockedforrole' => new external_value(PARAM_BOOL,
-                                        'If the purpose is locked for the user\'s role',
+                                'errormessage' => new external_value(PARAM_TEXT,
+                                        'The error message that should be displayed to the user if the purpose is not "available"',
                                         VALUE_REQUIRED),
                         ]
                 ));
@@ -92,16 +120,6 @@ class get_ai_config extends external_api {
                 ])
         );
 
-        $singlestructuredefinition['tenantenabled'] =
-                new external_value(PARAM_BOOL, 'If AI manager is being enabled for this tenant', VALUE_REQUIRED);
-        $singlestructuredefinition['userlocked'] =
-                new external_value(PARAM_BOOL, 'If user is being locked, thus must not use any AI tools', VALUE_REQUIRED);
-        $singlestructuredefinition['userconfirmed'] =
-                new external_value(PARAM_BOOL, 'If user has confirmed to use the AI tools', VALUE_REQUIRED);
-        $singlestructuredefinition['role'] =
-                new external_value(PARAM_TEXT, 'The user\'s role in the context of the AI manager', VALUE_REQUIRED);
-        $singlestructuredefinition['scope'] =
-                new external_value(PARAM_INT, 'The user\'s scope', VALUE_REQUIRED);
         $singlestructuredefinition['aiwarningurl'] =
                 new external_value(PARAM_URL, 'The URL which should be shown to the user to warn about AI results', VALUE_REQUIRED);
         return new external_single_structure(
