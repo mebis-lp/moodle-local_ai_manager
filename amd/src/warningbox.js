@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import {getAiConfig} from 'local_ai_manager/config';
+import {getAiInfo} from 'local_ai_manager/config';
 import Log from 'core/log';
 import Templates from 'core/templates';
 
@@ -35,7 +35,7 @@ import Templates from 'core/templates';
 export const renderWarningBox = async(selector) => {
     let aiConfig = null;
     try {
-        aiConfig = await getAiConfig();
+        aiConfig = await getAiInfo();
     } catch (error) {
         // This typically happens if we do not have the capabilities to retrieve the AI config.
         // So we just eventually log in debug mode and do not render anything.

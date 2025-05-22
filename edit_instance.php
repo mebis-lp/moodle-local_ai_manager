@@ -63,7 +63,7 @@ if (!empty($del)) {
 
 if (!empty($id)) {
     $connectorinstance = $factory->get_connector_instance_by_id($id);
-    if (!$accessmanager->can_manage_connectorinstance($connectorinstance)) {
+    if (!$accessmanager->can_manage_connectorinstance($connectorinstance) || !$connectorinstance->is_enabled()) {
         throw new moodle_exception('exception_editinstancedenied', 'local_ai_manager');
     }
     $connectorname = $connectorinstance->get_connector();
