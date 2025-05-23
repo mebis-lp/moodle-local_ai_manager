@@ -64,8 +64,8 @@ class config_manager {
      */
     private function load_config(): void {
         global $DB;
+        $this->config = [];
         if (empty($this->tenant->get_identifier())) {
-            $this->config = [];
             return;
         }
         $records = $DB->get_records('local_ai_manager_config', ['tenant' => $this->tenant->get_identifier()]);
@@ -107,6 +107,7 @@ class config_manager {
                         'configkey' => $configkey,
                 ]
         );
+        $this->load_config();
     }
 
     /**
