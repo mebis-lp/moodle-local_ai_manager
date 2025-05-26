@@ -81,6 +81,10 @@ class request_options {
         return $this->options;
     }
 
+    public function set_options(array $options): void {
+        $this->options = $options;
+    }
+
     /**
      * Helper function that sanitizes the options against the options defined in the purpose class.
      *

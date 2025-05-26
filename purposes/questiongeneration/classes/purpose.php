@@ -26,6 +26,8 @@
 namespace aipurpose_questiongeneration;
 
 use local_ai_manager\base_purpose;
+use local_ai_manager\request_options;
+use Locale;
 
 /**
  * Purpose genai methods
@@ -47,10 +49,27 @@ class purpose extends base_purpose {
         // If the LLM returns a code block, remove the Markdown wrapper (```)
         // around the result.
         $matches = [];
-        preg_match('/^```[a-zA-Z0-9]*\s*(.*?)\s*```$/s', $output, $matches);
+        preg_match('/^```[a-zA-Z0-9]*\s*(.*?)\s*```/s', $output, $matches);
         if (count($matches) > 1) {
             $output = $matches[1];
         }
         return $output;
     }
+
+    public function manipulate_prompt(string $prompt): string {
+        return str_replace('{{currentlang}}', Locale::getDisplayLanguage(current_language(), 'en'), $prompt);
+    }
+
+    public function manipulate_requestoptions(request_options $requestoptions): request_options {
+        $options = $requestoptions->get_options();
+
+        if (!empty($options['conversationcontext'])) {
+            $options['conversationcontext'] =
+                    json_decode(str_replace('{{currentlang}}', Locale::getDisplayLanguage(current_language(), 'en'),
+                            json_encode($options['conversationcontext'])), true);
+        }
+        $requestoptions->set_options($options);
+        return $requestoptions;
+    }
+
 }
