@@ -55,21 +55,4 @@ class purpose extends base_purpose {
         }
         return $output;
     }
-
-    public function manipulate_prompt(string $prompt): string {
-        return str_replace('{{currentlang}}', Locale::getDisplayLanguage(current_language(), 'en'), $prompt);
-    }
-
-    public function manipulate_requestoptions(request_options $requestoptions): request_options {
-        $options = $requestoptions->get_options();
-
-        if (!empty($options['conversationcontext'])) {
-            $options['conversationcontext'] =
-                    json_decode(str_replace('{{currentlang}}', Locale::getDisplayLanguage(current_language(), 'en'),
-                            json_encode($options['conversationcontext'])), true);
-        }
-        $requestoptions->set_options($options);
-        return $requestoptions;
-    }
-
 }

@@ -145,12 +145,4 @@ class base_purpose {
         $output = str_replace('\\]', '\\\\]', $output);
         return format_text($output, FORMAT_MARKDOWN, ['filter' => false]);
     }
-
-        public function manipulate_prompt(string $prompt): string {
-            return $prompt;
-        }
-
-        public function manipulate_requestoptions(request_options $requestoptions): request_options {
-            return $requestoptions;
-        }
 }

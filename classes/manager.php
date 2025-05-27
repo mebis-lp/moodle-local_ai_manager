@@ -178,11 +178,6 @@ class manager {
             );
         }
 
-        // Allow purpose to manipulate prompt.
-        $prompttext = $this->purpose->manipulate_prompt($prompttext);
-        // Allow purpose to manipulate request options.
-        $requestoptions = $this->purpose->manipulate_requestoptions($requestoptions);
-
         $promptdata = $this->connector->get_prompt_data($prompttext, $requestoptions);
         $starttime = microtime(true);
         try {
