@@ -34,9 +34,12 @@ class connector extends \local_ai_manager\base_connector {
 
     #[\Override]
     public function get_models_by_purpose(): array {
-        $visionmodels = ['llava', 'llava:7b', 'llava:13b', 'llava:34b', 'bakllava', 'moondream'];
-        $textmodels = ['gemma', 'llama3', 'llama3.1', 'mistral', 'codellama', 'qwen', 'phi3', 'mixtral', 'dolphin-mixtral',
-                'tinyllama'];
+        $visionmodels =
+                ['llava-llama3', 'llava-phi3', 'granite-3.2-vision', 'bakllava', 'moondream', 'llama3.2-vision', 'llama4', 'gemma3',
+                        'qwen2.5vl', 'mistral-small3.1'];
+        $textmodels =
+                ['gemma', 'gemma3', 'llama3', 'llama3.1', 'llama3.2-vision', 'llama3.3', 'llama4', 'phi4', 'mistral',
+                        'mistral-small3.1', 'codellama', 'qwen', 'mixtral', 'dolphin-mixtral', 'tinyllama'];
         return [
                 'chat' => $textmodels,
                 'feedback' => $textmodels,
