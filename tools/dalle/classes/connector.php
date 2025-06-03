@@ -38,7 +38,7 @@ class connector extends base_connector {
     #[\Override]
     public function get_models_by_purpose(): array {
         return [
-                'imggen' => ['dall-e-2', 'dall-e-3'],
+                'imggen' => ['dall-e-3', 'gpt-image-1'],
         ];
     }
 
@@ -49,8 +49,12 @@ class connector extends base_connector {
         $parameters = [
                 'prompt' => $prompttext,
                 'size' => empty($options['sizes'][0]) ? $defaultimagesize : $options['sizes'][0],
-                'response_format' => 'b64_json',
         ];
+        if ($this->instance->get_model() !== 'gpt-image-1' &&
+                $this->instance->get_model() !== aitool_option_azure::get_azure_model_name('gpt-image-1')) {
+            // Only dalle models support this parameter, because gpt-image-1 will always return base64 string anyways.
+            $parameters['response_format'] = 'b64_json';
+        }
         if (!$this->instance->azure_enabled()) {
             // If azure is enabled, the model will be preconfigured in the azure resource, so we do not need to send it.
             $parameters['model'] = $this->instance->get_model();
@@ -106,20 +110,20 @@ class connector extends base_connector {
     public function get_available_options(): array {
         $options = [];
         switch ($this->instance->get_model()) {
-            case 'dall-e-2':
-                $options['sizes'] = [
-                        ['key' => '256x256', 'displayname' => get_string('small', 'local_ai_manager') . ' (256px x 256px)'],
-                        ['key' => '512x512', 'displayname' => get_string('medium', 'local_ai_manager') . ' (512px x 512px)'],
-                        ['key' => '1024x1024', 'displayname' => get_string('large', 'local_ai_manager') . ' (1024px x 1024px)'],
-                ];
-                break;
             case 'dall-e-3':
             case aitool_option_azure::get_azure_model_name('dalle'):
-                // We assume that if using Azure (in which we would have PRECONFIGURED_MODEL as model) we only can deploy dall-e-3.
                 $options['sizes'] = [
                         ['key' => '1024x1024', 'displayname' => get_string('squared', 'local_ai_manager') . ' (1024px x 1024px)'],
                         ['key' => '1792x1024', 'displayname' => get_string('landscape', 'local_ai_manager') . ' (1792px x 1024px)'],
                         ['key' => '1024x1792', 'displayname' => get_string('portrait', 'local_ai_manager') . ' (1024px x 1792px)'],
+                ];
+                break;
+            case 'gpt-image-1':
+            case aitool_option_azure::get_azure_model_name('gpt-image-1'):
+                $options['sizes'] = [
+                        ['key' => '1024x1024', 'displayname' => get_string('squared', 'local_ai_manager') . ' (1024px x 1024px)'],
+                        ['key' => '1536x1024', 'displayname' => get_string('landscape', 'local_ai_manager') . ' (1536px x 1024px)'],
+                        ['key' => '1024x1536', 'displayname' => get_string('portrait', 'local_ai_manager') . ' (1024px x 1536px)'],
                 ];
                 break;
             default:

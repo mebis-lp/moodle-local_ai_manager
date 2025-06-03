@@ -46,7 +46,7 @@ class connector extends base_connector {
     #[\Override]
     public function get_models_by_purpose(): array {
         return [
-                'imggen' => ['imagegeneration@006', 'imagen-3.0-generate-001'],
+                'imggen' => ['imagen-3.0-generate-002'],
         ];
     }
 
@@ -84,21 +84,6 @@ class connector extends base_connector {
 
     #[\Override]
     public function make_request(array $data, request_options $requestoptions): request_response {
-        // Currently, imagen does not support many languages. So we first translate the prompt into English and hardcode the
-        // language to "English" later on in the request options.
-        $translatemanager = new manager('translate');
-        $translaterequestresult = $translatemanager->perform_request(
-                'Translate the following words into English, only return the translated text: '
-                . $data['instances'][0]['prompt'], $requestoptions->get_component(), $requestoptions->get_context()->id);
-        if ($translaterequestresult->get_code() !== 200) {
-            return request_response::create_from_error($translaterequestresult->get_code(),
-                    get_string('err_translationfailed', 'aitool_imagen'), $translaterequestresult->get_debuginfo());
-        }
-        $translatedprompt = $translaterequestresult->get_content();
-
-        // Subsitute the current prompt by the translated one.
-        $data['instances'][0]['prompt'] = $translatedprompt;
-
         $vertexaiauthhandler =
                 new aitool_option_vertexai_authhandler($this->instance->get_id(), $this->instance->get_customfield1());
         try {
@@ -156,11 +141,11 @@ class connector extends base_connector {
     #[\Override]
     public function get_available_options(): array {
         $options['sizes'] = [
-                ['key' => '1:1', 'displayname' => '1:1 (1536 x 1536)'],
-                ['key' => '9:16', 'displayname' => '9:16 (1152 x 2016)'],
-                ['key' => '16:9', 'displayname' => '16:9 (2016 x 1134)'],
-                ['key' => '3:4', 'displayname' => '3:4 (1344 x 1792)'],
-                ['key' => '4:3', 'displayname' => '4:3 (1792 x 1344)'],
+                ['key' => '1:1', 'displayname' => '1:1 (1024 x 1024)'],
+                ['key' => '3:4', 'displayname' => '4:3 (896 x 1280)'],
+                ['key' => '4:3', 'displayname' => '4:3 (1280 x 896)'],
+                ['key' => '9:16', 'displayname' => '9:16 (768 x 1408)'],
+                ['key' => '16:9', 'displayname' => '16:9 (1408 x 768)'],
         ];
         return $options;
     }
