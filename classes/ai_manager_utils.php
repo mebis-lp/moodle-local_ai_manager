@@ -49,32 +49,34 @@ class ai_manager_utils {
             bool $includedeleted = true, string $fields = '*', array $purposes = []): array {
         global $DB;
 
-        $select = '';
+        $conditions = [];
         $params = [];
 
         if (!empty($userid)) {
-            $select .= "userid = :userid AND ";
+            $conditions[] = "userid = :userid";
             $params['userid'] = $userid;
         }
 
-        $select .= "contextid = :contextid AND component = :component";
+        $conditions[] = "contextid = :contextid";
+        $conditions[] = "component = :component";
         $params['contextid'] = $contextid;
         $params['component'] = $component;
 
         if (!empty($itemid)) {
-            $select .= " AND itemid = :itemid";
+            $conditions[] = "itemid = :itemid";
             $params['itemid'] = $itemid;
         }
         if (empty($includedeleted)) {
-            $select .= " AND deleted = 0";
+            $conditions[] = "deleted = :deleted";
             // The column 'deleted' is defined to have value 0 by default, so we should be safe to use this as a query param.
             $params['deleted'] = 0;
         }
         if (!empty($purposes)) {
             [$insql, $inparams] = $DB->get_in_or_equal($purposes, SQL_PARAMS_NAMED);
-            $select .= " AND purpose " . $insql;
+            $conditions[] = "purpose " . $insql;
             $params = array_merge($params, $inparams);
         }
+        $select = implode(' AND ', $conditions);
         return $DB->get_records_select('local_ai_manager_request_log', $select, $params, 'timecreated ASC', $fields);
     }
 
