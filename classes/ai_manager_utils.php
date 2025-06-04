@@ -48,15 +48,19 @@ class ai_manager_utils {
     public static function get_log_entries(string $component, int $contextid, int $userid = 0, int $itemid = 0,
             bool $includedeleted = true, string $fields = '*', array $purposes = []): array {
         global $DB;
-        $select = "component = :component AND contextid = :contextid";
-        $params = [
-                'component' => $component,
-                'contextid' => $contextid,
-        ];
+
+        $select = '';
+        $params = [];
+
         if (!empty($userid)) {
-            $select .= " AND userid = :userid";
+            $select .= "userid = :userid AND ";
             $params['userid'] = $userid;
         }
+
+        $select .= "contextid = :contextid AND component = :component";
+        $params['contextid'] = $contextid;
+        $params['component'] = $component;
+
         if (!empty($itemid)) {
             $select .= " AND itemid = :itemid";
             $params['itemid'] = $itemid;
