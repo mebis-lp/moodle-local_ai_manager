@@ -41,7 +41,7 @@ class ai_manager_utils {
      * @param int $userid the userid of the user, optional
      * @param int $itemid the itemid, optional
      * @param bool $includedeleted if log entries which are marked as deleted, should be included in the result
-     * @param string $fields Comma separated list of SQL fields to contain in the result, defaults to all fields
+     * @param string $fields Comma separated list of SQL fields that should be contained in the result, defaults to all fields
      * @param array $purposes Array of purpose name strings that should be returned. If empty, all purposes will be returned.
      * @return array array of records of the log table
      */
@@ -71,8 +71,7 @@ class ai_manager_utils {
             $select .= " AND purpose " . $insql;
             $params = array_merge($params, $inparams);
         }
-        $records = $DB->get_records_select('local_ai_manager_request_log', $select, $params, 'timecreated ASC', $fields);
-        return !empty($records) ? $records : [];
+        return $DB->get_records_select('local_ai_manager_request_log', $select, $params, 'timecreated ASC', $fields);
     }
 
     /**
