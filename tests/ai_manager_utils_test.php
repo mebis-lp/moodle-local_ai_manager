@@ -142,4 +142,155 @@ final class ai_manager_utils_test extends \advanced_testcase {
         $this->assertEquals($coursecontext->id,
                 ai_manager_utils::find_closest_parent_course_context($blockcoursemodulecontextcontext)->id);
     }
+
+    /**
+     * Test for the get_log_entries method.
+     *
+     * @covers \local_ai_manager\ai_manager_utils::get_log_entries
+     */
+    public function test_get_log_entries(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $record = new stdClass();
+        $record->userid = $user->id;
+        $record->value = 3.8;
+        $record->purpose = 'chat';
+        $record->model = 'testmodel';
+        $record->modelinfo = 'testmodel-3.5';
+        $record->prompttext = 'some prompt 1';
+        $record->promptcompletion = 'some prompt response 1';
+        $record->component = 'block_ai_chat';
+        $record->contextid = 12;
+        $record->itemid = 5;
+        $record->timecreated = time();
+        $DB->insert_record('local_ai_manager_request_log', $record);
+
+        $record = new stdClass();
+        $record->userid = $user->id;
+        $record->value = 2.3;
+        $record->purpose = 'chat';
+        $record->model = 'testmodel';
+        $record->modelinfo = 'testmodel-3.5';
+        $record->prompttext = 'some prompt 2';
+        $record->promptcompletion = 'some prompt response 2';
+        $record->component = 'block_ai_chat';
+        $record->contextid = 13;
+        $record->itemid = 7;
+        $record->timecreated = time();
+        $DB->insert_record('local_ai_manager_request_log', $record);
+
+        $record = new stdClass();
+        $record->userid = $user->id;
+        $record->value = 1.2;
+        $record->purpose = 'translate';
+        $record->model = 'testmodel';
+        $record->modelinfo = 'testmodel-3.5';
+        $record->prompttext = 'some prompt 3';
+        $record->promptcompletion = 'some prompt response 3';
+        $record->component = 'tiny_ai';
+        $record->contextid = 12;
+        $record->itemid = 5;
+        $record->timecreated = time();
+        $DB->insert_record('local_ai_manager_request_log', $record);
+
+        $record = new stdClass();
+        $record->userid = $user->id;
+        $record->value = 1.2;
+        $record->purpose = 'itt';
+        $record->model = 'testmodel';
+        $record->modelinfo = 'testmodel-3.5';
+        $record->prompttext = 'some prompt 4';
+        $record->promptcompletion = 'some prompt response 4';
+        $record->component = 'tiny_ai';
+        $record->contextid = 12;
+        $record->itemid = 5;
+        $record->timecreated = time();
+        $DB->insert_record('local_ai_manager_request_log', $record);
+
+        // Same as the first, but now with different user.
+        $record = new stdClass();
+        $record->userid = $user2->id;
+        $record->value = 1.2;
+        $record->purpose = 'chat';
+        $record->model = 'testmodel';
+        $record->modelinfo = 'testmodel-3.5';
+        $record->prompttext = 'some prompt 5';
+        $record->promptcompletion = 'some prompt response 5';
+        $record->component = 'block_ai_chat';
+        $record->contextid = 12;
+        $record->itemid = 5;
+        $record->timecreated = time();
+        $DB->insert_record('local_ai_manager_request_log', $record);
+
+        // Same as the first, but now with different itemid.
+        $record = new stdClass();
+        $record->userid = $user2->id;
+        $record->value = 1.2;
+        $record->purpose = 'chat';
+        $record->model = 'testmodel';
+        $record->modelinfo = 'testmodel-3.5';
+        $record->prompttext = 'some prompt 6';
+        $record->promptcompletion = 'some prompt response 6';
+        $record->component = 'block_ai_chat';
+        $record->contextid = 12;
+        $record->itemid = 10;
+        $record->timecreated = time();
+        $DB->insert_record('local_ai_manager_request_log', $record);
+
+        // Same as the first, but now with deleted.
+        $record = new stdClass();
+        $record->userid = $user2->id;
+        $record->value = 1.2;
+        $record->purpose = 'chat';
+        $record->model = 'testmodel';
+        $record->modelinfo = 'testmodel-3.5';
+        $record->prompttext = 'some prompt 7';
+        $record->promptcompletion = 'some prompt response 7';
+        $record->component = 'block_ai_chat';
+        $record->contextid = 12;
+        $record->itemid = 5;
+        $record->deleted = 1;
+        $record->timecreated = time();
+        $DB->insert_record('local_ai_manager_request_log', $record);
+
+        $logentries = ai_manager_utils::get_log_entries('block_ai_chat', 12);
+        $this->assertCount(4, $logentries);
+        $this->assertCount(1, array_filter($logentries, fn($logentry) => $logentry->prompttext === 'some prompt 1'));
+        $this->assertCount(1, array_filter($logentries, fn($logentry) => $logentry->prompttext === 'some prompt 5'));
+        $this->assertCount(1, array_filter($logentries, fn($logentry) => $logentry->prompttext === 'some prompt 6'));
+        $this->assertCount(1, array_filter($logentries, fn($logentry) => $logentry->prompttext === 'some prompt 7'));
+
+        $logentries = ai_manager_utils::get_log_entries('block_ai_chat', 13);
+        $this->assertCount(1, $logentries);
+        $this->assertCount(1, array_filter($logentries, fn($logentry) => $logentry->prompttext === 'some prompt 2'));
+
+        $logentries = ai_manager_utils::get_log_entries('tiny_ai', 13);
+        $this->assertCount(0, $logentries);
+
+        $logentries = ai_manager_utils::get_log_entries('tiny_ai', 12);
+        $this->assertCount(2, $logentries);
+        $this->assertCount(1, array_filter($logentries, fn($logentry) => $logentry->prompttext === 'some prompt 3'));
+        $logentries = ai_manager_utils::get_log_entries('tiny_ai', 12, 0, 0, true, '*', ['translate']);
+        $this->assertCount(1, $logentries);
+        $this->assertCount(1, array_filter($logentries, fn($logentry) => $logentry->prompttext === 'some prompt 3'));
+
+        $logentries = ai_manager_utils::get_log_entries('tiny_ai', 12, 0, 0, true, '*', ['chat']);
+        $this->assertCount(0, $logentries);
+
+        $logentries = ai_manager_utils::get_log_entries('block_ai_chat', 12, 0, 0, false);
+        $this->assertCount(3, $logentries);
+        // Should not contain the deleted entry.
+        $this->assertCount(0, array_filter($logentries, fn($logentry) => $logentry->prompttext === 'some prompt 7'));
+
+        // Finally, test selection of database fields.
+        $logentries = ai_manager_utils::get_log_entries('block_ai_chat', 12, $user->id, 5, true, 'id,prompttext,promptcompletion');
+        $this->assertCount(1, $logentries);
+        $entry = reset($logentries);
+        $this->assertTrue(property_exists($entry, 'prompttext'));
+        $this->assertTrue(property_exists($entry, 'promptcompletion'));
+        $this->assertFalse(property_exists($entry, 'component'));
+    }
 }

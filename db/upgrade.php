@@ -291,5 +291,15 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025021700, 'local', 'ai_manager');
     }
 
+    if ($oldversion < 2025022102) {
+        $table = new xmldb_table('local_ai_manager_request_log');
+        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $dbman->add_key($table, $key);
+        $key = new xmldb_key('contextid', XMLDB_KEY_FOREIGN, ['contextid'], 'context', ['id']);
+        $dbman->add_key($table, $key);
+
+        upgrade_plugin_savepoint(true, 2025022102, 'local', 'ai_manager');
+    }
+
     return true;
 }
