@@ -60,7 +60,7 @@ if ($context->contextlevel === CONTEXT_COURSE) {
 }
 
 
-$url = new moodle_url('/local/ai_manager/view_prompts.php');
+$url = new moodle_url('/local/ai_manager/view_prompts.php', ['contextid' => $context->id]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
