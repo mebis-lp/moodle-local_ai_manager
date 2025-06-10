@@ -23,6 +23,8 @@
  */
 
 import {call as fetchMany} from 'core/ajax';
+import {exception as displayException} from 'core/notification';
+
 
 let aiConfig = null;
 
@@ -58,5 +60,11 @@ export const getAiConfig = async(tenant = null) => {
 };
 
 export const getPurposeOptions = async(purpose) => {
-    return await fetchPurposeOptions(purpose);
+    let purposeOptions = null;
+    try {
+        purposeOptions = await fetchPurposeOptions(purpose);
+    } catch (exception) {
+        await displayException(exception);
+    }
+    return purposeOptions;
 };

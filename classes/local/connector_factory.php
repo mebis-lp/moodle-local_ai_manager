@@ -166,7 +166,7 @@ class connector_factory {
     public static function get_connector_instances_for_purpose(string $purpose): array {
         $instances = [];
         foreach (base_instance::get_all_instances() as $instance) {
-            if (in_array($purpose, $instance->supported_purposes())) {
+            if (in_array($purpose, $instance->supported_purposes()) && $instance->is_connector_enabled()) {
                 $instances[$instance->get_id()] = $instance;
             }
         }
