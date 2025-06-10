@@ -14,18 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_ai_manager\table;
+
+use moodle_url;
+
 /**
- * Version file for local_ai_manager.
+ * Subplugin overview table.
  *
  * @package    local_ai_manager
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @copyright  2025 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
+class aipurposes_admin_table extends \local_ai_manager\table\aitools_admin_table {
 
-$plugin->version  = 2025022103;
-$plugin->requires = 2024042200;
-$plugin->release = '1.0';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_BETA;
+    #[\Override]
+    protected function get_plugintype(): string {
+        return 'aipurpose';
+    }
+
+    #[\Override]
+    public function guess_base_url(): void {
+        $this->define_baseurl(
+                new moodle_url('/admin/settings.php', ['section' => 'aipurposepluginsmanagement'])
+        );
+    }
+}

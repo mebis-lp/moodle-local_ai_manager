@@ -93,7 +93,11 @@ class submit_query extends external_api {
                 $return = ['code' => 200, 'string' => 'ok', 'result' => $purposeobject->format_output($result->get_content())];
             }
         } catch (\Exception $e) {
-            $return = ['code' => 500, 'string' => 'error', 'result' => $e->getMessage()];
+            $error = ['message' => $e->getMessage()];
+            if (debugging()) {
+                $error['debuginfo'] = $e->getTraceAsString();
+            }
+            $return = ['code' => 500, 'string' => 'error', 'result' => json_encode($error)];
         }
 
         return $return;

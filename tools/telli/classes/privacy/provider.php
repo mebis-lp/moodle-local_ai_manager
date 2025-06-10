@@ -14,20 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace aitool_telli\privacy;
+
 /**
- * Settings page to be included as tab in ai_managers settings page
+ * aitool_telli privacy provider class.
  *
- * @package    aipurpose_imggen
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    aitool_telli
+ * @copyright  2025 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class provider implements \core_privacy\local\metadata\null_provider {
 
-defined('MOODLE_INTERNAL') || die();
-
-$settings = new admin_settingpage('tab_aipurpose_imggen', get_string('pluginname', 'aipurpose_imggen'));
-
-$name = new lang_string('pluginname', 'aipurpose_imggen');
-$settings->add(new admin_setting_heading('pluginname', $name, ''));
-
-$tabs->add($settings);
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

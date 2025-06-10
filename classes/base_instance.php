@@ -20,6 +20,7 @@ use local_ai_manager\local\config_manager;
 use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
+use local_ai_manager\plugininfo\aitool;
 use stdClass;
 
 /**
@@ -180,6 +181,15 @@ class base_instance {
             $instances[] = new self($record->id);
         }
         return $instances;
+    }
+
+    /**
+     * Returns if the connector subplugin this is an instance of is enabled.
+     *
+     * @return bool true if the related connector plugin is enabled, false otherwise
+     */
+    public function is_connector_enabled(): bool {
+        return in_array($this->connector, aitool::get_enabled_plugins());
     }
 
     /**
