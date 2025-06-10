@@ -40,16 +40,15 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtextarea('aitool_telli/availablemodels',
             new lang_string('availablemodelssetting', 'aitool_telli'),
             new lang_string('availablemodelssettingdesc', 'aitool_telli'),
-            "gpt-3.5-turbo\n"
-            . "gpt-4-turbo#VISION\n"
-            . "gpt-4o-mini#VISION\n"
-            . "gpt-4o-mini#VISION\n"
+            "meta-llama/Meta-Llama-3.1-8B-Instruct\n"
+            . "gpt-4-turbo\n"
+            . "gpt-3.5-turbo\n"
             . "meta-llama/CodeLlama-13b-Instruct-hf\n"
-            . "meta-llama/Meta-Llama-3.1-405B-Instruct-FP8\n"
-            . "meta-llama/Meta-Llama-3.1-70B-Instruct\n"
-            . "meta-llama/Meta-Llama-3.1-8B-Instruct\n"
             . "mistralai/Mistral-7B-Instruct-v0.3\n"
-            . "mistralai/Mixtral-8x7B-Instruct-v0.1"
+            . "mistralai/Mixtral-8x7B-Instruct-v0.1\n"
+            . "meta-llama/Meta-Llama-3.1-405B-Instruct-FP8\n"
+            . "BAAI/bge-m3\n"
+            . "gpt-4o#VISION"
     ));
 
     $settings->add(new admin_setting_description('aitool_telli/managementsitebutton',
