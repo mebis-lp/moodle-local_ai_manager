@@ -19,6 +19,7 @@ namespace local_ai_manager\local;
 use local_ai_manager\base_connector;
 use local_ai_manager\base_purpose;
 use local_ai_manager\base_instance;
+use local_ai_manager\plugininfo\aitool;
 
 /**
  * Class for creating/retrieving some important objects.
@@ -54,7 +55,7 @@ class connector_factory {
      * Returns the connector instance object for a given connector instance id.
      *
      * @param int $id the connector instance id (of the database record)
-     * @return base_instance the instance object
+     * @return base_instance the instance object or null if tool not enabled
      */
     public function get_connector_instance_by_id(int $id): base_instance {
         global $DB;
@@ -62,6 +63,9 @@ class connector_factory {
             return $this->connectorinstance;
         }
         $instancerecord = $DB->get_record('local_ai_manager_instance', ['id' => $id], '*', MUST_EXIST);
+        if (!in_array($instancerecord->connector, aitool::get_enabled_plugins())) {
+            throw new \moodle_exception('exception_tooldisabled', 'local_ai_manager');
+        }
         $instanceclassname = '\\aitool_' . $instancerecord->connector . '\\instance';
         $this->connectorinstance = new $instanceclassname($id);
         return $this->connectorinstance;
