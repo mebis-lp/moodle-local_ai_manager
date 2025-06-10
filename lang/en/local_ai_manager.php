@@ -217,6 +217,7 @@ $string['small'] = 'small';
 $string['squared'] = 'squared';
 $string['statistics_for'] = 'Statistic for {$a}';
 $string['statisticsoverview'] = 'Global overview';
+$string['subpluginspageheading'] = 'AI Manager Subplugins';
 $string['subplugintype_aipurpose'] = 'AI purpose';
 $string['subplugintype_aipurpose_plural'] = 'AI purposes';
 $string['subplugintype_aitool'] = 'AI tool';

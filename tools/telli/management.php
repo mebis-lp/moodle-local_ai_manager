@@ -24,6 +24,7 @@
  */
 
 use aitool_telli\form\management_form;
+use aitool_telli\local\utils;
 use core\http_client;
 use core\output\html_writer;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -35,7 +36,7 @@ require_admin();
 $PAGE->set_context(context_system::instance());
 
 // Execute the controller.
-$PAGE->set_heading('AI Manager Subplugins');
+$PAGE->set_heading(get_string('subpluginspageheading', 'local_ai_manager'));
 $PAGE->set_pagelayout('admin');
 $PAGE->set_url('/local/ai_manager/tools/telli/management.php');
 
@@ -45,50 +46,8 @@ if ($managementform->is_cancelled()) {
     redirect(new moodle_url('/admin/settings.php', ['section' => 'aitoolpluginsmanagement']));
 } else if ($data = $managementform->get_data()) {
 
-    $client = new http_client([
-        // We intentionally do not use the global local_ai_manager timeout setting, because here
-        // we are not requesting any AI processing, but just query information from the API endpoints.
-            'timeout' => 10,
-    ]);
-
-    $options['headers'] = [
-            'Authorization' => 'Bearer ' . optional_param('apikey', '', PARAM_TEXT),
-            'Content-Type' => 'application/json;charset=utf-8',
-    ];
-
-    $baseurl = optional_param('baseurl', '', PARAM_URL);
-    if (!str_ends_with($baseurl, '/')) {
-        $baseurl .= '/';
-    }
-
-    $usageendpoint = $baseurl . 'v1/usage';
-
-    try {
-        $response = $client->get($usageendpoint, $options);
-    } catch (ClientExceptionInterface $exception) {
-        throw new \moodle_exception('err_apiresult', 'aitool_telli', '', $exception->getMessage());
-    }
-    if ($response->getStatusCode() === 200) {
-        $usagereturn = $response->getBody()->getContents();
-    } else {
-        throw new \moodle_exception('err_apiresult', 'aitool_telli', '',
-                get_string('statuscode', 'aitool_telli') . ': ' . $response->getStatusCode() . ': ' .
-                $response->getReasonPhrase());
-    }
-
-    $modelsendpoint = $baseurl . 'v1/models';
-
-    try {
-        $response = $client->get($modelsendpoint, $options);
-    } catch (ClientExceptionInterface $exception) {
-        throw new \moodle_exception('err_apiresult', 'aitool_telli', '', $exception->getMessage());
-    }
-    if ($response->getStatusCode() === 200) {
-        $modelsreturn = $response->getBody()->getContents();
-    } else {
-        throw new \moodle_exception('err_apiresult', 'aitool_telli', '',
-                get_string('statuscode', 'aitool_telli') . $response->getStatusCode() . ': ' . $response->getReasonPhrase());
-    }
+    $apiinfo = utils::get_api_info(optional_param('apikey', '', PARAM_TEXT),
+            optional_param('baseurl', '', PARAM_URL));
 
     echo $OUTPUT->header();
 
@@ -98,9 +57,9 @@ if ($managementform->is_cancelled()) {
 
     echo $OUTPUT->render_from_template('aitool_telli/management',
             [
-                    'usagejson' => json_encode(json_decode($usagereturn),
+                    'usagejson' => json_encode(json_decode($apiinfo->usage),
                             JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-                    'modelsjson' => json_encode(json_decode($modelsreturn),
+                    'modelsjson' => json_encode(json_decode($apiinfo->models),
                             JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             ]
     );
