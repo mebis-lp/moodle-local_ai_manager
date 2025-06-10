@@ -235,7 +235,7 @@ abstract class base_connector {
         $debuginfo = $exception->getMessage() . '\n' . $exception->getTraceAsString() . '\n';
         $rawresponse = method_exists($exception, 'getResponse') ? $exception->getResponse() : null;
         if (!empty($rawresponse)) {
-            $debuginfo .= $exception->getResponse()->getBody()->getContents();
+            $debuginfo .= $rawresponse->getBody()->getContents();
         }
         if ($rawresponse instanceof Response) {
             $rawresponse = $rawresponse->getBody();
