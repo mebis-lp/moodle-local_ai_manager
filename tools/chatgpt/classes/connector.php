@@ -118,7 +118,7 @@ class connector extends \local_ai_manager\base_connector {
         $parameters = [
                 'messages' => $messages,
         ];
-        if (!str_starts_with($this->get_instance()->get_model(), 'o')) {
+        if (!in_array($this->get_instance()->get_model(), ['o1', 'o1-mini', 'o3', 'o3-mini', 'o4-mini'])) {
             $parameters['temperature'] = $this->instance->get_temperature();
         }
         if (!$this->instance->azure_enabled()) {
