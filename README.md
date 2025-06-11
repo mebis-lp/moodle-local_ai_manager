@@ -16,13 +16,19 @@ Key features are:
 handling of the tenants in your moodle instance
 - API functions both on PHP and JS side for connecting frontend plugins like:
   - Chatbot (https://github.com/mebis-lp/moodle-block_ai_chat)
-  - AI text question type (https://github.com/mebis-lp/moodle-qtype_aitext which is a fork of https://github.com/marcusgreen/moodle-qtype_aitext)
+  - AI text question type (https://github.com/marcusgreen/moodle-qtype_aitext)
   - Tiny AI tools (https://github.com/mebis-lp/moodle-tiny_ai)
+  - AI control center (https://github.com/mebis-lp/moodle-block_ai_control)
   - ... probably more to come
 - Enabling/disabling of users of a tenant
 - Limiting requests per time for each role
 - Control if users with a certain role can access certain purposes
 - Detailed possibilities to monitor user usage
+- Possibility for teachers to see the prompts of students (can be customized/disabled by capabilities)
+- Frontend components that can be implemented in all frontend plugins:
+  - Information about data being sent to external AI systems
+  - Current usage/limits
+  - Warning regarding how to deal with results of generative AI
 
 Currently supported AI tools:
 - OpenAI ChatGPT (also via Azure)
@@ -32,6 +38,7 @@ Currently supported AI tools:
 - Google Synthesize (text to speech)
 - Google Imagen 3 (via Vertex AI)
 - Ollama
+- Telli (Service for German schools)
 
 Currently available AI purposes:
 - Chat
