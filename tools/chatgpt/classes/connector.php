@@ -116,9 +116,11 @@ class connector extends \local_ai_manager\base_connector {
         }
 
         $parameters = [
-                'temperature' => $this->instance->get_temperature(),
                 'messages' => $messages,
         ];
+        if (!str_starts_with($this->get_instance()->get_model(), 'o')) {
+            $parameters['temperature'] = $this->instance->get_temperature();
+        }
         if (!$this->instance->azure_enabled()) {
             // If azure is enabled, the model will be preconfigured in the azure resource, so we do not need to send it.
             $parameters['model'] = $this->instance->get_model();
