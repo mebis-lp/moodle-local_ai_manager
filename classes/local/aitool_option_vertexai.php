@@ -68,8 +68,8 @@ class aitool_option_vertexai {
         $serviceaccountinfo = json_decode($serviceaccountjson);
         $projectid = $serviceaccountinfo->project_id;
 
-        $baseendpoint = 'https://europe-west3-aiplatform.googleapis.com/v1/projects/' . $projectid
-                . '/locations/europe-west3/publishers/google/models/'
+        $baseendpoint = 'https://europe-north1-aiplatform.googleapis.com/v1/projects/' . $projectid
+                . '/locations/europe-north1/publishers/google/models/'
                 . $data->model;
         return [$serviceaccountjson, $baseendpoint];
     }

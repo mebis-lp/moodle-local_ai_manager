@@ -39,13 +39,13 @@ class connector extends \local_ai_manager\base_connector {
 
     #[\Override]
     public function get_models_by_purpose(): array {
-        $textmodels = ['gemini-1.0-pro', 'gemini-1.0-pro-vision', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+        $textmodels = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash', 'gemini-2.0-pro'];
         return [
                 'chat' => $textmodels,
                 'feedback' => $textmodels,
                 'singleprompt' => $textmodels,
                 'translate' => $textmodels,
-                'itt' => ['gemini-1.5-pro', 'gemini-1.5-flash'],
+                'itt' => $textmodels,
         ];
     }
 

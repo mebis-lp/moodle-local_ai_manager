@@ -50,6 +50,11 @@ class aitool_option_temperature {
         $mform->addElement('float', 'temperaturecustom', get_string('temperature_custom_value', 'local_ai_manager'));
         $mform->disabledIf('temperaturecustom', 'temperatureusecustom');
         $mform->disabledIf('temperatureprechoicearray', 'temperatureusecustom', 'checked');
+        foreach (['o1', 'o1-mini', 'o3', 'o3-mini', 'o4-mini'] as $modelwithouttemperature) {
+            $mform->hideIf('temperatureprechoicearray', 'model', 'eq', $modelwithouttemperature);
+            $mform->hideIf('temperatureusecustom', 'model', 'eq', $modelwithouttemperature);
+            $mform->hideIf('temperaturecustom', 'model', 'eq', $modelwithouttemperature);
+        }
     }
 
     /**
