@@ -188,7 +188,7 @@ class aitool_option_vertexai_authhandler {
         $serviceaccountinfo = json_decode($this->serviceaccountinfo);
         $projectid = trim($serviceaccountinfo->project_id);
 
-        $response = $client->get('https://europe-west3-aiplatform.googleapis.com/v1beta1/projects/' . $projectid . '/cacheConfig',
+        $response = $client->get('https://europe-north1-aiplatform.googleapis.com/v1beta1/projects/' . $projectid . '/cacheConfig',
                 $options);
         if ($response->getStatusCode() !== 200) {
             throw new \moodle_exception('exception_retrievingcachestatus', 'local_ai_manager', '', '',
