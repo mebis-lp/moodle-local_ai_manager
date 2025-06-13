@@ -82,6 +82,17 @@ class request_options {
     }
 
     /**
+     * Setter for the options.
+     *
+     * Needed to update the options inside the object after they have been altered.
+     *
+     * @param array $options The options array which should overwrite the current one inside the object
+     */
+    public function set_options(array $options): void {
+        $this->options = $options;
+    }
+
+    /**
      * Helper function that sanitizes the options against the options defined in the purpose class.
      *
      * @throws coding_exception if validation is failing

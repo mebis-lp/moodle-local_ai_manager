@@ -17,6 +17,7 @@
 namespace local_ai_manager;
 
 use context;
+use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
@@ -377,5 +378,17 @@ class ai_manager_utils {
         } else {
             return $context->get_context_name();
         }
+    }
+
+    /**
+     * Helper function for external plugins to retrieve the available options for a given purpose.
+     *
+     * @param string $purpose the purpose name
+     * @return array array of available purpose options including type
+     */
+    public static function get_available_purpose_options(string $purpose): array {
+        $factory = \core\di::get(connector_factory::class);
+        $purposeobject = $factory->get_purpose_by_purpose_string($purpose);
+        return $purposeobject->get_available_purpose_options();
     }
 }
