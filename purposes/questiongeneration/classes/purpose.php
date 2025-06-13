@@ -46,12 +46,13 @@ class purpose extends base_purpose {
 
     #[\Override]
     public function format_output(string $output): string {
-        // If the LLM returns a code block, remove the Markdown wrapper (```)
+        // If the LLM returns a code block, remove the Markdown wrapper (```) and additional text
         // around the result.
+        $output = trim($output);
         $matches = [];
-        preg_match('/^```[a-zA-Z0-9]*\s*(.*?)\s*```/s', $output, $matches);
+        preg_match('/```[a-zA-Z0-9]*\s*(.*?)\s*```/s', $output, $matches);
         if (count($matches) > 1) {
-            $output = $matches[1];
+            $output = trim($matches[1]);
         }
         return $output;
     }
