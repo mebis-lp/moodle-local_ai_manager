@@ -24,7 +24,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2025041600;
+$plugin->version  = 2025061300;
 $plugin->requires = 2023042403;
 $plugin->release = '0.0.1';
 $plugin->component = 'aipurpose_questiongeneration';
