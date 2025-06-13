@@ -44,11 +44,11 @@ final class purpose_test extends \advanced_testcase {
         $returnstringwithspacesandnewlines = "\n\n\n" . '      ' . $plainxml . '     ' . "\n\n";
         $this->assertEquals($plainxml, $questiongenerationpurpose->format_output($returnstringwithspacesandnewlines));
 
-        $returnstringwithmarkdowncodeformatting = '```' . $plainxml . '```';
+        $returnstringwithmarkdowncodeformatting = "\u{0060}\u{0060}\u{0060}" . $plainxml . "\u{0060}\u{0060}\u{0060}";
         $this->assertEquals($plainxml, $questiongenerationpurpose->format_output($returnstringwithmarkdowncodeformatting));
 
         $returnstringwithmarkdowncodeformattingandtext = 'Here is the question you asked me for:' . "\n\n"
-                . '```' . $plainxml . '```' . "\n\n"
+                . "\u{0060}\u{0060}\u{0060}" . $plainxml . "\u{0060}\u{0060}\u{0060}\n\n"
                 . 'This is the question I generated. Let me know if I can do anything else for you.';
         $this->assertEquals($plainxml, $questiongenerationpurpose->format_output($returnstringwithmarkdowncodeformattingandtext));
 

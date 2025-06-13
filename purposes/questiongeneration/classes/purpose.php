@@ -50,7 +50,8 @@ class purpose extends base_purpose {
         // around the result.
         $output = trim($output);
         $matches = [];
-        preg_match('/```[a-zA-Z0-9]*\s*(.*?)\s*```/s', $output, $matches);
+        $triplebackticks = "\u{0060}\u{0060}\u{0060}";
+        preg_match('/' . $triplebackticks . '[a-zA-Z0-9]*\s*(.*?)\s*' . $triplebackticks . '/s', $output, $matches);
         if (count($matches) > 1) {
             $output = trim($matches[1]);
         }
