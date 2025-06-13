@@ -54,10 +54,12 @@ class userstats_table extends table_sql implements dynamic {
     public function __construct(
             string $uniqid,
     ) {
+        global $SESSION;
         parent::__construct($uniqid);
-        $tenant = \core\di::get(tenant::class);
+        $tenant = $SESSION->local_ai_manager_tenant;
+
         $this->set_attribute('id', $uniqid);
-        $purpose = optional_param('purpose', '', PARAM_ALPHANUM);
+        $purpose = $SESSION->local_ai_manager_statistics_purpose ?? null;
         $baseurl = empty($purpose)
                 ? new moodle_url('/local/ai_manager/user_statisticss.php', ['tenant' => $tenant->get_identifier()])
                 : new moodle_url('/local/ai_manager/purpose_statistics.php',

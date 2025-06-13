@@ -91,7 +91,7 @@ class userinfo {
      *
      * @return int the role constant integer to use as role for a user which has not been assigned a role yet
      */
-    public function get_default_role() {
+    public function get_default_role(): int {
         $accessmanager = \core\di::get(access_manager::class);
         if (\core\di::get(tenant::class)->is_default_tenant()) {
             return $accessmanager->is_tenant_manager($this->userid) ? self::ROLE_UNLIMITED : self::ROLE_BASIC;

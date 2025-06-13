@@ -43,10 +43,18 @@ export const selectors = {
 export const init = (id) => {
     const pendingPromise = new Pending('local_ai_manager/rights_config_table');
     table = document.getElementById(id);
+    if (!table) {
+        pendingPromise.resolve();
+        return;
+    }
 
     document.addEventListener(TableEvents.tableContentRefreshed, () => {
-        // Update the table object, because it has been newly created.
+        // Update the table object because it has been newly created.
         table = document.getElementById(id);
+        if (!table) {
+            // In case of no results when filtered, there won't be a table.
+            return;
+        }
         initCheckboxes();
     });
 

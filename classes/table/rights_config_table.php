@@ -58,9 +58,11 @@ class rights_config_table extends table_sql implements dynamic {
      * @param string $uniqid a unique id to use for the table
      */
     public function __construct($uniqid) {
+        global $SESSION;
         parent::__construct($uniqid);
 
-        $this->tenant = \core\di::get(tenant::class);
+        $this->tenant = $SESSION->local_ai_manager_tenant;
+
         $this->set_attribute('id', $this->uniqueid);
         $this->define_baseurl(new moodle_url('/local/ai_manager/rights_config.php',
                 ['tenant' => $this->tenant->get_identifier()]));;
@@ -105,7 +107,8 @@ class rights_config_table extends table_sql implements dynamic {
         $from =
                 '{user} u LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid';
         $where = 'u.deleted != 1 AND u.suspended != 1 AND ' . $tenantfield . ' = :tenant';
-        $params = array_merge(['tenant' => $this->tenant->get_sql_identifier()]);
+
+        $params = ['tenant' => $this->tenant->get_sql_identifier()];
 
         $usertableextend =
                 new usertable_extend($this->tenant, $this->columnnames, $this->headernames, $fields, $from, $where, $params);
@@ -137,21 +140,21 @@ class rights_config_table extends table_sql implements dynamic {
         if ($filterset->has_filter('role')) {
             // This is a nightmare concerning performance, but showing the rights config table while also filtering roles does not
             // happen very often, so we should be fine.
-            // On the other hand we cannot just apply the filter SQL to the table sql, because there is no SQL way to determine the
+            // On the other hand we cannot just apply the filter SQL to the table SQL, because there is no SQL way to determine the
             // roles for users who do not have a userinfo record yet.
             $rolefilter = $filterset->get_filter('role');
             $rolefilterids = $rolefilter->get_filter_values();
             if (!empty($rolefilterids)) {
                 $rolefiltersql = "SELECT u.id as userid, ui.role as role FROM {user} u "
                         . "LEFT JOIN {local_ai_manager_userinfo} ui ON u.id = ui.userid "
-                        . "WHERE u.deleted != 1 AND u.suspended != 1 AND " . $tenantfield . " = :tenant";
+                        . "WHERE u.deleted <> 1 AND u.suspended <> 1 AND " . $tenantfield . " = :tenant";
                 $rolefilterparams = ['tenant' => $this->tenant->get_sql_identifier()];
                 $records = $DB->get_records_sql($rolefiltersql, $rolefilterparams);
                 $roleuserids = [];
+                $rolefilterids = array_map('intval', $rolefilterids);
                 foreach ($records as $record) {
                     $userinfo = new userinfo($record->userid);
-                    $role = $record->role === null ? $userinfo->get_default_role() : $record->role;
-                    if (in_array($role, $rolefilterids)) {
+                    if (in_array($userinfo->get_role(), $rolefilterids)) {
                         $roleuserids[] = $record->userid;
                     }
                 }
@@ -161,6 +164,7 @@ class rights_config_table extends table_sql implements dynamic {
                 } else {
                     // We could not find any user with the roles in the filter, so we need to return no entries.
                     $rolefilterwhere = ' FALSE ';
+                    $roleparams = [];
                 }
                 $rolefilterwhere = '(' . $rolefilterwhere . ')';
                 $filterparams = array_merge($filterparams, $roleparams);
@@ -314,7 +318,6 @@ class rights_config_table extends table_sql implements dynamic {
 
     #[\Override]
     public function set_filterset(filterset $filterset): void {
-        $this->tenant = \core\di::get(tenant::class);
         if (!($filterset instanceof rights_config_table_filterset)) {
             throw new \coding_exception('The filterset must be an instance of rights_config_table_filterset');
         }
