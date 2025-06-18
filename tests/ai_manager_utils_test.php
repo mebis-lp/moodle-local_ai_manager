@@ -16,6 +16,11 @@
 
 namespace local_ai_manager;
 
+use aitool_chatgpt\instance;
+use local_ai_manager\hook\additional_user_restriction;
+use local_ai_manager\local\connector_factory;
+use local_ai_manager\local\userinfo;
+use local_ai_manager\local\userusage;
 use stdClass;
 
 /**
@@ -292,5 +297,196 @@ final class ai_manager_utils_test extends \advanced_testcase {
         $this->assertTrue(property_exists($entry, 'prompttext'));
         $this->assertTrue(property_exists($entry, 'promptcompletion'));
         $this->assertFalse(property_exists($entry, 'component'));
+    }
+
+    /**
+     * Test the function that calculates the general availability of frontend tools.
+     *
+     * @covers \local_ai_manager\ai_manager_utils::get_ai_config
+     * @covers \local_ai_manager\ai_manager_utils::determine_availability
+     */
+    public function test_determine_availability(): void {
+        $this->resetAfterTest();
+        $user = $this->getDataGenerator()->create_user(['institution' => '1234']);
+        $course = $this->getDataGenerator()->create_course();
+
+        $block = $this->getDataGenerator()->create_block('html',
+                ['parentcontextid' => \context_course::instance($course->id)->id]);
+
+        // First of all, set up everything in a way that a request could in theory be made, so no restrictions apply.
+        $aiuserroleid = $this->getDataGenerator()->create_role(['shortname' => 'aiuser']);
+        role_assign($aiuserroleid, $user->id, SYSCONTEXTID);
+        assign_capability('local/ai_manager:use', CAP_ALLOW, $aiuserroleid, SYSCONTEXTID);
+        $this->setUser($user);
+        $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
+        $this->assertTrue($tenant->is_tenant_allowed());
+
+        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+        $configmanager->set_config('tenantenabled', true);
+
+        $userinfo = new userinfo($user->id);
+        $userinfo->set_confirmed(true);
+        $userinfo->set_role(userinfo::ROLE_BASIC);
+        $userinfo->set_locked(false);
+        $userinfo->set_scope(userinfo::SCOPE_EVERYWHERE);
+        $userinfo->store();
+
+        $userusage = new userusage(\core\di::get(connector_factory::class)->get_purpose_by_purpose_string('chat'), $user->id);
+        $userusage->set_currentusage(10);
+        $userusage->store();
+
+        $configmanager->set_config('chat_max_requests_basic', 50);
+        $blockcontextid = \context_block::instance($block->id)->id;
+
+        $availability = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['availability'];
+        $this->assertEquals($availability['available'], ai_manager_utils::AVAILABILITY_AVAILABLE);
+
+        // Now one by one introduce one "problem", check the correct state and reset the "problem".
+        unassign_capability('local/ai_manager:use', $aiuserroleid, SYSCONTEXTID);
+        assign_capability('local/ai_manager:use', CAP_PROHIBIT, $aiuserroleid, SYSCONTEXTID);
+        $availability = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['availability'];
+        $this->assertEquals($availability['available'], ai_manager_utils::AVAILABILITY_HIDDEN);
+        unassign_capability('local/ai_manager:use', $aiuserroleid, SYSCONTEXTID);
+        assign_capability('local/ai_manager:use', CAP_ALLOW, $aiuserroleid, SYSCONTEXTID);
+
+        set_config('restricttenants', 1, 'local_ai_manager');
+        $availability = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['availability'];
+        $this->assertEquals($availability['available'], ai_manager_utils::AVAILABILITY_HIDDEN);
+        set_config('restricttenants', 0, 'local_ai_manager');
+
+        $configmanager->set_config('tenantenabled', false);
+        $availability = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['availability'];
+        $this->assertEquals($availability['available'], ai_manager_utils::AVAILABILITY_HIDDEN);
+        set_config('restrictedtenants', '', 'local_ai_manager');
+        $configmanager->set_config('tenantenabled', true);
+
+        $userinfo->set_locked(true);
+        $userinfo->store();
+        $availability = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['availability'];
+        $this->assertEquals($availability['available'], ai_manager_utils::AVAILABILITY_DISABLED);
+        $userinfo->set_locked(false);
+        $userinfo->store();
+
+        $userinfo->set_confirmed(false);
+        $userinfo->store();
+        $availability = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['availability'];
+        $this->assertEquals($availability['available'], ai_manager_utils::AVAILABILITY_DISABLED);
+        $userinfo->set_confirmed(true);
+        $userinfo->store();
+
+        $userinfo->set_scope(userinfo::SCOPE_COURSES_ONLY);
+        $userinfo->store();
+        $availability = ai_manager_utils::get_ai_config($user, SYSCONTEXTID, null, ['chat'])['availability'];
+        $this->assertEquals($availability['available'], ai_manager_utils::AVAILABILITY_HIDDEN);
+        $userinfo->set_scope(userinfo::SCOPE_EVERYWHERE);
+        $userinfo->store();
+    }
+
+    /**
+     * Test the function that calculates the availability of frontend tools for certain purposes.
+     *
+     * @covers \local_ai_manager\ai_manager_utils::get_ai_config
+     * @covers \local_ai_manager\ai_manager_utils::determine_purposes_availability
+     */
+    public function test_determine_purposes_availability(): void {
+        $this->resetAfterTest();
+        $user = $this->getDataGenerator()->create_user(['institution' => '1234']);
+        $course = $this->getDataGenerator()->create_course();
+
+        $block = $this->getDataGenerator()->create_block('html',
+                ['parentcontextid' => \context_course::instance($course->id)->id]);
+
+        // First of all, set up everything in a way that a request could in theory be made, so no restrictions apply.
+        $aiuserroleid = $this->getDataGenerator()->create_role(['shortname' => 'aiuser']);
+        role_assign($aiuserroleid, $user->id, SYSCONTEXTID);
+        assign_capability('local/ai_manager:use', CAP_ALLOW, $aiuserroleid, SYSCONTEXTID);
+        $this->setUser($user);
+        $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
+        $this->assertTrue($tenant->is_tenant_allowed());
+
+        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+        $configmanager->set_config('tenantenabled', true);
+
+        $userinfo = new userinfo($user->id);
+        $userinfo->set_confirmed(true);
+        $userinfo->set_role(userinfo::ROLE_BASIC);
+        $userinfo->set_locked(false);
+        $userinfo->set_scope(userinfo::SCOPE_EVERYWHERE);
+        $userinfo->store();
+
+        $userusage = new userusage(\core\di::get(connector_factory::class)->get_purpose_by_purpose_string('chat'), $user->id);
+        $userusage->set_currentusage(10);
+        $userusage->store();
+
+        $configmanager->set_config('chat_max_requests_basic', 50);
+        $blockcontextid = \context_block::instance($block->id)->id;
+
+        $chatgptinstance = new instance();
+        $chatgptinstance->set_model('gpt-4o');
+
+        $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+        $instance = $factory->get_new_instance('chatgpt');
+        $instance->store();
+
+        $configmanager->set_config(base_purpose::get_purpose_tool_config_key('chat', userinfo::ROLE_BASIC), $instance->get_id());
+
+        $hookmanager = \core\di::get(\core\hook\manager::class);
+        $hookmanager->phpunit_redirect_hook(additional_user_restriction::class, function($hook) {
+            $hook->set_access_allowed(true);
+        });
+
+        $chatpurposeconfig = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['purposes'][0];
+        $this->assertEquals($chatpurposeconfig['available'], ai_manager_utils::AVAILABILITY_AVAILABLE);
+
+        // Just a general test if we have a config for all purposes if we do not specify a certain one.
+        $purposesconfig = ai_manager_utils::get_ai_config($user, $blockcontextid)['purposes'];
+        $this->assertCount(count(base_purpose::get_all_purposes()), $purposesconfig);
+        foreach (base_purpose::get_all_purposes() as $purpose) {
+            $purposeconfig =
+                    array_values(array_filter($purposesconfig, fn($purposeconfig) => $purposeconfig['purpose'] === $purpose))[0];
+            $this->assertTrue(in_array($purposeconfig['available'],
+                    [ai_manager_utils::AVAILABILITY_AVAILABLE, ai_manager_utils::AVAILABILITY_HIDDEN,
+                            ai_manager_utils::AVAILABILITY_DISABLED]));
+        }
+
+        // Now introduce "problems" one by one and check the correct state. After that reset
+        // "the problem".
+        // At first, simulate that for the role no AI tool has been configured.
+        $configmanager->unset_config(base_purpose::get_purpose_tool_config_key('chat', userinfo::ROLE_BASIC));
+        $chatpurposeconfig = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['purposes'][0];
+        $this->assertEquals($chatpurposeconfig['available'], ai_manager_utils::AVAILABILITY_DISABLED);
+        $configmanager->set_config(base_purpose::get_purpose_tool_config_key('chat', userinfo::ROLE_BASIC), $instance->get_id());
+
+        \local_ai_manager\plugininfo\aitool::enable_plugin('chatgpt', false);
+        \core\di::set(connector_factory::class, new connector_factory($configmanager));
+        $chatpurposeconfig = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['purposes'][0];
+        $this->assertEquals($chatpurposeconfig['available'], ai_manager_utils::AVAILABILITY_DISABLED);
+        \local_ai_manager\plugininfo\aitool::enable_plugin('chatgpt', true);
+        \core\di::set(connector_factory::class, new connector_factory($configmanager));
+
+        $userusage->set_currentusage(100);
+        $userusage->store();
+        $chatpurposeconfig = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['purposes'][0];
+        $this->assertEquals($chatpurposeconfig['available'], ai_manager_utils::AVAILABILITY_DISABLED);
+        $userusage->set_currentusage(10);
+        $userusage->store();
+
+        // Disable purpose for the basic role.
+        $configmanager->set_config('chat_max_requests_basic', 0);
+        $chatpurposeconfig = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['purposes'][0];
+        $this->assertEquals($chatpurposeconfig['available'], ai_manager_utils::AVAILABILITY_DISABLED);
+        $configmanager->set_config('chat_max_requests_basic', 50);
+
+        // Test the hook.
+        $hookmanager->phpunit_stop_redirections();
+        $hookmanager->phpunit_redirect_hook(additional_user_restriction::class, function($hook) {
+            $hook->set_access_allowed(false, 403, 'You are not allowed!');
+        });
+        $chatpurposeconfig = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['purposes'][0];
+        $this->assertEquals($chatpurposeconfig['available'], ai_manager_utils::AVAILABILITY_HIDDEN);
+        $hookmanager->phpunit_stop_redirections();
+        $hookmanager->phpunit_redirect_hook(additional_user_restriction::class, function($hook) {
+            $hook->set_access_allowed(true);
+        });
     }
 }

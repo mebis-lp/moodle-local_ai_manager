@@ -17,6 +17,9 @@
 namespace local_ai_manager;
 
 use context;
+use core\exception\moodle_exception;
+use core_plugin_manager;
+use local_ai_manager\hook\additional_user_restriction;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
@@ -32,6 +35,14 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ai_manager_utils {
+    /** @var string Constant declaring that a frontend plugin should be available in general. */
+    const AVAILABILITY_AVAILABLE = 'available';
+
+    /** @var string Constant declaring that a frontend plugin should be hidden in general. */
+    const AVAILABILITY_HIDDEN = 'hidden';
+
+    /** @var string Constant declaring that a frontend plugin should be disabled in general. */
+    const AVAILABILITY_DISABLED = 'disabled';
 
     /**
      * API function to retrieve entries from the ai_manager logging table.
@@ -200,7 +211,7 @@ class ai_manager_utils {
     }
 
     /**
-     * API function to check, if an itemid already exists.
+     * API function to check if an itemid already exists.
      *
      * @param string $component the component to check
      * @param int $contextid the contextid to check
@@ -262,29 +273,41 @@ class ai_manager_utils {
      * @param ?string $tenant the tenant to retrieve the information for. If null, the current tenant will be used
      * @return array complex associative array containing all the needed configurations
      */
-    public static function get_ai_config(stdClass $user, ?string $tenant = null): array {
+    public static function get_ai_config(stdClass $user, int $contextid, ?string $tenant = null,
+            ?array $selectedpurposes = []): array {
         if (!is_null($tenant)) {
             $tenant = new tenant($tenant);
             \core\di::set(tenant::class, $tenant);
         }
-        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
         $tenant = \core\di::get(tenant::class);
-        $userinfo = new userinfo($user->id);
 
-        $purposes = [];
-        $purposeconfig = $configmanager->get_purpose_config($userinfo->get_role());
-        $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
-        foreach (base_purpose::get_all_purposes() as $purpose) {
-            $purposeinstance = $factory->get_purpose_by_purpose_string($purpose);
-            $userusage = new userusage($purposeinstance, $user->id);
-            $purposes[] = [
-                    'purpose' => $purpose,
-                    'isconfigured' => !empty($purposeconfig[$purpose]),
-                    'limitreached' => $userusage->get_currentusage() >=
-                            $configmanager->get_max_requests($purposeinstance, $userinfo->get_role()),
-                    'lockedforrole' => $configmanager->get_max_requests($purposeinstance, $userinfo->get_role()) === 0,
-            ];
+        $availablepurposes = \local_ai_manager\plugininfo\aipurpose::get_enabled_plugins();
+        if (empty($selectedpurposes)) {
+            // If no purpose is specified, we return the config for all purposes.
+            $selectedpurposes = $availablepurposes;
         }
+
+        $availability = self::determine_availability($user, $tenant, $contextid);
+        $purposes = self::determine_purposes_availability($user, $contextid, $selectedpurposes);
+
+        return [
+                'availability' => $availability,
+                'purposes' => $purposes,
+        ];
+    }
+
+    /**
+     * API function to get general information about the AI manager.
+     *
+     * @param ?string $tenant the tenant to retrieve the information for. If null, the current tenant will be used
+     * @return array associative array containing the general info object
+     */
+    public static function get_ai_info(?string $tenant = null): array {
+        if (!is_null($tenant)) {
+            $tenant = new tenant($tenant);
+            \core\di::set(tenant::class, $tenant);
+        }
+        $tenant = \core\di::get(tenant::class);
 
         $tools = [];
         foreach (\local_ai_manager\plugininfo\aitool::get_enabled_plugins() as $toolname) {
@@ -303,13 +326,7 @@ class ai_manager_utils {
         $aiwarningurl = get_config('local_ai_manager', 'aiwarningurl') ?: '';
 
         return [
-                'tenantenabled' => $configmanager->is_tenant_enabled(),
-                'userlocked' => $userinfo->is_locked(),
-                'userconfirmed' => $userinfo->is_confirmed(),
-                'role' => userinfo::get_role_as_string($userinfo->get_role()),
-                'scope' => $userinfo->get_scope(),
                 'aiwarningurl' => $aiwarningurl,
-                'purposes' => $purposes,
                 'tools' => $tools,
         ];
     }
@@ -377,5 +394,152 @@ class ai_manager_utils {
         } else {
             return $context->get_context_name();
         }
+    }
+
+    /**
+     * Determine the general availability of a frontend plugin.
+     *
+     * @param stdClass $user the user to check
+     * @param tenant $tenant the tenant to check
+     * @param int $contextid the context on which the availability should be determined
+     * @return array array with keys 'available' and 'errormessage' declaring the general
+     *  availability for a frontend plugin
+     */
+    public static function determine_availability(stdClass $user, tenant $tenant, int $contextid) {
+        $availability = [];
+        $availability['available'] = self::AVAILABILITY_AVAILABLE;
+        $availability['errormessage'] = '';
+
+        if (!has_capability('local/ai_manager:use', \context_system::instance(), $user->id)) {
+            $availability['available'] = self::AVAILABILITY_HIDDEN;
+            return $availability;
+        }
+
+        if (!$tenant->is_tenant_allowed()) {
+            $availability['available'] = self::AVAILABILITY_HIDDEN;
+            return $availability;
+        }
+
+        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+        if (!$configmanager->is_tenant_enabled()) {
+            $availability['available'] = self::AVAILABILITY_HIDDEN;
+            return $availability;
+        }
+
+        $userinfo = new userinfo($user->id);
+        if ($userinfo->is_locked()) {
+            $availability['available'] = self::AVAILABILITY_DISABLED;
+            $availability['errormessage'] = get_string('error_http403blocked', 'local_ai_manager');
+            return $availability;
+        }
+
+        if (!$userinfo->is_confirmed()) {
+            $availability['available'] = self::AVAILABILITY_DISABLED;
+            $url = new moodle_url('/local/ai_manager/confirm_ai_usage.php');
+            $confirmlink = \html_writer::link($url, $url->out(), ['target' => '_blank']);
+            $availability['errormessage'] = get_string('error_http403notconfirmed', 'local_ai_manager')
+                    . '. ' . get_string('useconfirmlink', 'local_ai_manager', $confirmlink);
+            return $availability;
+        }
+
+        $context = context::instance_by_id($contextid);
+        if ($userinfo->get_scope() === userinfo::SCOPE_COURSES_ONLY) {
+            $parentcoursecontext = self::find_closest_parent_course_context($context);
+            if (is_null($parentcoursecontext)) {
+                $availability['available'] = self::AVAILABILITY_HIDDEN;
+                return $availability;
+            }
+        }
+
+        return $availability;
+    }
+
+    /**
+     * Determine the availability of a certain purpose in a frontend plugin.
+     *
+     * @param stdClass $user the user to check
+     * @param int $contextid the context on which the availability should be determined
+     * @param array $selectedpurposes array of purpose strings to check. If empty all purposes will be checked
+     * @return array array containing arrays of the form ['purpose' => ..., 'available' => ..., 'errormessage' => ...]
+     *  that provides the information if the purpose should be available in a frontend plugin
+     */
+    public static function determine_purposes_availability(stdClass $user, int $contextid, array $selectedpurposes): array {
+        if (empty($selectedpurposes)) {
+            return [];
+        }
+
+        $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
+        $userinfo = new userinfo($user->id);
+        $context = \context::instance_by_id($contextid);
+
+        $purposes = [];
+        $purposeconfig = $configmanager->get_purpose_config($userinfo->get_role());
+        $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+        foreach (array_keys(core_plugin_manager::instance()->get_installed_plugins('aipurpose')) as $purpose) {
+            if (!in_array($purpose, $selectedpurposes)) {
+                continue;
+            }
+            $purposeinstance = $factory->get_purpose_by_purpose_string($purpose);
+            $userusage = new userusage($purposeinstance, $user->id);
+
+            if (empty($purposeconfig[$purpose])) {
+                $purposes[] = [
+                        'purpose' => $purpose,
+                        'available' => self::AVAILABILITY_DISABLED,
+                        'errormessage' => get_string('error_purposenotconfigured', 'local_ai_manager'),
+                ];
+                continue;
+            }
+
+            // If the connector plugin to which the instance configured for this purpose belongs, is disabled or not available,
+            // we disable the frontend plugin for this purpose.
+            $instance = $factory->get_connector_instance_by_purpose($purpose, $userinfo->get_role());
+            if (!$instance->is_enabled()) {
+                $purposes[] = [
+                        'purpose' => $purpose,
+                        'available' => self::AVAILABILITY_DISABLED,
+                        'errormessage' => get_string('exception_instanceunavailable', 'local_ai_manager'),
+                ];
+                continue;
+            }
+
+            if ($userusage->get_currentusage() >=
+                    $configmanager->get_max_requests($purposeinstance, $userinfo->get_role())) {
+                $purposes[] = [
+                        'purpose' => $purpose,
+                        'available' => self::AVAILABILITY_DISABLED,
+                        'errormessage' => get_string('error_limitreached', 'local_ai_manager'),
+                ];
+                continue;
+            }
+
+            if ($configmanager->get_max_requests($purposeinstance, $userinfo->get_role()) === 0) {
+                $purposes[] = [
+                        'purpose' => $purpose,
+                        'available' => self::AVAILABILITY_DISABLED,
+                        'errormessage' => get_string('error_purposenotconfigured', 'local_ai_manager'),
+                ];
+                continue;
+            }
+
+            // Provide an additional hook for further limiting access.
+            $restrictionhook = new additional_user_restriction($userinfo, $context, $purposeinstance);
+            \core\di::get(\core\hook\manager::class)->dispatch($restrictionhook);
+            if (!$restrictionhook->is_allowed()) {
+                $purposes[] = [
+                        'purpose' => $purpose,
+                        'available' => self::AVAILABILITY_HIDDEN,
+                        'errormessage' => $restrictionhook->get_message(),
+                ];
+                continue;
+            }
+
+            $purposes[] = [
+                    'purpose' => $purpose,
+                    'available' => self::AVAILABILITY_AVAILABLE,
+                    'errormessage' => '',
+            ];
+        }
+        return $purposes;
     }
 }

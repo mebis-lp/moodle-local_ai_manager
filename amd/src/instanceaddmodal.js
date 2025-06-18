@@ -14,30 +14,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Module handling the form submission of the statistics tables of local_ai_manager.
+ * Module handling for adding a new AI tool.
  *
- * @module     local_ai_manager/userquota
+ * @module     local_ai_manager/instanceaddmodal
  * @copyright  2024 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import {getAiConfig} from 'local_ai_manager/config';
+import {getAiInfo} from 'local_ai_manager/config';
 import {getStrings} from 'core/str';
 import Modal from 'core/modal';
 
 export const renderInstanceAddModal = async(instanceTableSelector) => {
     const instanceTable = document.querySelector(instanceTableSelector);
-    const aiConfig = await getAiConfig(instanceTable.dataset.tenant);
+    const aiInfo = await getAiInfo(instanceTable.dataset.tenant);
     const toolsContext = [];
     const pluginnameStringsToFetch = [];
-    aiConfig.tools.forEach((tool) => {
+    aiInfo.tools.forEach((tool) => {
         pluginnameStringsToFetch.push({key: 'pluginname', component: 'aitool_' + tool.name});
     });
     const pluginNameStrings = await getStrings(pluginnameStringsToFetch);
 
     const descriptionStringsToFetch = [];
-    aiConfig.tools.forEach((tool) => {
+    aiInfo.tools.forEach((tool) => {
         descriptionStringsToFetch.push({key: 'adddescription', component: 'aitool_' + tool.name});
     });
     const descriptionStrings = await getStrings(descriptionStringsToFetch);
@@ -45,7 +45,7 @@ export const renderInstanceAddModal = async(instanceTableSelector) => {
     for (let i = 0; i < pluginnameStringsToFetch.length; i++) {
         toolsContext.push({
             linklabel: pluginNameStrings[i],
-            addurl: aiConfig.tools[i].addurl,
+            addurl: aiInfo.tools[i].addurl,
             adddescription: descriptionStrings[i],
         });
     }

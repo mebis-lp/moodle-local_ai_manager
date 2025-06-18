@@ -28,6 +28,7 @@ use local_ai_manager\local\tenant;
 use local_ai_manager\local\usage;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
+use local_ai_manager\plugininfo\aitool;
 use stdClass;
 
 /**
@@ -119,6 +120,7 @@ final class manager_test extends \advanced_testcase {
 
         $chatgptinstance = new instance();
         $chatgptinstance->set_model('gpt-4o');
+        $chatgptinstance->set_connector('chatgpt');
 
         // Fake a stream object, because we will mock the method that access it anyway.
         $streamresponse = new Stream(fopen('php://temp', 'r+'));
@@ -136,10 +138,18 @@ final class manager_test extends \advanced_testcase {
         $connectorfactory =
                 $this->getMockBuilder(connector_factory::class)->setConstructorArgs([$configmanager])->getMock();
         $connectorfactory->expects($this->any())->method('get_connector_by_purpose')->willReturn($chatgptconnector);
+        if ($configuration['instanceconfigured']) {
+            $connectorfactory->expects($this->any())->method('get_connector_instance_by_purpose')->willReturn($chatgptinstance);
+        } else {
+            $connectorfactory->expects($this->any())->method('get_connector_instance_by_purpose')->willReturn(null);
+        }
+
         $chatpurpose = new purpose();
         $connectorfactory->expects($this->any())->method('get_purpose_by_purpose_string')->willReturn($chatpurpose);
         \core\di::set(config_manager::class, $configmanager);
         \core\di::set(connector_factory::class, $connectorfactory);
+
+        aitool::enable_plugin('chatgpt', $configuration['instanceconnectorenabled']);
 
         // We disable the hook here so we have a defined setup for this unit test.
         // The hook callbacks should be tested whereever the callback is being implemented.
@@ -179,6 +189,8 @@ final class manager_test extends \advanced_testcase {
             // That means that there are more than 0 requests. 0 requests would mean that this role is locked.
                 'maxrequests' => 10,
                 'currentusage' => 5,
+                'instanceconfigured' => true,
+                'instanceconnectorenabled' => true,
         ];
         return [
                 'everythingok' => [
@@ -256,6 +268,16 @@ final class manager_test extends \advanced_testcase {
                                     // This is the default value for an unlimited account.
                                         'period' => format_time(DAYSECS),
                                 ]),
+                ],
+                'instancenotconfigured' => [
+                        'configuration' => [...$defaultoptions, 'instanceconfigured' => false],
+                        'expectedcode' => 403,
+                        'message' => get_string('error_purposenotconfigured', 'local_ai_manager'),
+                ],
+                'instanceconnectorenabled' => [
+                        'configuration' => [...$defaultoptions, 'instanceconnectorenabled' => false],
+                        'expectedcode' => 403,
+                        'message' => get_string('exception_instanceunavailable', 'local_ai_manager'),
                 ],
         ];
     }

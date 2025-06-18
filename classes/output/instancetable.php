@@ -85,8 +85,10 @@ class instancetable implements renderable, templatable {
                     $purposesroleextended[] = ['fullname' => get_string('pluginname', 'aipurpose_' . $purpose)];
                 }
             }
-            $linkedname = html_writer::link(new moodle_url('/local/ai_manager/edit_instance.php',
-                    ['id' => $instance->get_id(), 'tenant' => $tenant->get_identifier()]), $instance->get_name());
+            $linkedname = $instance->is_enabled()
+                    ? html_writer::link(new moodle_url('/local/ai_manager/edit_instance.php',
+                            ['id' => $instance->get_id(), 'tenant' => $tenant->get_identifier()]), $instance->get_name())
+                    : $instance->get_name();
 
             $instances[] = [
                     'name' => $linkedname,
@@ -94,6 +96,7 @@ class instancetable implements renderable, templatable {
                     'model' => $instance->get_model() === base_instance::PRECONFIGURED_MODEL
                             ? get_string('preconfiguredmodel', 'local_ai_manager')
                             : $instance->get_model(),
+                    'enabled' => $instance->is_enabled(),
                     'purposesrolebasic' => $purposesrolebasic,
                     'purposesroleextended' => $purposesroleextended,
                     'nopurposeslink' => html_writer::link(new moodle_url('/local/ai_manager/purpose_config.php',

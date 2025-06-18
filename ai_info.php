@@ -67,7 +67,10 @@ foreach ($configmanager->get_purpose_config($userinfo->get_role()) as $purpose =
     }
     $templatepurpose['purpose'] = get_string('pluginname', 'aipurpose_' . $purpose);
     $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
-    $instance = $factory->get_connector_instance_by_id($instanceid);
+    $instance = $factory->get_connector_instance_by_purpose($purpose, $userinfo->get_role());
+    if (!$instance->is_enabled()) {
+        continue;
+    }
     $templatepurpose['name'] = $instance->get_name();
     $templatepurpose['endpoint'] = $instance->get_endpoint();
     $templatepurpose['model'] = $instance->get_model();
@@ -77,7 +80,7 @@ foreach ($configmanager->get_purpose_config($userinfo->get_role()) as $purpose =
 }
 
 $legalroles = explode(',', get_config('local_ai_manager', 'legalroles'));
-// If the user has at least one of the defined roles he/she will have to consent the data processing.
+// If the user has at least one of the defined roles, he/she will have to consent to the data processing.
 $userhaslegalrole =
         array_reduce($legalroles,
                 fn($acc, $cur) => $acc || user_has_role_assignment($USER->id, $cur, \context_system::instance()->id));

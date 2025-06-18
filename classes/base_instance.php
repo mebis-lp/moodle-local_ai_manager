@@ -184,11 +184,13 @@ class base_instance {
     }
 
     /**
-     * Returns if the connector subplugin this is an instance of is enabled.
+     * Returns if the instance is enabled.
      *
-     * @return bool true if the related connector plugin is enabled, false otherwise
+     * Currently, this is equivalent if the connector subplugin this is an instance of is enabled.
+     *
+     * @return bool true if the instance is enabled, false otherwise
      */
-    public function is_connector_enabled(): bool {
+    public function is_enabled(): bool {
         return in_array($this->connector, aitool::get_enabled_plugins());
     }
 
@@ -623,7 +625,7 @@ class base_instance {
 
     /**
      * Function which determines the supported purposes based on the definitions of available models in the connector class.
-     *
+
      * @return array list of purpose names
      */
     final public function supported_purposes(): array {

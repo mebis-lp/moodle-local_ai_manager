@@ -136,6 +136,15 @@ class manager {
             return prompt_response::create_from_error(403, get_string('error_http403blocked', 'local_ai_manager'), '');
         }
 
+        $connectorfactory = \core\di::get(connector_factory::class);
+        $instance = $connectorfactory->get_connector_instance_by_purpose($this->purpose->get_plugin_name(), $userinfo->get_role());
+        if (is_null($instance)) {
+            return prompt_response::create_from_error(403, get_string('error_purposenotconfigured', 'local_ai_manager'), '');
+        }
+        if (!$instance->is_enabled()) {
+            return prompt_response::create_from_error(403, get_string('exception_instanceunavailable', 'local_ai_manager'), '');
+        }
+
         if (!$userinfo->is_confirmed()) {
             return prompt_response::create_from_error(403, get_string('error_http403notconfirmed', 'local_ai_manager'), '');
         }

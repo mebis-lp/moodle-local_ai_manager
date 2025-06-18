@@ -27,16 +27,34 @@ import {exception as displayException} from 'core/notification';
 
 
 let aiConfig = null;
+let aiInfo = null;
+let selectedPurposes = null;
 
 /**
- * Make request for retrieving the purpose configuration for current tenant.
+ * Make a request for retrieving the purpose configuration for current tenant.
+ *
+ * @param {int} contextid the id of the context for which we need the ai configuration
+ * @param {string} tenant the tenant identifier or null, if the tenant of the user should be used
+ * @param {array} purposes array of purpose strings
+ */
+const fetchAiConfig = (contextid, tenant = null, purposes) => fetchMany([{
+    methodname: 'local_ai_manager_get_ai_config',
+    args: {
+        contextid,
+        tenant,
+        purposes
+    },
+}])[0];
+
+/**
+ * Make a request for retrieving general information for the current tenant.
  *
  * @param {string} tenant the tenant identifier or null, if the tenant of the user should be used
  */
-const fetchAiConfig = (tenant = null) => fetchMany([{
-    methodname: 'local_ai_manager_get_ai_config',
+const fetchAiInfo = (tenant = null) => fetchMany([{
+    methodname: 'local_ai_manager_get_ai_info',
     args: {
-        tenant
+        tenant,
     },
 }])[0];
 
@@ -48,15 +66,31 @@ const fetchPurposeOptions = (purpose) => fetchMany([{
 }])[0];
 
 /**
- * Executes the call to store input value.
+ * Executes the call that returns the AI config object with detailed user specific configuration.
+ *
+ * @param {int} contextid the id of the context for which we need the ai configuration
+ * @param {string} tenant the tenant identifier or null, if the tenant of the user should be used
+ * @param {array} purposes array of purpose strings
+ */
+export const getAiConfig = async(contextid, tenant = null, purposes = []) => {
+    if (aiConfig === null || purposes !== selectedPurposes) {
+        // Store purposes, so we can detect if another call requests different purposes.
+        selectedPurposes = purposes;
+        aiConfig = await fetchAiConfig(contextid, tenant, purposes);
+    }
+    return aiConfig;
+};
+
+/**
+ * Executes the call to get the general info object.
  *
  * @param {string} tenant the tenant identifier or null, if the tenant of the user should be used
  */
-export const getAiConfig = async(tenant = null) => {
-    if (aiConfig === null) {
-        aiConfig = await fetchAiConfig(tenant);
+export const getAiInfo = async(tenant = null) => {
+    if (aiInfo === null) {
+        aiInfo = await fetchAiInfo(tenant);
     }
-    return aiConfig;
+    return aiInfo;
 };
 
 export const getPurposeOptions = async(purpose) => {

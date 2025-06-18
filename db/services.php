@@ -40,6 +40,13 @@ $functions = [
                 'ajax' => true,
                 'capabilities' => 'local/ai_manager:use',
         ],
+        'local_ai_manager_get_ai_info' => [
+                'classname' => 'local_ai_manager\external\get_ai_info',
+                'description' => 'Get general information about the AI manager',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local/ai_manager:use',
+        ],
         'local_ai_manager_get_purpose_options' => [
                 'classname' => 'local_ai_manager\external\get_purpose_options',
                 'description' => 'Retrieve available options for a given purpose',

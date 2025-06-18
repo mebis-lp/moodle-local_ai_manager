@@ -63,9 +63,6 @@ class connector_factory {
             return $this->connectorinstance;
         }
         $instancerecord = $DB->get_record('local_ai_manager_instance', ['id' => $id], '*', MUST_EXIST);
-        if (!in_array($instancerecord->connector, aitool::get_enabled_plugins())) {
-            throw new \moodle_exception('exception_tooldisabled', 'local_ai_manager');
-        }
         $instanceclassname = '\\aitool_' . $instancerecord->connector . '\\instance';
         $this->connectorinstance = new $instanceclassname($id);
         return $this->connectorinstance;
@@ -166,7 +163,7 @@ class connector_factory {
     public static function get_connector_instances_for_purpose(string $purpose): array {
         $instances = [];
         foreach (base_instance::get_all_instances() as $instance) {
-            if (in_array($purpose, $instance->supported_purposes()) && $instance->is_connector_enabled()) {
+            if (in_array($purpose, $instance->supported_purposes()) && $instance->is_enabled()) {
                 $instances[$instance->get_id()] = $instance;
             }
         }
