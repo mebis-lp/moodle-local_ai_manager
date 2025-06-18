@@ -15,17 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * Lang strings for aipurpose_questiongeneration - EN.
  *
- * @package    local_ai_manager
+ * @package    aipurpose_questiongeneration
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2025061802;
-$plugin->requires = 2024042200;
-$plugin->release = '1.1';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_BETA;
+$string['pluginname'] = 'Question generation';
+$string['privacy:metadata'] = 'The local ai_manager purpose subplugin "Question generation" does not store any personal data.';
+$string['requestcount'] = 'GenAI requests';
+$string['requestcount_shortened'] = 'GenAI';

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for local_ai_manager.
+ * Version file for aipurpose_questiongeneration.
  *
- * @package    local_ai_manager
+ * @package    aipurpose_questiongeneration
  * @copyright  ISB Bayern, 2024
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version  = 2025061802;
-$plugin->requires = 2024042200;
-$plugin->release = '1.1';
-$plugin->component = 'local_ai_manager';
-$plugin->maturity = MATURITY_BETA;
+$plugin->requires = 2023042403;
+$plugin->release = '0.0.1';
+$plugin->component = 'aipurpose_questiongeneration';
+$plugin->maturity = MATURITY_ALPHA;

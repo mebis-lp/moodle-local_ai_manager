@@ -162,7 +162,12 @@ final class manager_test extends \advanced_testcase {
         $result = $manager->perform_request('Random string that is irrelevant', 'block_ai_chat', $contextid);
         $this->assertEquals($expectedcode, $result->get_code());
         if ($result->get_code() == 200) {
-            $this->assertEquals($result->get_content(), $message);
+            // The returned content has already been sent through the format_output method of the purpose.
+            // So we apply it here.
+            $this->assertEquals(
+                    $result->get_content(),
+                    $connectorfactory->get_purpose_by_purpose_string('chat')->format_output($message)
+            );
         } else {
             $this->assertEquals($result->get_errormessage(), $message);
         }
