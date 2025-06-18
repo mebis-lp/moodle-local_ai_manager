@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_ai_manager\local\admin_setting_configdate;
+
 defined('MOODLE_INTERNAL') || die;
 
 global $DB;
@@ -144,6 +146,23 @@ if ($hassiteconfig) {
                 get_string('privilegedrolesdesc', 'local_ai_manager'),
                 ['manager'],
                 $roles
+        ));
+
+        $settings->add(new admin_setting_configcheckbox('local_ai_manager/enablecleanuprequestlogtask',
+            get_string('enablecleanuprequestlogtask', 'local_ai_manager'),
+            get_string('enablecleanuprequestlogtaskdesc', 'local_ai_manager'),
+        '0'
+        ));
+
+        $settings->add(new admin_setting_configdate('local_ai_manager/datawiperanonymizedate',
+                get_string('datawiperanonymizedate', 'local_ai_manager'),
+                get_string('datawiperanonymizedatedesc', 'local_ai_manager'),
+                '1759269600'
+        ));
+        $settings->add(new admin_setting_configdate('local_ai_manager/datawiperdeletedate',
+                get_string('datawiperdeletedate', 'local_ai_manager'),
+                get_string('datawiperdeletedatedesc', 'local_ai_manager'),
+                '1759269600'
         ));
     }
 

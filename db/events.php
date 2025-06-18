@@ -15,31 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tasks definition for local_ai_manager.
+ * Event handlers.
  *
- * @package    local_ai_manager
- * @copyright  2024 ISB Bayern
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   local_ai_manager
+ * @copyright 2025 ISB Bayern
+ * @author    Philipp Memmel
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = [
+$observers = [
         [
-                'classname' => 'local_ai_manager\task\reset_user_usage',
-                'minute' => '0',
-                'hour' => '*',
-                'day' => '*',
-                'dayofweek' => '*',
-                'month' => '*',
-        ],
-        [
-                'classname' => 'local_ai_manager\task\data_wiper',
-                'minute' => '2',
-                'hour' => '53',
-                'day' => '*',
-                'dayofweek' => '*',
-                'month' => '*',
+                'eventname' => '\core\event\user_deleted',
+                'callback' => '\local_ai_manager\local\observers::user_deleted',
         ],
 ];
