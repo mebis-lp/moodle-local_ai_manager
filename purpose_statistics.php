@@ -29,9 +29,10 @@ use local_ai_manager\output\tenantnavbar;
 require_once(dirname(__FILE__) . '/../../config.php');
 require_login();
 
-global $CFG, $DB, $OUTPUT, $PAGE, $USER;
+global $CFG, $DB, $OUTPUT, $PAGE, $SESSION, $USER;
 
 $purpose = required_param('purpose', PARAM_ALPHANUM);
+$SESSION->local_ai_manager_statistics_purpose = $purpose;
 
 tenant_config_output_utils::setup_tenant_config_page(new moodle_url('/local/ai_manager/purpose_statistics.php'));
 

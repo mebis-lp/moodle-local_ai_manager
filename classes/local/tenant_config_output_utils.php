@@ -36,12 +36,16 @@ class tenant_config_output_utils {
      * @param moodle_url $url the moodle url object of the current page
      */
     public static function setup_tenant_config_page(moodle_url $url): void {
-        global $PAGE;
+        global $PAGE, $SESSION;
         $tenantid = optional_param('tenant', '', PARAM_ALPHANUM);
 
         if (!empty($tenantid)) {
             $tenant = new \local_ai_manager\local\tenant($tenantid);
             \core\di::set(\local_ai_manager\local\tenant::class, $tenant);
+            // Dynamic tables external service does not support passing any parameters to the table nor can you pass
+            // optional param or anything else. So only storing the current tenant in the session is left as possibility to
+            // track the currently selected tenant.
+            $SESSION->local_ai_manager_tenant = $tenant;
         }
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $accessmanager = \core\di::get(\local_ai_manager\local\access_manager::class);
